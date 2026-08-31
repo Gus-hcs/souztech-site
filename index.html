@@ -139,6 +139,10 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    overflow-x: clip;
+  }
+  body {
+    overflow-x: clip;
   }
   @media (prefers-reduced-motion: reduce) {
     html {
@@ -1164,6 +1168,98 @@
     font-size: 12px;
     color: var(--ink-3);
     line-height: 1.5;
+  }
+
+  /* ---------------------------------------------------------- responsivo */
+  /* o mockup não pode estourar a própria caixa em tela estreita */
+  .app,
+  .app__body,
+  .app__main,
+  .app__side,
+  .stat,
+  .row {
+    min-width: 0;
+  }
+  .row > span:not(.tag):not(.val) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .stat .v {
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 640px) {
+    /* deixa o texto quebrar sozinho — a quebra fixa estoura no celular */
+    .display br,
+    .title br,
+    .thesis br,
+    .hero__lede br {
+      display: none;
+    }
+    .app__mainHead {
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .app__mainHead .legend {
+      margin-left: 0;
+    }
+    .faq details p {
+      padding-right: 8px;
+    }
+    .faq summary {
+      font-size: 17px;
+      gap: 12px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    body {
+      font-size: 16px;
+    }
+    .wrap {
+      padding: 0 18px;
+    }
+    .section {
+      padding: 60px 0;
+    }
+    .section--tight {
+      padding: 48px 0;
+    }
+    .section__head {
+      margin-bottom: 34px;
+    }
+    .hero {
+      padding: 52px 0 0;
+    }
+    .hero__stage {
+      margin-top: 40px;
+      padding-bottom: 76px;
+    }
+    .hero__cta {
+      margin-top: 24px;
+    }
+    .hero__cta .btn {
+      width: 100%;
+    }
+    .display {
+      font-size: clamp(31px, 8.6vw, 42px);
+    }
+    .nav__inner {
+      gap: 10px;
+    }
+    .thesis-note,
+    .noteline,
+    .lead {
+      font-size: 17px;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .app__side {
+      grid-template-columns: 1fr;
+    }
   }
 
   /* ---------------------------------------------------------- movimento */
