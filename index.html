@@ -8,7 +8,59 @@
   name="description"
   content="Software de gestão de obra para construtoras e engenharia: contrato, medição, compra, recebimento e prazo numa tela só, com a margem de cada obra sempre à vista."
 />
+<link rel="canonical" href="https://souztech.com/" />
 <meta name="referrer" content="no-referrer" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SouZ Controle de Obra" />
+<meta property="og:title" content="Da obra no papel ao resultado no caixa." />
+<meta
+  property="og:description"
+  content="Contrato, medição, compra, recebimento e prazo numa tela só — com a margem de cada obra em tempo real, antes de o prejuízo aparecer no fechamento."
+/>
+<meta property="og:url" content="https://souztech.com/" />
+<meta property="og:image" content="https://souztech.com/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="pt_BR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="SouZ — Da obra no papel ao resultado no caixa." />
+<meta
+  name="twitter:description"
+  content="Software de gestão de obra para construtoras. A margem de cada obra em tempo real."
+/>
+<meta name="twitter:image" content="https://souztech.com/og.png" />
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SouZ Controle de Obra",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "url": "https://souztech.com/",
+    "inLanguage": "pt-BR",
+    "description": "Software de gestão de obra para construtoras e empresas de engenharia, com foco em obras MCMV financiadas pela CAIXA: contrato, medição, compra, recebimento, cronograma e curva S numa tela só.",
+    "featureList": [
+      "Financeiro da obra: contratos, medições, recebimentos, lançamentos e fluxo de caixa",
+      "Cronograma com avanço físico ponderado e curva S",
+      "Plano de materiais por etapa",
+      "Módulo CAIXA / MCMV",
+      "Relatório em PDF, exportação CSV e acesso ao Power BI",
+      "Trilha de auditoria"
+    ],
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "BRL",
+      "description": "Assinatura mensal por faixa de obras ativas"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Souz Tech",
+      "url": "https://souztech.com/"
+    }
+  }
+</script>
 <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; upgrade-insecure-requests" />
 <meta name="theme-color" content="#05100E" />
 <link
@@ -115,6 +167,9 @@
   /* ---------------------------------------------------------- base */
   * {
     box-sizing: border-box;
+  }
+  [hidden] {
+    display: none !important;
   }
   html {
     scroll-behavior: smooth;
@@ -385,7 +440,7 @@
   .nav__links a.navlink {
     font-family: var(--mono);
     font-size: 12px;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.08em;
     color: var(--ink-2);
     transition: color 0.16s ease;
   }
@@ -424,8 +479,8 @@
     --line: #d0d0c8;
     --line-strong: #b6b6ac;
     --ink: var(--tinta-clara);
-    --ink-2: #454b47;
-    --ink-3: #6a706a;
+    --ink-2: #3e443f;
+    --ink-3: #575d56;
     --accent: var(--ciano);
     --accent-solid: var(--ciano);
     --neg: #b5382a;
@@ -1103,12 +1158,12 @@
       align-items: start;
     }
     .rec-t {
-      min-height: 62vh;
+      min-height: 54vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       border-top: 0;
-      padding: 40px 0;
+      padding: 36px 0;
     }
     .rec-sticky {
       display: block;
