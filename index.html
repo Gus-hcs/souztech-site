@@ -1459,17 +1459,37 @@
     color: var(--ink-2);
     line-height: 1.5;
   }
-  .plan .ptag {
+  .plan .pprice {
     margin-top: 18px;
     font-family: var(--mono);
     font-size: 12px;
+    letter-spacing: 0.02em;
+    color: var(--ink-2);
+  }
+  .plan-garantias {
+    margin: 24px 0 0;
+    padding: 18px 0 0;
+    border-top: 1px solid var(--line);
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 22px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: var(--ink-3);
   }
-  .plans-note {
-    margin-top: 22px;
-    font-size: 14px;
-    color: var(--ink-3);
-    max-width: 64ch;
+  .plan-garantias li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .plan-garantias li::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    background: var(--accent);
   }
 
   /* ---------------------------------------------------------- faq */
@@ -1559,12 +1579,47 @@
     display: grid;
     gap: 6px;
   }
-  .field label {
+  .field label,
+  .field-lbl {
     font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: 0.1em;
+    font-size: 11px;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--ink-3);
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 2px;
+  }
+  .chips .chip {
+    font: inherit;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: var(--ink-2);
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 7px 13px;
+    cursor: pointer;
+    transition: color 0.14s ease, border-color 0.14s ease, background-color 0.14s ease;
+  }
+  .chips .chip:hover {
+    border-color: var(--ink-3);
+  }
+  .chips .chip[aria-pressed='true'] {
+    color: var(--on-accent);
+    background: var(--accent-solid);
+    border-color: var(--accent-solid);
+  }
+  .chips .chip:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .field-outro {
+    margin-top: 8px;
   }
   .field input,
   .field select,
@@ -1609,6 +1664,91 @@
   }
   .sent.show {
     display: block;
+  }
+
+  /* ---------------------------------------------------- WhatsApp + CTA mobile */
+  .wz {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 80;
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    color: var(--ciano-claro);
+    background: var(--elevado);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r);
+    box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .wz:hover {
+    border-color: var(--ciano-claro);
+    transform: translateY(-2px);
+  }
+  .wz:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .cta-mob {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 79;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: color-mix(in srgb, var(--ground) 92%, transparent);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+    transform: translateY(120%);
+    transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .cta-mob.is-on {
+    transform: none;
+  }
+  .cta-mob .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  @media (min-width: 721px) {
+    .cta-mob {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .wz {
+      bottom: 72px;
+    }
+  }
+
+  /* ------------------------------------------------------- selo de confiança */
+  .selo {
+    background: var(--ground);
+    border-top: 1px solid var(--line);
+  }
+  .selo .wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 8px;
+    justify-content: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .selo span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .selo span + span::before {
+    content: '·';
+    color: var(--line-strong);
   }
 
   /* ---------------------------------------------------------- rodapé */
@@ -2383,7 +2523,7 @@
           Para quem está saindo da planilha na primeira ou segunda obra. Importação e suporte por
           e-mail.
         </p>
-        <span class="ptag">valor sob medida</span>
+        <!-- com preço definido: <span class="pprice">a partir de R$ X/mês</span> -->
       </div>
       <div class="plan is-featured">
         <span class="prange">4 a 12 obras</span>
@@ -2392,7 +2532,7 @@
           Carteira em andamento, mais de um responsável por obra. Painel consolidado, Power BI e
           acompanhamento de implantação.
         </p>
-        <span class="ptag">valor sob medida</span>
+        <!-- com preço definido: <span class="pprice">a partir de R$ X/mês</span> -->
       </div>
       <div class="plan">
         <span class="prange">13+ obras</span>
@@ -2401,12 +2541,16 @@
           Volume alto e prestação de contas para banco e investidor. Onboarding conduzido e canal
           direto.
         </p>
-        <span class="ptag">valor sob medida</span>
+        <!-- com preço definido: <span class="pprice">a partir de R$ X/mês</span> -->
       </div>
     </div>
-    <p class="plans-note reveal">
-      O valor certo para a sua operação sai na demonstração — é rápido, e sem compromisso.
-    </p>
+    <ul class="plan-garantias reveal">
+      <li>Sem taxa de implantação</li>
+      <li>Sem fidelidade</li>
+      <li>Cancela quando quiser</li>
+      <li>Seus dados exportáveis a qualquer momento</li>
+    </ul>
+    <p class="plans-note reveal">O preço sai na demonstração — e é o mesmo que você paga, sem surpresa depois.</p>
   </div>
 </section>
 
@@ -2520,8 +2664,22 @@
         </div>
       </div>
       <div class="field">
-        <label for="msg">Como você controla hoje</label>
-        <textarea id="msg" name="msg" placeholder="Planilha, outro sistema, papel…"></textarea>
+        <span class="field-lbl" id="ctrl-lbl">Como você controla hoje</span>
+        <div class="chips" role="group" aria-labelledby="ctrl-lbl">
+          <button type="button" class="chip" data-chip>Planilha</button>
+          <button type="button" class="chip" data-chip>ERP genérico</button>
+          <button type="button" class="chip" data-chip>Papel / WhatsApp</button>
+          <button type="button" class="chip" data-chip>Nada estruturado</button>
+          <button type="button" class="chip" data-chip data-outro>Outro</button>
+        </div>
+        <input type="hidden" id="msg" name="msg" />
+        <input
+          type="text"
+          id="msg-outro"
+          class="field-outro"
+          placeholder="Conte em uma linha"
+          hidden
+        />
       </div>
       <button class="btn btn--primary" type="submit">Enviar e receber um horário</button>
       <p class="sent" id="sent">
@@ -2531,6 +2689,13 @@
     </form>
   </div>
 </section>
+
+<div class="selo">
+  <div class="wrap">
+    <span>LGPD</span><span>backup diário</span><span>exportação em CSV a qualquer momento</span
+    ><span>acesso direto ao Power BI</span>
+  </div>
+</div>
 
 <!-- ======================= RODAPÉ ======================= -->
 <footer class="foot">
@@ -2557,10 +2722,92 @@
   </div>
 </footer>
 
+<a class="wz" data-wz aria-label="Falar no WhatsApp" hidden>
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+    <path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.8 14.1c-.2.7-1.4 1.3-2 1.4-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-5-4.4-5.1-4.6-.2-.2-1.3-1.7-1.3-3.2 0-1.5.8-2.3 1.1-2.6.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .7.5l.9 2.2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.2-.3.3-.1.6.1.3.7 1.2 1.5 1.9 1 .9 1.9 1.2 2.2 1.3.3.1.4.1.6-.1l.9-1c.2-.2.4-.2.6-.1l2 1c.3.1.5.2.5.3.1.2.1.7-.1 1.3Z"/>
+  </svg>
+</a>
+
+<div class="cta-mob" data-cta-mob>
+  <a class="btn btn--primary" href="#contato">Agendar demonstração</a>
+</div>
+
 <script>
+  /* número do WhatsApp (só dígitos, com DDI + DDD). Preencher: */
+  var WHATSAPP = '5562999999999';
+
   (function () {
     var reduz =
       window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ---------- WhatsApp flutuante ----------
+    (function () {
+      var wz = document.querySelector('[data-wz]');
+      if (!wz) return;
+      var so = String(WHATSAPP).replace(/\D/g, '');
+      if (!so || /^5562999999999$/.test(so)) return; // sem número real, não mostra
+      wz.href =
+        'https://wa.me/' +
+        so +
+        '?text=' +
+        encodeURIComponent('Olá! Vim pelo site do SouZ e queria conhecer o sistema.');
+      wz.target = '_blank';
+      wz.rel = 'noopener';
+      wz.hidden = false;
+    })();
+
+    // ---------- barra de CTA no mobile depois de 60% de rolagem ----------
+    (function () {
+      var bar = document.querySelector('[data-cta-mob]');
+      if (!bar) return;
+      var contato = document.getElementById('contato');
+      window.addEventListener(
+        'scroll',
+        function () {
+          var h = document.documentElement.scrollHeight - window.innerHeight;
+          var passou = h > 0 && window.pageYOffset / h > 0.6;
+          var noContato =
+            contato && contato.getBoundingClientRect().top < window.innerHeight;
+          bar.classList.toggle('is-on', passou && !noContato);
+        },
+        { passive: true },
+      );
+    })();
+
+    // ---------- chips do formulário ('Como você controla hoje') ----------
+    (function () {
+      var chips = [].slice.call(document.querySelectorAll('.chips [data-chip]'));
+      if (!chips.length) return;
+      var hid = document.getElementById('msg');
+      var outro = document.getElementById('msg-outro');
+      function sync() {
+        var m = chips.filter(function (c) {
+          return c.getAttribute('aria-pressed') === 'true';
+        })[0];
+        if (!m) {
+          hid.value = '';
+        } else if (m.hasAttribute('data-outro')) {
+          hid.value = outro.value.trim() || 'Outro';
+        } else {
+          hid.value = m.textContent.trim();
+        }
+      }
+      chips.forEach(function (c) {
+        c.setAttribute('aria-pressed', 'false');
+        c.addEventListener('click', function () {
+          var jaOn = c.getAttribute('aria-pressed') === 'true';
+          chips.forEach(function (o) {
+            o.setAttribute('aria-pressed', 'false');
+          });
+          c.setAttribute('aria-pressed', jaOn ? 'false' : 'true');
+          var eOutro = !jaOn && c.hasAttribute('data-outro');
+          outro.hidden = !eOutro;
+          if (eOutro) outro.focus();
+          sync();
+        });
+      });
+      outro.addEventListener('input', sync);
+    })();
 
     // ---------- herói: carrossel de fotos em cross-fade ----------
     (function () {
