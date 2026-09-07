@@ -666,23 +666,186 @@
     background: var(--ground);
     border: 1px solid var(--line);
     border-radius: var(--r);
+    flex: none;
   }
-  .app__seg span {
+  .app__seg button {
+    font: inherit;
     font-family: var(--mono);
     font-size: 10.5px;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
     color: var(--ink-3);
-    padding: 4px 8px;
+    background: none;
+    border: 0;
+    padding: 4px 9px;
     border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.12s ease, background-color 0.12s ease;
   }
-  .app__seg span.on {
+  .app__seg button:hover {
+    color: var(--ink-2);
+  }
+  .app__seg button[aria-selected='true'] {
     background: var(--surface);
     color: var(--ink);
   }
-  @media (max-width: 640px) {
-    .app__seg {
-      display: none;
+  .app__seg button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  @media (max-width: 560px) {
+    .app__bar {
+      flex-wrap: wrap;
     }
+    .app__seg {
+      margin: 6px 0 0;
+      width: 100%;
+      justify-content: space-between;
+      overflow-x: auto;
+    }
+  }
+
+  /* painéis do mock (Fase 2) */
+  .app__panel {
+    display: none;
+  }
+  .app__panel.is-on {
+    display: block;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .app__panel.is-on {
+      animation: painelIn 0.15s ease;
+    }
+    @keyframes painelIn {
+      from {
+        opacity: 0;
+      }
+    }
+  }
+  .app__pad {
+    padding: 20px 22px 22px;
+  }
+  .mini-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .mini-head h4 {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .mini-head span {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: var(--ink-3);
+  }
+  .mini-wrap {
+    overflow-x: auto;
+  }
+  .mini {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11.5px;
+  }
+  .mini th {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-align: left;
+    padding: 0 10px 7px 0;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  .mini td {
+    padding: 8px 10px 8px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-2);
+    white-space: nowrap;
+  }
+  .mini tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  .mini .n {
+    text-align: right;
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+  }
+  .mini tr.alerta td {
+    background: color-mix(in srgb, var(--warn) 8%, transparent);
+  }
+  .mini .warn-tx {
+    color: var(--warn);
+  }
+  .pill {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border: 1px solid var(--line-strong);
+    color: var(--ink-2);
+    white-space: nowrap;
+  }
+  .pill.ok {
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    color: var(--accent);
+  }
+  .pill.warn {
+    border-color: color-mix(in srgb, var(--warn) 45%, transparent);
+    color: var(--warn);
+  }
+  .pill.mudo {
+    color: var(--ink-3);
+  }
+  .diario-mock {
+    display: grid;
+    gap: 12px;
+  }
+  .diario-mock article {
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: 12px 14px;
+  }
+  .di-cab {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .di-cab b {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink);
+  }
+  .di-cab span {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-3);
+  }
+  .diario-mock p {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: var(--ink-2);
+    line-height: 1.45;
+    max-width: none;
+  }
+  .di-fotos {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .di-fotos span {
+    width: 52px;
+    height: 38px;
+    border: 1px solid var(--line);
+    background:
+      repeating-linear-gradient(135deg, var(--line) 0 1px, transparent 1px 8px),
+      var(--ground);
   }
   .app__body {
     display: grid;
@@ -1594,18 +1757,19 @@
   </div>
 
   <div class="hero__deck">
-    <div
-      class="app"
-      role="img"
-      aria-label="Tela do SouZ: saldo em caixa, margem projetada, avanço físico, curva S de físico previsto contra realizado e lista de movimentações da obra."
-    >
+    <div class="app" role="group" aria-label="Demonstração da tela do SouZ">
       <div class="app__bar">
         <div class="app__dots" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="app__name">SouZ · <b>Residencial Vila Nova — Casa 14</b></div>
-        <div class="app__seg" aria-hidden="true">
-          <span class="on">Visão geral</span><span>Medições</span><span>Compras</span><span>Diário</span>
+        <div class="app__seg" role="tablist" aria-label="Áreas da obra">
+          <button role="tab" id="tab-visao" aria-controls="pnl-visao" aria-selected="true">Visão geral</button>
+          <button role="tab" id="tab-medicoes" aria-controls="pnl-medicoes" aria-selected="false" tabindex="-1">Medições</button>
+          <button role="tab" id="tab-compras" aria-controls="pnl-compras" aria-selected="false" tabindex="-1">Compras</button>
+          <button role="tab" id="tab-diario" aria-controls="pnl-diario" aria-selected="false" tabindex="-1">Diário</button>
         </div>
       </div>
+
+      <div class="app__panel is-on" id="pnl-visao" role="tabpanel" aria-labelledby="tab-visao">
       <div class="app__body">
         <div class="app__side">
           <div class="stat">
@@ -1666,6 +1830,61 @@
               <span class="tag">Recebimento</span><span>Parcela 4 — CAIXA liberada</span
               ><span class="val">R$ 38.900</span>
             </div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <div class="app__panel" id="pnl-medicoes" role="tabpanel" aria-labelledby="tab-medicoes" hidden>
+        <div class="app__pad">
+          <div class="mini-head"><h4>Medições de prestadores</h4><span>5 contratos · R$ 47.400 medido</span></div>
+          <div class="mini-wrap"><table class="mini">
+            <thead><tr><th>Prestador</th><th>Etapa</th><th class="n">Medido</th><th class="n">Valor</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Construtora Lima</td><td>Alvenaria</td><td class="n">100%</td><td class="n">R$ 12.400</td><td><span class="pill ok">Pago</span></td></tr>
+              <tr><td>Elétrica Sul</td><td>Instalações elétricas</td><td class="n">60%</td><td class="n">R$ 8.900</td><td><span class="pill">Medido</span></td></tr>
+              <tr><td>Hidráulica MT</td><td>Instal. hidráulicas</td><td class="n">45%</td><td class="n">R$ 6.200</td><td><span class="pill">Medido</span></td></tr>
+              <tr class="alerta"><td>Cobertura &amp; Cia</td><td>Cobertura</td><td class="n">100%</td><td class="n">R$ 15.100</td><td><span class="pill warn">Pago acima do medido</span></td></tr>
+              <tr><td>Pintura Goiás</td><td>Pintura</td><td class="n">0%</td><td class="n">R$ 4.800</td><td><span class="pill mudo">Planejado</span></td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <div class="app__panel" id="pnl-compras" role="tabpanel" aria-labelledby="tab-compras" hidden>
+        <div class="app__pad">
+          <div class="mini-head"><h4>Plano de compras</h4><span>4 itens · R$ 8.100 a comprar nas etapas</span></div>
+          <div class="mini-wrap"><table class="mini">
+            <thead><tr><th>Material</th><th>Fornecedor</th><th>Comprar até</th><th class="n">Valor</th><th class="n">Falta na etapa</th></tr></thead>
+            <tbody>
+              <tr><td>Bloco cerâmico 14</td><td>Cerâmica Aurora</td><td>12/set</td><td class="n">R$ 9.800</td><td class="n">R$ 2.400</td></tr>
+              <tr><td>Cimento CP-II 50 kg</td><td>Depósito União</td><td>20/set</td><td class="n">R$ 6.300</td><td class="n">—</td></tr>
+              <tr class="alerta"><td>Telha cerâmica</td><td>Cerâmica Aurora</td><td class="warn-tx">28/ago · vencido</td><td class="n">R$ 6.120</td><td class="n">R$ 1.800</td></tr>
+              <tr><td>Aço CA-50 10 mm</td><td>Ferro &amp; Aço GO</td><td>05/out</td><td class="n">R$ 11.400</td><td class="n">R$ 3.900</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <div class="app__panel" id="pnl-diario" role="tabpanel" aria-labelledby="tab-diario" hidden>
+        <div class="app__pad">
+          <div class="mini-head"><h4>Diário de obra</h4><span>últimos registros</span></div>
+          <div class="diario-mock">
+            <article>
+              <div class="di-cab"><b>04/set</b><span>Sol · 8 na obra</span></div>
+              <p>Concretagem da laje do pavimento térreo. Forma retirada do bloco 2.</p>
+              <div class="di-fotos" aria-hidden="true"><span></span><span></span></div>
+            </article>
+            <article>
+              <div class="di-cab"><b>02/set</b><span>Nublado · 6 na obra</span></div>
+              <p>Elevação de alvenaria, 3ª fiada. Recebido caminhão de bloco cerâmico.</p>
+              <div class="di-fotos" aria-hidden="true"><span></span></div>
+            </article>
+            <article>
+              <div class="di-cab"><b>30/ago</b><span>Chuva · 3 na obra</span></div>
+              <p>Serviço parado pela manhã. À tarde, impermeabilização do reservatório.</p>
+              <div class="di-fotos" aria-hidden="true"><span></span><span></span></div>
+            </article>
           </div>
         </div>
       </div>
@@ -2119,6 +2338,43 @@
             feito(false);
           });
         }
+      });
+    })();
+
+    // ---------- abas do mock ----------
+    (function () {
+      var tablist = document.querySelector('.app__seg[role="tablist"]');
+      if (!tablist) return;
+      var tabs = [].slice.call(tablist.querySelectorAll('[role="tab"]'));
+      function sel(tab) {
+        tabs.forEach(function (t) {
+          var on = t === tab;
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          t.tabIndex = on ? 0 : -1;
+          var pnl = document.getElementById(t.getAttribute('aria-controls'));
+          if (pnl) {
+            pnl.hidden = !on;
+            pnl.classList.toggle('is-on', on);
+          }
+        });
+      }
+      tablist.addEventListener('click', function (e) {
+        var t = e.target.closest('[role="tab"]');
+        if (t) sel(t);
+      });
+      tablist.addEventListener('keydown', function (e) {
+        var i = tabs.indexOf(document.activeElement);
+        if (i < 0) return;
+        var n =
+          e.key === 'ArrowRight' ? i + 1 :
+          e.key === 'ArrowLeft' ? i - 1 :
+          e.key === 'Home' ? 0 :
+          e.key === 'End' ? tabs.length - 1 : -1;
+        if (n < 0) return;
+        e.preventDefault();
+        n = (n + tabs.length) % tabs.length;
+        tabs[n].focus();
+        sel(tabs[n]);
       });
     })();
 
