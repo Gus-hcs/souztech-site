@@ -1514,69 +1514,140 @@
      fora não alcança o conteúdo clonado pelo <use>. O cubo é sempre
      cinza, nos dois temas (Manual da Marca 01.4). */
 
-  /* ---------------------------------------------------------- seção que "gruda" */
-  .spot--sticky {
-    align-items: start;
+  /* ------------------------------------------- simulador de duplicidade */
+  .spot--sim {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    max-width: 720px;
+    margin-inline: auto;
   }
-  .spot--sticky .spot__lead {
-    position: sticky;
-    top: 22vh;
-  }
-  .spot__rail {
-    margin-top: 26px;
-    height: 3px;
-    background: var(--line);
-    position: relative;
-    overflow: hidden;
-  }
-  .spot__rail i {
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: var(--fill, 0%);
-    background: var(--accent);
-    transition: width 0.5s ease;
-  }
-  .spot__steps {
+  .dup {
     display: grid;
     gap: 16px;
   }
-  .stepcard {
+  .dup-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 620px) {
+    .dup-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+  .dup-card {
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--r);
-    padding: 30px 28px;
-    min-height: 46vh;
+    padding: 16px 16px 18px;
     display: grid;
-    align-content: center;
+    gap: 10px;
   }
-  .section--raise .stepcard {
+  .section--raise .dup-card {
     background: var(--ground);
   }
-  .stepcard .sc-k {
+  .dup-k {
     font-family: var(--mono);
     font-size: 11px;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--accent);
   }
-  .stepcard h4 {
-    font-size: 21px;
-    letter-spacing: -0.02em;
-    margin-top: 12px;
+  .dup-card label {
+    display: grid;
+    gap: 4px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
   }
-  .stepcard p {
-    margin-top: 12px;
-    font-size: 15px;
-    line-height: 1.55;
+  .dup-card input {
+    font: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--ground);
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    padding: 9px 10px;
+    letter-spacing: -0.006em;
+    text-transform: none;
+  }
+  .section--raise .dup-card input {
+    background: var(--surface);
+  }
+  .dup-card input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .dup-acao {
+    display: flex;
+    justify-content: center;
+  }
+  .dup-res {
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .dup-res:not([hidden]) {
+      animation: painelIn 0.2s ease;
+    }
+  }
+  .dup-alerta {
+    display: flex;
+    gap: 12px;
+    color: var(--neg);
+    border: 1px solid color-mix(in srgb, var(--neg) 42%, transparent);
+    background: color-mix(in srgb, var(--neg) 8%, transparent);
+    border-radius: var(--r);
+    padding: 14px 16px;
+  }
+  .dup-alerta svg {
+    flex: none;
+    margin-top: 1px;
+  }
+  .dup-alerta b {
+    color: var(--neg);
+    font-size: 14px;
+  }
+  .dup-alerta p {
+    margin: 3px 0 0;
+    font-size: 13.5px;
+    line-height: 1.5;
     color: var(--ink-2);
+    max-width: none;
   }
-  @media (max-width: 880px) {
-    .spot--sticky .spot__lead {
-      position: static;
-    }
-    .stepcard {
-      min-height: 0;
-    }
+  .dup-alerta p b {
+    color: var(--ink);
+  }
+  .dup-margem {
+    display: grid;
+    gap: 6px;
+  }
+  .dup-margem-k {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .dup-margem-v {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 26px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .dup-seta {
+    color: var(--ink-3);
+    font-size: 18px;
+  }
+  .dup-alvo {
+    color: var(--neg);
   }
 
   /* ---------------------------------------------------------- movimento */
@@ -1972,36 +2043,55 @@
 <!-- ======================= SPOTLIGHT: DUPLICIDADE (seção que gruda) ======================= -->
 <section class="section section--raise">
   <div class="wrap">
-    <div class="spot spot--sticky">
+    <div class="spot spot--sim">
       <div class="spot__lead reveal">
         <p class="eyebrow">O que a planilha não tem</p>
         <h3>Cada real entra uma vez, e num lugar certo.</h3>
         <p>
-          O sistema separa medição, lançamento e recebimento por natureza — e recusa a duplicidade.
-          É a diferença entre saber a margem hoje e descobrir no fechamento que a obra pagou o piso
-          duas vezes.
+          Na planilha, o mesmo serviço vira uma linha de medição e uma linha de compra — e ninguém
+          percebe até o fechamento. No SouZ, tente você mesmo.
         </p>
-        <div class="spot__rail" aria-hidden="true"><i></i></div>
-        <a class="arrow" href="#contato" style="margin-top: 20px; display: inline-flex"
-          >Ver isso numa obra sua</a
-        >
       </div>
-      <div class="spot__steps">
-        <article class="stepcard reveal" data-step>
-          <span class="sc-k">01 · Medição</span>
-          <h4>Serviço do prestador, medido e pago.</h4>
-          <p>Nunca ultrapassa o contrato mais os aditivos aprovados. Se o pago passa do medido, o sistema avisa na hora.</p>
-        </article>
-        <article class="stepcard reveal" data-step>
-          <span class="sc-k">02 · Lançamento</span>
-          <h4>Compra, taxa ou serviço sem medição.</h4>
-          <p>Entra aqui — e em nenhum outro lugar. É o que impede o material de ser pago como medição e como compra.</p>
-        </article>
-        <article class="stepcard reveal" data-step>
-          <span class="sc-k">03 · Recebimento</span>
-          <h4>Parcela do cliente ou do financiamento.</h4>
-          <p>Previsto, aprovado e o que foi de fato creditado — separados, para o caixa não mostrar dinheiro que ainda não entrou.</p>
-        </article>
+
+      <div class="dup" data-sim>
+        <div class="dup-cards">
+          <div class="dup-card">
+            <span class="dup-k">Medição</span>
+            <label>Serviço<input type="text" data-f="desc-med" value="Alvenaria · Construtora Lima" /></label>
+            <label>Valor<input type="text" inputmode="decimal" data-f="val-med" value="R$ 12.400" /></label>
+          </div>
+          <div class="dup-card">
+            <span class="dup-k">Compra</span>
+            <label>Item<input type="text" data-f="desc-comp" value="Alvenaria (mão de obra)" /></label>
+            <label>Valor<input type="text" inputmode="decimal" data-f="val-comp" value="R$ 12.400" /></label>
+          </div>
+        </div>
+
+        <div class="dup-acao">
+          <button type="button" class="btn btn--primary" data-sim-lancar>Lançar os dois</button>
+        </div>
+
+        <div class="dup-res" data-sim-res hidden>
+          <div class="dup-alerta" role="alert">
+            <svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true">
+              <path d="M10 2 18.5 17H1.5L10 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+              <path d="M10 8v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+              <circle cx="10" cy="14.4" r="0.9" fill="currentColor" />
+            </svg>
+            <div>
+              <b>Duplicidade detectada</b>
+              <p>Este serviço já foi medido e pago em <b>28/ago</b>. O sistema bloqueia o segundo lançamento.</p>
+            </div>
+          </div>
+          <div class="dup-margem">
+            <span class="dup-margem-k">Impacto na margem se o erro passasse</span>
+            <div class="dup-margem-v mono">
+              <span>14,8%</span><span class="dup-seta" aria-hidden="true">→</span
+              ><span class="dup-alvo" data-sim-to>12,1%</span>
+            </div>
+          </div>
+          <button type="button" class="btn btn--ghost btn--sm" data-sim-refazer>Refazer</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2481,8 +2571,6 @@
       });
       var heroFade = document.querySelector('[data-hero-fade]');
       var hero = document.querySelector('.hero');
-      var rail = document.querySelector('.spot__rail');
-      var steps = [].slice.call(document.querySelectorAll('.spot__steps [data-step]'));
       var tick = false;
 
       function frame() {
@@ -2502,14 +2590,6 @@
           heroFade.style.opacity = String(1 - prog);
           heroFade.style.transform = 'translate3d(0,' + (prog * 40).toFixed(1) + 'px,0)';
         }
-
-        if (rail && steps.length) {
-          var vistos = steps.filter(function (s) {
-            var r = s.getBoundingClientRect();
-            return r.top < vh * 0.6;
-          }).length;
-          rail.style.setProperty('--fill', (vistos / steps.length) * 100 + '%');
-        }
       }
       function onScroll() {
         if (!tick) {
@@ -2520,6 +2600,38 @@
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', onScroll);
       frame();
+    })();
+
+    // ---------- simulador de duplicidade (Fase 3) ----------
+    (function () {
+      var sim = document.querySelector('[data-sim]');
+      if (!sim) return;
+      var res = sim.querySelector('[data-sim-res]');
+      var alvo = sim.querySelector('[data-sim-to]');
+      var raf;
+      function anima(de, ate) {
+        if (reduz) {
+          alvo.textContent = ate.toFixed(1).replace('.', ',') + '%';
+          return;
+        }
+        cancelAnimationFrame(raf);
+        var t0 = performance.now();
+        (function passo(t) {
+          var p = Math.min(1, (t - t0) / 700);
+          var e = 1 - Math.pow(1 - p, 3);
+          alvo.textContent = (de + (ate - de) * e).toFixed(1).replace('.', ',') + '%';
+          if (p < 1) raf = requestAnimationFrame(passo);
+        })(t0);
+      }
+      sim.querySelector('[data-sim-lancar]').addEventListener('click', function () {
+        res.hidden = false;
+        anima(14.8, 12.1);
+      });
+      sim.querySelector('[data-sim-refazer]').addEventListener('click', function () {
+        cancelAnimationFrame(raf);
+        res.hidden = true;
+        alvo.textContent = '12,1%';
+      });
     })();
 
     // ---------- nav ganha fundo sólido depois de rolar ----------
