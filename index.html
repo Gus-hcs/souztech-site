@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>SouZ Controle de Obra — sua carteira de obras numa tela só</title>
+<title>SouZ Controle de Obra — gasto, caixa e margem de cada obra numa tela só</title>
 <meta
   name="description"
-  content="Software para construtoras pequenas e médias controlarem várias obras ao mesmo tempo: contrato, medição, recebimento, cronograma e pendências — do planejamento ao resultado."
+  content="Software de gestão de obra para construtoras e engenheiros: cada real que entra e sai de cada obra, orçado × realizado, fluxo de caixa e margem — antes do fechamento, não depois."
 />
 <link rel="canonical" href="https://souztech.com/" />
 <meta name="referrer" content="no-referrer" />
@@ -16,7 +16,7 @@
 <meta property="og:title" content="Sua obra fecha no azul?" />
 <meta
   property="og:description"
-  content="Contrato, medição, recebimento e cronograma de cada obra da sua carteira, numa tela só — para ver o resultado antes do fechamento, não depois."
+  content="Gasto, caixa e margem de cada obra da sua carteira numa tela só — para corrigir enquanto ainda dá, não descobrir no fechamento."
 />
 <meta property="og:url" content="https://souztech.com/" />
 <meta property="og:image" content="https://souztech.com/og.png" />
@@ -27,7 +27,7 @@
 <meta name="twitter:title" content="SouZ — Sua obra fecha no azul?" />
 <meta
   name="twitter:description"
-  content="Software de gestão de obra para construtoras pequenas e médias. Contrato, medição, recebimento e cronograma numa tela só."
+  content="Gestão de obra para construtoras: gasto, caixa e margem de cada obra numa tela só."
 />
 <meta name="twitter:image" content="https://souztech.com/og.png" />
 
@@ -51,15 +51,15 @@
     "operatingSystem": "Web",
     "url": "https://souztech.com/",
     "inLanguage": "pt-BR",
-    "description": "Software de gestão de obra para construtoras pequenas e médias controlarem uma carteira de obras: contrato, medição, recebimento, cronograma, físico x financeiro e pendências.",
+    "description": "Software de gestão de obra para construtoras e engenheiros controlarem uma carteira de obras: gastos por etapa, orçado x realizado, fluxo de caixa, medições, cronograma e pendências.",
     "featureList": [
-      "Carteira de obras com caixa, resultado projetado e avanço",
-      "Contratos e aditivos, cronograma e plano de materiais",
+      "Carteira de obras com caixa, resultado projetado e margem",
+      "Lançamentos por etapa e orçado x realizado",
+      "Fluxo de caixa projetado com vale de caixa",
       "Medições com trava para o contrato",
-      "Recebimentos por marco físico de qualquer financiador",
-      "Curva S físico x financeiro e fluxo de caixa",
+      "Curva S físico x financeiro",
       "Pendências automáticas com causa raiz e ação",
-      "Relatórios em PDF para cliente e financiador",
+      "Relatórios em PDF para cliente, sócio e financiador",
       "Diário de obra com fotos, funciona sem rede"
     ],
     "offers": {
@@ -78,6 +78,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png" />
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
 
+<link rel="preload" as="image" type="image/avif" imagesrcset="img/telas/tela-carteira-960.avif 960w, img/telas/tela-carteira-1920.avif 1920w" imagesizes="(max-width:1100px) 94vw, 1060px" fetchpriority="high" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
@@ -87,9 +88,9 @@
 
 <style>
   /* ==================================================================
-     SouZ Controle de Obra — site institucional, conforme o Manual da
-     Marca v1.0. Dark-first: a marca nasce no escuro. Ciano gasta pouco —
-     só ação e resultado. Cantos retos em divisória, 8px em botão/card.
+     SouZ Controle de Obra — site institucional, Manual da Marca v1.0.
+     Dark-first. Ciano só em ação e resultado. Raio 0 em divisória,
+     8px em botão/card. Movimento só em transform/opacity.
      ================================================================== */
   :root {
     color-scheme: dark;
@@ -108,7 +109,7 @@
     --surface-2: var(--elevado);
     --line: #1c2e2a;
     --line-strong: #2a423d;
-    --ink: #fbfcfb; /* títulos e números: branco quase puro — o contraste que carrega a página */
+    --ink: #fbfcfb;
     --ink-2: var(--nevoa);
     --ink-3: var(--cinza);
     --accent: var(--ciano-claro);
@@ -116,14 +117,13 @@
     --on-accent: #fbfcfb;
     --grid: rgba(47, 212, 196, 0.08);
     --warn: #e0a44a;
-    --neg: #e2705f;
 
     --sans: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
     --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
     --w: 1200px;
     --r: 8px;
+    --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
   }
-  /* seção clara — só para relatórios em PDF: papel, texto escuro */
   .secao-papel {
     --ground: var(--papel);
     --surface: #fbfcfb;
@@ -134,11 +134,8 @@
     --ink-2: #3e4b48;
     --ink-3: #5f6b68;
     --accent: var(--ciano);
-    --accent-solid: var(--ciano);
     background: var(--ground);
     color: var(--ink-2);
-    border-top: 1px solid var(--line-strong);
-    border-bottom: 1px solid var(--line-strong);
   }
 
   * { box-sizing: border-box; }
@@ -146,14 +143,9 @@
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; overflow-x: clip; }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   body {
-    margin: 0;
-    background: var(--ground);
-    color: var(--ink-2);
-    font-family: var(--sans);
-    font-size: 16px;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    margin: 0; background: var(--ground); color: var(--ink-2);
+    font-family: var(--sans); font-size: 16px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: clip;
   }
   h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.022em; text-wrap: balance; color: var(--ink); }
   p { margin: 0; }
@@ -164,289 +156,309 @@
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   .skip-link {
-    position: fixed; top: -60px; left: 12px; z-index: 200;
-    background: var(--accent-solid); color: var(--on-accent);
-    padding: 10px 16px; border-radius: var(--r); font-weight: 600; font-size: 14px;
-    transition: top 0.15s ease;
+    position: fixed; top: -60px; left: 12px; z-index: 200; background: var(--accent-solid); color: var(--on-accent);
+    padding: 10px 16px; border-radius: var(--r); font-weight: 600; font-size: 14px; transition: top 0.15s ease;
   }
   .skip-link:focus { top: 12px; }
+  .progresso {
+    position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 120; pointer-events: none;
+    background: var(--ciano-claro); transform-origin: 0 50%; transform: scaleX(0);
+  }
 
   .wrap { width: 100%; max-width: var(--w); margin: 0 auto; padding: 0 24px; }
   @media (max-width: 560px) { .wrap { padding: 0 18px; } }
 
-  .eyebrow {
-    font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.2em;
-    text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 14px;
-  }
+  .eyebrow { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 14px; }
   .display { font-size: clamp(36px, 6.4vw, 64px); line-height: 1.03; letter-spacing: -0.035em; font-weight: 800; }
-  .titulo { font-size: clamp(26px, 3.6vw, 38px); line-height: 1.12; letter-spacing: -0.026em; font-weight: 700; }
-  .subtitulo { font-size: clamp(17px, 1.9vw, 20px); line-height: 1.5; color: var(--ink-2); font-weight: 400; max-width: 62ch; }
-  .texto { font-size: 16px; line-height: 1.6; color: var(--ink-2); max-width: 65ch; }
-  .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .titulo { font-size: clamp(28px, 3.8vw, 44px); line-height: 1.08; letter-spacing: -0.03em; font-weight: 800; }
+  .subtitulo { font-size: clamp(17px, 1.9vw, 20px); line-height: 1.5; color: var(--ink-2); font-weight: 400; max-width: 60ch; }
+  .texto { font-size: 16.5px; line-height: 1.6; color: var(--ink-2); max-width: 58ch; }
+  .acc { color: var(--accent); }
   .centro { text-align: center; }
   .centro .subtitulo, .centro .texto { margin-left: auto; margin-right: auto; }
 
   .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    font: inherit; font-size: 15px; font-weight: 600; line-height: 1;
-    padding: 14px 22px; border-radius: var(--r); border: 1px solid transparent;
-    cursor: pointer; white-space: nowrap;
-    transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-size: 15px; font-weight: 600; line-height: 1;
+    padding: 15px 24px; border-radius: var(--r); border: 1px solid transparent; cursor: pointer; white-space: nowrap;
+    transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
   }
   .btn--primario { background: var(--accent-solid); color: var(--on-accent); }
   .btn--primario:hover { background: var(--ciano-claro); color: #05100e; }
   .btn--fantasma { background: transparent; color: var(--ink); border-color: var(--line-strong); }
   .btn--fantasma:hover { border-color: var(--accent); color: var(--accent); }
-  .secao-papel .btn--fantasma { color: var(--ink); }
-  .seta { display: inline-flex; align-items: center; gap: 5px; color: var(--accent); font-size: 14px; font-weight: 600; font-family: var(--mono); }
-  .seta::after { content: '→'; transition: transform 0.18s ease; }
-  .seta:hover::after { transform: translateX(3px); }
+  .btn:active { transform: translateY(1px); }
 
-  .iso-camada { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 1; }
-  .iso-camada rect { fill: url(#malha-iso); }
-
-  /* --------------------------------------------------------------- nav */
-  .nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 90;
-    background: transparent; border-bottom: 1px solid transparent;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-  }
+  /* ----------------------------------------------------------------- nav */
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 90; border-bottom: 1px solid transparent; transition: background-color 0.3s ease, border-color 0.3s ease; }
   .nav--solido {
-    background: color-mix(in srgb, var(--preto) 90%, transparent);
+    background: color-mix(in srgb, var(--preto) 82%, transparent);
     -webkit-backdrop-filter: saturate(140%) blur(14px); backdrop-filter: saturate(140%) blur(14px);
     border-bottom-color: var(--line);
   }
-  .nav__inner { display: flex; align-items: center; gap: 20px; height: 62px; }
-  .marca { display: inline-flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; letter-spacing: -0.02em; color: #fbfcfb; white-space: nowrap; }
+  .nav__inner { display: flex; align-items: center; gap: 20px; height: 64px; }
+  .marca { display: inline-flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; letter-spacing: -0.02em; color: #fbfcfb; white-space: nowrap; }
   .marca .cubo { width: 26px; height: 26px; flex: none; }
-  .marca small { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,.5); font-weight: 500; }
-  .nav__links { margin-left: auto; display: flex; align-items: center; gap: 26px; }
-  .nav__links a.navlink { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; color: rgba(255,255,255,.72); transition: color 0.16s ease; }
-  .nav__links a.navlink:hover { color: #fff; }
-  .nav--solido .nav__links a.navlink { color: var(--ink-3); }
-  .nav--solido .nav__links a.navlink:hover { color: var(--ink); }
+  .nav__links { margin-left: auto; display: flex; align-items: center; gap: 28px; }
+  .nav__links a.navlink { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; color: var(--ink-3); transition: color 0.16s ease; }
+  .nav__links a.navlink:hover { color: var(--ink); }
+  .nav__links .btn { padding: 11px 18px; font-size: 14px; }
   .nav__gaveta-btn { display: none; background: none; border: 0; color: #fff; padding: 8px; cursor: pointer; }
   @media (max-width: 860px) {
-    .nav__links > .navlink { display: none; }
+    .nav__links { display: none; }
     .nav__gaveta-btn { display: inline-flex; margin-left: auto; }
-    .nav__links > .btn { display: none; }
   }
-  .gaveta {
-    position: fixed; inset: 0; z-index: 95; background: var(--preto);
-    display: flex; flex-direction: column; padding: 24px; gap: 8px;
-    transform: translateX(100%); transition: transform 0.28s ease;
-  }
-  .gaveta.aberta { transform: none; }
+  .gaveta { position: fixed; inset: 0; z-index: 95; background: var(--preto); display: flex; flex-direction: column; padding: 24px; gap: 8px; transform: translateX(100%); transition: transform 0.28s var(--ease); visibility: hidden; }
+  .gaveta.aberta { transform: none; visibility: visible; }
   .gaveta__topo { display: flex; justify-content: flex-end; }
-  .gaveta__topo button { background: none; border: 0; color: #fff; padding: 8px; }
-  .gaveta a { padding: 16px 4px; font-size: 20px; font-weight: 600; border-bottom: 1px solid var(--line); color: var(--nevoa); }
-  .gaveta .btn { margin-top: 20px; }
+  .gaveta__topo button { background: none; border: 0; color: #fff; padding: 8px; cursor: pointer; }
+  .gaveta a { padding: 16px 4px; font-size: 22px; font-weight: 700; border-bottom: 1px solid var(--line); color: var(--nevoa); }
+  .gaveta .btn { margin-top: 20px; border-bottom: 0; font-size: 16px; }
 
-  /* -------------------------------------------------------------- seção */
-  .secao { position: relative; padding: 112px 0; }
-  .secao--tight { padding: 80px 0; }
+  /* --------------------------------------------------------------- seção */
+  .secao { position: relative; padding: 136px 0; }
   .secao--elevada { background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  section[id] { scroll-margin-top: 76px; }
-  @media (max-width: 720px) { .secao { padding: 72px 0; } .secao--tight { padding: 56px 0; } }
-  .secao__cabecalho { margin-bottom: 52px; max-width: 62ch; }
-  .secao__cabecalho .titulo { margin-top: 6px; }
-  .secao__cabecalho .subtitulo { margin-top: 14px; }
+  section[id] { scroll-margin-top: 72px; }
+  @media (max-width: 720px) { .secao { padding: 80px 0; } }
+  .secao__cabecalho { margin-bottom: 56px; max-width: 64ch; }
+  .secao__cabecalho .subtitulo { margin-top: 16px; }
 
-  /* revelar ao rolar */
-  .rv { opacity: 0; transform: translateY(12px); transition: opacity 0.4s cubic-bezier(.2,.7,.3,1), transform 0.4s cubic-bezier(.2,.7,.3,1); }
+  .rv { opacity: 0; transform: translateY(12px); transition: opacity 0.4s var(--ease), transform 0.4s var(--ease); }
   .rv.on { opacity: 1; transform: none; }
-  @media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } }
+  .rv-d1 { transition-delay: 0.06s; } .rv-d2 { transition-delay: 0.12s; } .rv-d3 { transition-delay: 0.18s; }
 
-  /* -------------------------------------------------------------- hero */
-  .hero { position: relative; overflow: hidden; isolation: isolate; text-align: center; padding: 128px 0 88px; }
-  .hero__fundo { position: absolute; inset: 0; z-index: 0; background: radial-gradient(65% 55% at 50% 18%, #0a1512, transparent 68%), var(--preto); }
-  .hero__grade { position: absolute; inset: 0; opacity: 0.6; }
-  .hero__inner { position: relative; z-index: 2; }
-  .hero h1 { margin: 0 auto; max-width: 15ch; font-size: clamp(36px, 6.8vw, 62px); color: var(--ink); }
-  .hero h1 .fraco { color: var(--ink-3); }
-  .hero__lede { margin: 18px auto 0; max-width: 54ch; }
-  .hero__cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 28px; }
-  .hero__fatos {
-    margin-top: 24px; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 10px;
-    font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3);
-  }
-  .hero__fatos span { display: inline-flex; align-items: center; gap: 8px; }
-  .hero__fatos span + span::before { content: ''; width: 3px; height: 3px; background: var(--line-strong); }
-
-  /* moldura mínima de janela para as telas reais */
+  /* janela mínima para as telas reais */
   .janela { background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r); overflow: hidden; text-align: left; }
   .janela__barra { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
   .janela__barra i { width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong); }
-  .janela img { width: 100%; height: auto; display: block; }
-  .tela { display: grid; gap: 10px; }
-  .tela figcaption { font-family: var(--mono); font-size: 12px; color: var(--ink-3); line-height: 1.5; }
+  .janela__barra span { margin-left: 10px; font-family: var(--mono); font-size: 11px; color: var(--ink-3); letter-spacing: 0.04em; }
+  .janela img { width: 100%; height: auto; }
+  .legenda { font-family: var(--mono); font-size: 12px; color: var(--ink-3); line-height: 1.5; margin-top: 12px; }
 
-  .hero__deck { position: relative; z-index: 2; max-width: 980px; margin: 40px auto 0; padding: 0 20px; }
-  .hero__deck .janela { box-shadow: 0 40px 90px -50px rgba(0,0,0,.75); }
-  .hero__deck figcaption { text-align: center; margin-top: 14px; }
-
-  /* -------------------------------------------------------------- problema */
-  .fatos { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--line); border: 1px solid var(--line); margin-top: 44px; }
-  @media (max-width: 760px) { .fatos { grid-template-columns: 1fr; } }
-  .fato { background: var(--ground); padding: 28px 24px; }
-  .secao--elevada .fato { background: var(--surface); }
-  .fato .num { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: var(--accent); }
-  .fato p { margin-top: 12px; font-size: 15px; line-height: 1.5; color: var(--ink-2); }
-  .fecho { margin-top: 40px; font-size: clamp(22px,3.2vw,30px); font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
-
-  /* --------------------------------------------------------- como funciona */
-  .passos { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--line); border: 1px solid var(--line); }
-  @media (max-width: 820px) { .passos { grid-template-columns: 1fr; } }
-  .passo { background: var(--ground); padding: 30px 26px; display: grid; gap: 16px; align-content: start; }
-  .secao--elevada .passo { background: var(--surface); }
-  .passo .pnum { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
-  .passo h3 { font-size: 19px; margin-top: 4px; }
-  .passo p.d { font-size: 14.5px; color: var(--ink-2); line-height: 1.55; }
-  .passo-tela { margin-top: 4px; }
-
-  /* -------------------------------------------------------------- spot */
-  .spot { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
-  .spot--inv { direction: rtl; } .spot--inv > * { direction: ltr; }
-  @media (max-width: 900px) { .spot, .spot--inv { grid-template-columns: 1fr; direction: ltr; gap: 32px; } }
-  .spot h3 { font-size: clamp(22px,3vw,30px); letter-spacing: -0.024em; margin-top: 10px; }
-  .spot .texto { margin-top: 16px; }
-  .spot .seta { margin-top: 22px; display: inline-flex; }
-  .exemplo-pend {
-    margin-top: 20px; background: var(--surface); border-left: 3px solid var(--warn);
-    border-radius: 0 var(--r) var(--r) 0; padding: 16px 18px; font-family: var(--mono); font-size: 14px; color: var(--ink);
+  /* ---------------------------------------------------------------- hero */
+  .hero { position: relative; overflow: hidden; isolation: isolate; text-align: center; padding: 148px 0 96px; }
+  .hero__fundo { position: absolute; inset: 0; z-index: 0; background: radial-gradient(60% 45% at 50% 0%, #0b1d19, transparent 70%), var(--preto); }
+  .hero__grade { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.7; }
+  .hero__grade rect, .iso-camada rect { fill: url(#malha-iso); }
+  .hero__inner { position: relative; z-index: 2; }
+  .hero h1 { margin: 0 auto; max-width: 13ch; font-size: clamp(42px, 8vw, 88px); line-height: 0.98; letter-spacing: -0.045em; font-weight: 800; }
+  .hero__lede { margin: 22px auto 0; max-width: 52ch; }
+  .hero__cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
+  .hero__fatos { margin-top: 26px; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 10px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+  .hero__fatos span { display: inline-flex; align-items: center; gap: 10px; }
+  .hero__fatos span + span::before { content: ''; width: 3px; height: 3px; background: var(--line-strong); }
+  .hero__palco { position: relative; z-index: 2; max-width: 1100px; margin: 64px auto 0; padding: 0 20px; perspective: 1600px; }
+  .hero__palco::before {
+    content: ''; position: absolute; left: 10%; right: 10%; top: 12%; bottom: -4%; z-index: -1;
+    background: radial-gradient(50% 50% at 50% 50%, rgba(47, 212, 196, 0.10), transparent 70%);
   }
-  .exemplo-pend span { color: var(--ink-3); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; display: block; margin-bottom: 8px; }
+  .hero__tela {
+    transform-origin: 50% 0;
+    transform: rotateX(calc((1 - var(--p, 1)) * 20deg)) scale(calc(0.88 + var(--p, 1) * 0.12));
+    will-change: transform;
+  }
+  .hero__tela .janela { box-shadow: 0 50px 100px -60px rgba(0, 0, 0, 0.9); }
 
-  /* -------------------------------------------------------------- financiada */
-  .financiada-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center; }
-  @media (max-width: 900px) { .financiada-grid { grid-template-columns: 1fr; } }
-  .etapas-financiador { display: flex; gap: 2px; margin-top: 26px; background: var(--line); border: 1px solid var(--line); }
-  .etapa-f { flex: 1; background: var(--surface); padding: 16px 14px; text-align: center; }
-  .etapa-f .k { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
-  .etapa-f b { display: block; margin-top: 8px; font-size: 13.5px; color: var(--ink); }
-  .etapa-f.on { background: color-mix(in srgb, var(--ciano) 18%, var(--surface)); }
+  /* ----------------------------------------------------------- manifesto */
+  .manifesto { padding: 160px 0; }
+  .manifesto p { font-size: clamp(28px, 4.6vw, 56px); line-height: 1.12; font-weight: 800; letter-spacing: -0.035em; color: var(--ink); max-width: 1000px; }
+  .manifesto .w { opacity: 0.16; transition: opacity 0.3s ease; }
+  .manifesto .w.on { opacity: 1; }
+  @media (max-width: 720px) { .manifesto { padding: 96px 0; } }
+
+  /* ------------------------------------------------------------ problema */
+  .fatos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--line); border: 1px solid var(--line); }
+  @media (max-width: 760px) { .fatos { grid-template-columns: 1fr; } }
+  .fato { background: var(--surface); padding: 32px 28px; }
+  .fato .num { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: var(--warn); }
+  .fato h3 { font-size: 19px; margin-top: 14px; line-height: 1.25; }
+  .fato p { margin-top: 10px; font-size: 15px; line-height: 1.55; color: var(--ink-3); }
+  .fecho { margin-top: 48px; font-size: clamp(24px, 3.4vw, 34px); font-weight: 800; letter-spacing: -0.025em; color: var(--ink); }
+
+  /* ------------------------------------------------------- como funciona */
+  .passos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 900px) { .passos { grid-template-columns: 1fr; } }
+  .passo { background: var(--ground); border: 1px solid var(--line); border-radius: var(--r); padding: 28px 24px 24px; display: grid; gap: 14px; align-content: start; transition: border-color 0.25s ease, transform 0.35s var(--ease); }
+  .passo:hover { border-color: var(--line-strong); transform: translateY(-3px); }
+  .passo .pnum { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  .passo h3 { font-size: 21px; }
+  .passo p.d { font-size: 14.5px; color: var(--ink-3); line-height: 1.55; }
+  .passo .janela { margin-top: 8px; }
+
+  /* ------------------------------------------ história com tela fixa */
+  .historia { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 72px; align-items: start; }
+  .passo-h { min-height: 76vh; display: flex; flex-direction: column; justify-content: center; padding: 48px 0; opacity: 0.28; transition: opacity 0.45s ease; }
+  .passo-h.ativo { opacity: 1; }
+  .passo-h .q { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  .passo-h h3 { font-size: clamp(28px, 3.4vw, 40px); line-height: 1.08; letter-spacing: -0.03em; font-weight: 800; margin-top: 14px; }
+  .passo-h .texto { margin-top: 18px; }
+  .passo-h .tela-inline { display: none; margin-top: 24px; }
+  .exemplo-pend { margin-top: 24px; background: var(--surface); border-left: 3px solid var(--warn); border-radius: 0 var(--r) var(--r) 0; padding: 16px 18px; font-family: var(--mono); font-size: 13.5px; line-height: 1.55; color: var(--ink); }
+  .exemplo-pend span { color: var(--ink-3); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 8px; }
+  .historia__visual { position: sticky; top: 88px; height: calc(100vh - 112px); display: flex; flex-direction: column; justify-content: center; }
+  .pilha { display: grid; }
+  .pilha > picture { grid-area: 1 / 1; opacity: 0; transform: scale(0.965) translateY(10px); transition: opacity 0.5s ease, transform 0.7s var(--ease); }
+  .pilha > picture.ativo { opacity: 1; transform: none; }
+  .historia__rodape { display: flex; align-items: center; gap: 14px; margin-top: 16px; font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+  .historia__rodape .trilho { flex: 1; height: 2px; background: var(--line); position: relative; overflow: hidden; }
+  .historia__rodape .trilho i { position: absolute; inset: 0; background: var(--ciano-claro); transform-origin: 0 50%; transform: scaleX(0.2); transition: transform 0.5s var(--ease); }
+  @media (max-width: 960px) {
+    .historia { grid-template-columns: 1fr; gap: 0; }
+    .historia__visual { display: none; }
+    .passo-h { min-height: 0; opacity: 1; padding: 36px 0; border-top: 1px solid var(--line); }
+    .passo-h:first-child { border-top: 0; }
+    .passo-h .tela-inline { display: block; }
+  }
+
+  /* ---------------------------------------------------------------- spot */
+  .spot { display: grid; grid-template-columns: 5fr 7fr; gap: 64px; align-items: center; }
+  .spot--inv { grid-template-columns: 7fr 5fr; }
+  .spot--inv > :first-child { order: 2; }
+  @media (max-width: 960px) { .spot, .spot--inv { grid-template-columns: 1fr; gap: 36px; } .spot--inv > :first-child { order: 0; } }
+  .spot h2 { margin-top: 4px; }
+  .spot .texto { margin-top: 18px; }
+  .lista-docs { margin-top: 24px; display: grid; gap: 10px; }
+  .lista-docs li { display: flex; gap: 12px; font-size: 15px; color: var(--ink-2); }
+  .lista-docs li::before { content: ''; flex: none; width: 6px; height: 6px; margin-top: 9px; background: var(--accent); }
+
+  .celulares { display: flex; gap: 24px; justify-content: center; align-items: flex-start; }
+  .celulares figure { margin: 0; width: min(46%, 250px); }
+  .celulares figure:nth-child(2) { margin-top: 56px; }
+
+  /* ---------------------------------------------------------- financiada */
+  .faixa-fin { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  @media (max-width: 900px) { .faixa-fin { grid-template-columns: 1fr; } }
+  .etapas-f { display: flex; gap: 2px; margin-top: 26px; background: var(--line); border: 1px solid var(--line); }
+  .etapa-f { flex: 1; background: var(--ground); padding: 16px 12px; text-align: center; }
+  .etapa-f .k { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--ink-3); }
+  .etapa-f b { display: block; margin-top: 6px; font-size: 13.5px; }
+  .etapa-f.on { background: color-mix(in srgb, var(--ciano) 18%, var(--ground)); }
   .etapa-f.on b { color: var(--accent); }
-  .foto-guindaste { border-radius: var(--r); overflow: hidden; border: 1px solid var(--line-strong); position: relative; }
-  .foto-guindaste::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,16,14,.05), rgba(5,16,14,.55)); }
-  .foto-guindaste img { filter: grayscale(.2) contrast(1.03) brightness(.82); }
+  .foto { border-radius: var(--r); overflow: hidden; border: 1px solid var(--line-strong); position: relative; }
+  .foto::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5, 16, 14, 0.05), rgba(5, 16, 14, 0.6)); pointer-events: none; }
+  .foto img { width: 100%; height: auto; filter: grayscale(0.25) contrast(1.03) brightness(0.8); transform: scale(1.06); }
 
-  /* -------------------------------------------------------------- para quem */
-  .quem-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; }
+  /* ----------------------------------------------------------- para quem */
+  .quem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
   @media (max-width: 860px) { .quem-grid { grid-template-columns: 1fr; } }
-  .quem-bloco { border-top: 1px solid var(--line-strong); padding-top: 20px; }
-  .quem-bloco h3 { font-size: 18px; }
-  .quem-bloco p { margin-top: 10px; font-size: 14.5px; color: var(--ink-2); line-height: 1.55; }
-  .foto-pequena-wrap { margin-top: 40px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .quem-bloco { border-top: 1px solid var(--line-strong); padding-top: 22px; }
+  .quem-bloco .k { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+  .quem-bloco h3 { font-size: 21px; margin-top: 10px; }
+  .quem-bloco p { margin-top: 10px; font-size: 15px; color: var(--ink-3); line-height: 1.55; }
+  .foto-pequena-wrap { margin-top: 48px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
   .foto-pequena { width: 168px; border-radius: var(--r); overflow: hidden; border: 1px solid var(--line-strong); flex: none; }
-  .foto-pequena img { filter: grayscale(.2) contrast(1.02) brightness(.86); }
-  .foto-pequena-legenda { font-family: var(--mono); font-size: 12px; color: var(--ink-3); max-width: 42ch; }
+  .foto-pequena img { filter: grayscale(0.2) contrast(1.02) brightness(0.86); }
+  .foto-pequena-legenda { font-family: var(--mono); font-size: 12px; color: var(--ink-3); max-width: 44ch; }
 
-  /* -------------------------------------------------------------- dados */
-  .dados-lista { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; background: var(--line); border: 1px solid var(--line); margin-top: 44px; }
-  @media (max-width: 860px) { .dados-lista { grid-template-columns: repeat(2,1fr); } }
+  /* --------------------------------------------------------------- dados */
+  .dados-lista { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; background: var(--line); border: 1px solid var(--line); }
+  @media (max-width: 860px) { .dados-lista { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 480px) { .dados-lista { grid-template-columns: 1fr; } }
-  .dado-item { background: var(--ground); padding: 24px 20px; }
-  .secao--elevada .dado-item { background: var(--surface); }
-  .dado-item h3 { font-size: 15.5px; }
-  .dado-item p { margin-top: 8px; font-size: 13.5px; color: var(--ink-2); line-height: 1.5; }
+  .dado-item { background: var(--surface); padding: 26px 22px; }
+  .dado-item h3 { font-size: 16px; }
+  .dado-item p { margin-top: 8px; font-size: 14px; color: var(--ink-3); line-height: 1.5; }
 
   /* -------------------------------------------------------------- planos */
-  .planos-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .planos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   @media (max-width: 820px) { .planos-grid { grid-template-columns: 1fr; } }
-  .plano { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 28px 24px; display: grid; align-content: start; gap: 6px; }
-  .plano .pnome { font-size: 17px; font-weight: 700; color: var(--ink); }
+  .plano { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 30px 26px; display: grid; align-content: start; gap: 6px; }
+  .plano--destaque { border-color: var(--accent); }
+  .plano .pnome { font-size: 19px; font-weight: 800; color: var(--ink); }
   .plano .pfaixa { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
-  .plano ul { margin-top: 14px; display: grid; gap: 8px; }
-  .plano li { position: relative; padding-left: 18px; font-size: 13.5px; color: var(--ink-2); }
+  .plano ul { margin-top: 16px; display: grid; gap: 8px; }
+  .plano li { position: relative; padding-left: 18px; font-size: 14px; color: var(--ink-2); }
   .plano li::before { content: ''; position: absolute; left: 0; top: 8px; width: 5px; height: 5px; background: var(--accent); }
-  .plano .ppreco { margin-top: 18px; font-family: var(--mono); font-size: 13px; color: var(--ink); padding-top: 14px; border-top: 1px solid var(--line); }
+  .plano .ppreco { margin-top: 20px; font-family: var(--mono); font-size: 13px; color: var(--ink); padding-top: 16px; border-top: 1px solid var(--line); }
   .plano .btn { margin-top: 16px; width: 100%; }
-  .planos-nota { margin-top: 22px; font-size: 14px; color: var(--ink-3); }
+  .planos-nota { margin-top: 24px; font-size: 14px; color: var(--ink-3); }
 
-  /* -------------------------------------------------------------- depoimentos */
-  .depo-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 20px; }
+  .depo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
   .depo { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 22px; }
   .depo p.txt { font-size: 15px; color: var(--ink-2); line-height: 1.55; }
   .depo .quem { margin-top: 16px; font-size: 13px; color: var(--ink-3); }
-  .depo .quem b { color: var(--ink); }
 
-  /* -------------------------------------------------------------- faq */
+  /* ----------------------------------------------------------------- faq */
   .faq { border-top: 1px solid var(--line-strong); max-width: 860px; }
   .faq details { border-bottom: 1px solid var(--line); }
-  .faq summary { display: flex; align-items: center; gap: 16px; cursor: pointer; list-style: none; padding: 22px 2px; font-size: 17px; font-weight: 600; letter-spacing: -0.014em; color: var(--ink); }
+  .faq summary { display: flex; align-items: center; gap: 16px; cursor: pointer; list-style: none; padding: 24px 2px; font-size: 18px; font-weight: 600; letter-spacing: -0.014em; color: var(--ink); }
   .faq summary::-webkit-details-marker { display: none; }
-  .faq .chev { margin-left: auto; flex: none; width: 10px; height: 10px; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(45deg) translate(-1px,-1px); transition: transform .22s ease; }
-  .faq details[open] .chev { transform: rotate(225deg) translate(-1px,-1px); }
-  .faq details p { padding: 0 30px 24px 2px; font-size: 15px; line-height: 1.6; color: var(--ink-2); max-width: 68ch; }
+  .faq .chev { margin-left: auto; flex: none; width: 10px; height: 10px; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(45deg) translate(-1px, -1px); transition: transform 0.22s ease; }
+  .faq details[open] .chev { transform: rotate(225deg) translate(-1px, -1px); }
+  .faq details p { padding: 0 30px 26px 2px; font-size: 15.5px; line-height: 1.6; color: var(--ink-3); max-width: 68ch; }
 
-  /* -------------------------------------------------------------- cta final */
-  .cta-final { position: relative; overflow: hidden; background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .cta-final .iso-camada rect { opacity: .5; }
+  /* ----------------------------------------------------------- cta final */
+  .cta-final { position: relative; overflow: hidden; background: var(--surface); border-top: 1px solid var(--line); }
+  .iso-camada { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.8; }
   .cta-final__inner { position: relative; z-index: 1; }
-  .cta-final .display { max-width: 16ch; margin: 0 auto; }
-  .cta-final__acoes { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 30px; }
+  .cta-final .display { max-width: 14ch; margin: 0 auto; font-size: clamp(40px, 7vw, 80px); }
+  .cta-final__acoes { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 34px; }
   .cta-final .direto { margin-top: 18px; font-size: 14px; color: var(--ink-3); }
   .cta-final .direto a { color: var(--accent); }
   .cta-final .direto a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
-  /* -------------------------------------------------------------- footer */
-  footer.rodape { padding: 56px 0 40px; }
+  /* -------------------------------------------------------------- rodapé */
+  footer.rodape { padding: 56px 0 40px; border-top: 1px solid var(--line); }
   .rodape__topo { display: flex; justify-content: space-between; align-items: flex-start; gap: 32px; flex-wrap: wrap; padding-bottom: 32px; border-bottom: 1px solid var(--line); }
   .rodape__marca { display: flex; align-items: center; gap: 12px; }
-  .rodape__marca svg { width: 32px; height: 32px; }
-  .rodape__marca span { font-weight: 800; font-size: 19px; color: var(--ink); }
-  .rodape__marca small { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-3); margin-top: 2px; }
+  .rodape__marca svg { width: 34px; height: 34px; }
+  .rodape__marca span { font-weight: 800; font-size: 20px; color: var(--ink); letter-spacing: -0.02em; }
+  .rodape__marca small { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--ink-3); margin-top: 2px; }
   .rodape__links { display: flex; gap: 28px; flex-wrap: wrap; font-size: 14px; color: var(--ink-2); }
   .rodape__links a:hover { color: var(--accent); }
   .rodape__base { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 24px; font-size: 13px; color: var(--ink-3); }
 
-  /* -------------------------------------------------------------- whatsapp flutuante */
-  .whats-flut {
-    position: fixed; right: 20px; bottom: 20px; z-index: 80; width: 54px; height: 54px; border-radius: 50%;
-    background: var(--accent-solid); color: var(--on-accent); display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 10px 24px -8px rgba(0,0,0,.6);
+  .whats-flut { position: fixed; right: 20px; bottom: 20px; z-index: 80; width: 54px; height: 54px; border-radius: 50%; background: var(--accent-solid); color: var(--on-accent); display: flex; align-items: center; justify-content: center; }
+  .whats-flut:hover { background: var(--ciano-claro); color: #05100e; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rv { opacity: 1; transform: none; transition: none; }
+    .hero__tela { transform: none; }
+    .manifesto .w { opacity: 1; }
+    .passo-h { opacity: 1; }
+    .pilha > picture { transition: none; }
+    .foto img { transform: none; }
   }
-  .whats-flut:hover { background: var(--ciano-claro); }
 </style>
 </head>
 <body>
 <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+<div class="progresso" aria-hidden="true"></div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <pattern id="malha-iso" width="52" height="60" patternUnits="userSpaceOnUse">
-      <path d="M0 60 L52 30 M0 0 L52 30 M26 -15 L26 75" stroke="var(--grid)" stroke-width="1" fill="none" />
+      <path d="M0 60 L52 30 M0 0 L52 30 M26 -15 L26 75" stroke="rgba(47,212,196,.08)" stroke-width="1" fill="none" />
     </pattern>
+    <symbol id="cubo" viewBox="0 0 340 342">
+      <g stroke="#686868" stroke-width="7" stroke-linejoin="round">
+        <g transform="translate(90,103)">
+          <polygon points="0,-100 86.6,-50 0,0 -86.6,-50" fill="#D6D6D6" />
+          <polygon points="-86.6,-50 0,0 0,100 -86.6,50" fill="#ADADAD" />
+          <polygon points="86.6,-50 86.6,50 0,100 0,0" fill="#E8E8E8" />
+        </g>
+        <g transform="translate(250,239)">
+          <polygon points="0,-100 86.6,-50 0,0 -86.6,-50" fill="#D6D6D6" />
+          <polygon points="-86.6,-50 0,0 0,100 -86.6,50" fill="#ADADAD" />
+          <polygon points="86.6,-50 86.6,50 0,100 0,0" fill="#E8E8E8" />
+        </g>
+      </g>
+    </symbol>
   </defs>
 </svg>
 
-<nav class="nav" id="nav-topo">
+<nav class="nav" id="nav-topo" aria-label="Principal">
   <div class="wrap nav__inner">
-    <a class="marca" href="#topo">
-      <svg class="cubo" viewBox="0 0 340 342" aria-hidden="true">
-        <g stroke="#686868" stroke-width="7" stroke-linejoin="round">
-          <g transform="translate(90,103)">
-            <polygon points="0,-100 86.6,-50 0,0 -86.6,-50" fill="#D6D6D6" />
-            <polygon points="-86.6,-50 0,0 0,100 -86.6,50" fill="#ADADAD" />
-            <polygon points="86.6,-50 86.6,50 0,100 0,0" fill="#E8E8E8" />
-          </g>
-          <g transform="translate(250,239)">
-            <polygon points="0,-100 86.6,-50 0,0 -86.6,-50" fill="#D6D6D6" />
-            <polygon points="-86.6,-50 0,0 0,100 -86.6,50" fill="#ADADAD" />
-            <polygon points="86.6,-50 86.6,50 0,100 0,0" fill="#E8E8E8" />
-          </g>
-        </g>
-      </svg>
+    <a class="marca" href="#topo" aria-label="SouZ — início">
+      <svg class="cubo" aria-hidden="true"><use href="#cubo" /></svg>
       <span>SouZ</span>
     </a>
     <div class="nav__links">
-      <a class="navlink" href="#carteira">Produto</a>
+      <a class="navlink" href="#produto">Produto</a>
       <a class="navlink" href="#como-funciona">Como funciona</a>
       <a class="navlink" href="#planos">Planos</a>
       <a class="navlink" href="#duvidas">Dúvidas</a>
       <a class="btn btn--primario" data-cta="whatsapp" href="#">Agendar demonstração</a>
     </div>
-    <button class="nav__gaveta-btn" data-acao="abrir-gaveta" aria-label="Abrir menu" aria-expanded="false">
+    <button class="nav__gaveta-btn" data-acao="abrir-gaveta" aria-label="Abrir menu" aria-expanded="false" aria-controls="gaveta">
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h16M3 11h16M3 16h16"/></svg>
     </button>
   </div>
@@ -458,7 +470,7 @@
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 5l14 14M19 5L5 19"/></svg>
     </button>
   </div>
-  <a href="#carteira" data-acao="fechar-gaveta">Produto</a>
+  <a href="#produto" data-acao="fechar-gaveta">Produto</a>
   <a href="#como-funciona" data-acao="fechar-gaveta">Como funciona</a>
   <a href="#planos" data-acao="fechar-gaveta">Planos</a>
   <a href="#duvidas" data-acao="fechar-gaveta">Dúvidas</a>
@@ -467,287 +479,338 @@
 
 <main id="conteudo">
 
-  <!-- ======================= HERO ======================= -->
+  <!-- =============================== HERO =============================== -->
   <header class="hero" id="topo">
     <div class="hero__fundo" aria-hidden="true">
-      <svg class="hero__grade" width="100%" height="100%"><rect width="100%" height="100%"/></svg>
+      <svg class="hero__grade"><rect width="100%" height="100%"/></svg>
     </div>
     <div class="wrap hero__inner">
-      <span class="eyebrow rv">Gestão de obra · carteira completa</span>
-      <h1 class="rv">Sua obra <span class="fraco">fecha no azul?</span></h1>
-      <p class="subtitulo hero__lede rv">
-        Contrato, medição, recebimento, cronograma e pendências de cada obra da sua carteira,
-        numa tela só — para você ver o resultado antes do fechamento, não depois.
+      <span class="eyebrow rv">Gestão de obra para construtoras</span>
+      <h1 class="rv rv-d1">Sua obra fecha <span class="acc">no azul?</span></h1>
+      <p class="subtitulo hero__lede rv rv-d2">
+        Cada real que entra e sai de cada obra, num painel só. Você vê o gasto, o caixa e a
+        margem de toda a carteira — hoje, não no fechamento.
       </p>
-      <div class="hero__cta rv">
+      <div class="hero__cta rv rv-d3">
         <a class="btn btn--primario" data-cta="whatsapp" href="#">Agendar demonstração</a>
-        <a class="btn btn--fantasma" href="#como-funciona">Ver como funciona</a>
+        <a class="btn btn--fantasma" href="#produto">Ver como funciona</a>
       </div>
-      <div class="hero__fatos rv">
+      <div class="hero__fatos rv rv-d3">
+        <span>Várias obras ao mesmo tempo</span>
         <span>Navegador e celular</span>
         <span>Importa a sua planilha</span>
-        <span>Conecta no Power BI</span>
         <span>Dados no Brasil</span>
       </div>
     </div>
-    <div class="hero__deck rv">
-      <figure class="tela">
+    <div class="hero__palco">
+      <div class="hero__tela" data-hero-tela>
         <div class="janela">
-          <div class="janela__barra"><i></i><i></i><i></i></div>
+          <div class="janela__barra"><i></i><i></i><i></i><span>Carteira de obras</span></div>
           <picture>
-            <source type="image/avif" srcset="img/telas/tela-carteira-700.avif 700w, img/telas/tela-carteira-1400.avif 1400w" sizes="(max-width:980px) 92vw, 940px">
-            <source type="image/webp" srcset="img/telas/tela-carteira-700.webp 700w, img/telas/tela-carteira-1400.webp 1400w" sizes="(max-width:980px) 92vw, 940px">
-            <img src="img/telas/tela-carteira-700.jpg" srcset="img/telas/tela-carteira-700.jpg 700w, img/telas/tela-carteira-1400.jpg 1400w" sizes="(max-width:980px) 92vw, 940px" width="700" height="551" alt="Carteira de obras do Souz: Casa 14 e Casa 42 lado a lado, com caixa hoje, resultado projetado e avanço físico de cada uma" fetchpriority="high">
+            <source type="image/avif" srcset="img/telas/tela-carteira-960.avif 960w, img/telas/tela-carteira-1920.avif 1920w" sizes="(max-width:1100px) 94vw, 1060px">
+            <source type="image/webp" srcset="img/telas/tela-carteira-960.webp 960w, img/telas/tela-carteira-1920.webp 1920w" sizes="(max-width:1100px) 94vw, 1060px">
+            <img src="img/telas/tela-carteira-960.jpg" srcset="img/telas/tela-carteira-960.jpg 960w, img/telas/tela-carteira-1920.jpg 1920w" sizes="(max-width:1100px) 94vw, 1060px" width="960" height="600" fetchpriority="high" alt="Carteira de obras do Souz: duas obras lado a lado com caixa hoje, resultado projetado, avanço físico e pendências de cada uma">
           </picture>
         </div>
-        <figcaption>Carteira de obras — dado de exemplo, obra fictícia.</figcaption>
-      </figure>
+        <p class="legenda">Tela real do sistema · dados de exemplo, obras fictícias.</p>
+      </div>
     </div>
   </header>
 
-  <!-- ======================= O PROBLEMA ======================= -->
-  <section class="secao secao--problema" id="problema">
+  <!-- ============================= MANIFESTO ============================= -->
+  <section class="manifesto" aria-label="O que o Souz resolve">
+    <div class="wrap">
+      <p data-manifesto>Você sabe quanto cada obra está dando de lucro? Não no fechamento, quando o dinheiro já foi. <span class="acc">Hoje.</span> O Souz junta contrato, medição, compra e recebimento de todas as suas obras e mostra o resultado enquanto ainda dá para corrigir.</p>
+    </div>
+  </section>
+
+  <!-- ============================== PROBLEMA ============================= -->
+  <section class="secao secao--elevada" id="problema">
     <div class="wrap">
       <div class="secao__cabecalho rv">
-        <span class="eyebrow" style="color:var(--warn)">O dia a dia sem controle</span>
-        <h2 class="titulo">Cada obra na cabeça de alguém, cada informação num lugar diferente</h2>
-        <p class="subtitulo">
-          Planilha por obra, print de WhatsApp, caderno de campo. Funciona até a construtora ter
-          mais de uma obra tocando ao mesmo tempo — aí ninguém mais sabe, em tempo real, se cada
-          uma está dando lucro ou prejuízo. O problema só aparece no fechamento, quando não dá
-          mais para corrigir.
-        </p>
+        <span class="eyebrow" style="color:var(--warn)">Obra controlada na planilha</span>
+        <h2 class="titulo">O prejuízo não aparece na obra. Aparece no fechamento.</h2>
+        <p class="subtitulo">Planilha por obra, print de WhatsApp, caderno de campo. Com uma obra, dá. Com três tocando ao mesmo tempo, ninguém sabe qual está dando dinheiro — até a conta não fechar.</p>
       </div>
-      <div class="fatos rv">
-        <div class="fato">
+      <div class="fatos">
+        <div class="fato rv">
           <span class="num">01</span>
-          <p><strong>Medição paga além do que foi executado</strong> — e ninguém percebe até fechar a etapa.</p>
+          <h3>Medição paga além do que foi feito</h3>
+          <p>O empreiteiro recebe por uma etapa que ainda não está pronta, e ninguém cruza o que foi pago com o que foi executado.</p>
         </div>
-        <div class="fato">
+        <div class="fato rv rv-d1">
           <span class="num">02</span>
-          <p><strong>Parcela do banco parada há semanas</strong> — sem ninguém checando por que o crédito não caiu.</p>
+          <h3>Gasto sem etapa, orçamento estourado</h3>
+          <p>Compra, frete e taxa entram no mesmo bolo. Qual etapa passou do orçado só se descobre no fim da obra.</p>
         </div>
-        <div class="fato">
+        <div class="fato rv rv-d2">
           <span class="num">03</span>
-          <p><strong>Etapa travada porque o material não chegou</strong> — e a informação só sobe ao engenheiro depois que a obra já parou.</p>
+          <h3>O caixa acaba antes da obra</h3>
+          <p>O mês apertado aparece quando o boleto chega, não quando ainda dava para segurar uma compra ou cobrar um recebimento.</p>
         </div>
       </div>
       <p class="fecho rv">Fim das planilhas desconexas.</p>
     </div>
   </section>
 
-  <!-- ======================= COMO FUNCIONA ======================= -->
+  <!-- =============================== PRODUTO ============================= -->
+  <section class="secao" id="produto">
+    <div class="wrap">
+      <div class="secao__cabecalho rv">
+        <span class="eyebrow">O que o dono da obra vê</span>
+        <h2 class="titulo">Cinco perguntas que a planilha não responde</h2>
+      </div>
+
+      <div class="historia" data-historia>
+        <div class="historia__passos">
+
+          <article class="passo-h" data-passo="0">
+            <span class="q">01 · Carteira</span>
+            <h3>Qual obra está dando dinheiro?</h3>
+            <p class="texto">Todas as obras lado a lado: caixa hoje, resultado projetado, margem e avanço físico. A que está segurando o mês aparece primeiro, com o motivo.</p>
+            <div class="tela-inline janela">
+              <div class="janela__barra"><i></i><i></i><i></i><span>Carteira de obras</span></div>
+              <picture>
+                <source type="image/avif" srcset="img/telas/tela-carteira-960.avif 960w, img/telas/tela-carteira-1920.avif 1920w" sizes="92vw">
+                <source type="image/webp" srcset="img/telas/tela-carteira-960.webp 960w, img/telas/tela-carteira-1920.webp 1920w" sizes="92vw">
+                <img src="img/telas/tela-carteira-960.jpg" width="960" height="600" loading="lazy" alt="Carteira de obras com caixa, resultado projetado e avanço de cada obra">
+              </picture>
+            </div>
+          </article>
+
+          <article class="passo-h" data-passo="1">
+            <span class="q">02 · Lançamentos</span>
+            <h3>Para onde foi o dinheiro?</h3>
+            <p class="texto">Cada compra, taxa e serviço lançado na etapa certa. O orçado × realizado por etapa mostra qual estourou — enquanto a etapa ainda está em andamento.</p>
+            <div class="tela-inline janela">
+              <div class="janela__barra"><i></i><i></i><i></i><span>Lançamentos</span></div>
+              <picture>
+                <source type="image/avif" srcset="img/telas/tela-lancamentos-960.avif 960w, img/telas/tela-lancamentos-1920.avif 1920w" sizes="92vw">
+                <source type="image/webp" srcset="img/telas/tela-lancamentos-960.webp 960w, img/telas/tela-lancamentos-1920.webp 1920w" sizes="92vw">
+                <img src="img/telas/tela-lancamentos-960.jpg" width="960" height="600" loading="lazy" alt="Lançamentos da obra com gráfico de para onde foi o dinheiro e tabela de orçado por etapa">
+              </picture>
+            </div>
+          </article>
+
+          <article class="passo-h" data-passo="2">
+            <span class="q">03 · Fluxo de caixa</span>
+            <h3>Quando o caixa vai apertar?</h3>
+            <p class="texto">O fluxo projetado mostra o vale de caixa: o dia em que o saldo chega no mínimo. Dá tempo de antecipar um recebimento ou segurar uma compra.</p>
+            <div class="tela-inline janela">
+              <div class="janela__barra"><i></i><i></i><i></i><span>Fluxo de caixa</span></div>
+              <picture>
+                <source type="image/avif" srcset="img/telas/tela-fluxo-960.avif 960w, img/telas/tela-fluxo-1920.avif 1920w" sizes="92vw">
+                <source type="image/webp" srcset="img/telas/tela-fluxo-960.webp 960w, img/telas/tela-fluxo-1920.webp 1920w" sizes="92vw">
+                <img src="img/telas/tela-fluxo-960.jpg" width="960" height="600" loading="lazy" alt="Fluxo de caixa com entradas e saídas mês a mês, saldo acumulado e próximos pagamentos">
+              </picture>
+            </div>
+          </article>
+
+          <article class="passo-h" data-passo="3">
+            <span class="q">04 · Físico × financeiro</span>
+            <h3>O que eu paguei já está feito?</h3>
+            <p class="texto">A curva S cruza o avanço físico com o dinheiro que saiu. E a medição trava no contrato: não dá para pagar mais do que foi executado.</p>
+            <div class="tela-inline janela">
+              <div class="janela__barra"><i></i><i></i><i></i><span>Físico × financeiro</span></div>
+              <picture>
+                <source type="image/avif" srcset="img/telas/tela-curva-960.avif 960w, img/telas/tela-curva-1920.avif 1920w" sizes="92vw">
+                <source type="image/webp" srcset="img/telas/tela-curva-960.webp 960w, img/telas/tela-curva-1920.webp 1920w" sizes="92vw">
+                <img src="img/telas/tela-curva-960.jpg" width="960" height="600" loading="lazy" alt="Curva S comparando físico previsto, físico realizado e financeiro realizado">
+              </picture>
+            </div>
+          </article>
+
+          <article class="passo-h" data-passo="4">
+            <span class="q">05 · Pendências</span>
+            <h3>O que eu faço agora?</h3>
+            <p class="texto">Cada pendência vem com a causa, o valor em jogo e a ação. Não é "algo está errado" — é o que resolver primeiro.</p>
+            <div class="exemplo-pend"><span>Exemplo real do sistema · obra fictícia</span>Contrato medido à frente do físico · R$ 3.082 adiantados → segurar a próxima medição até o físico alcançar</div>
+            <div class="tela-inline janela">
+              <div class="janela__barra"><i></i><i></i><i></i><span>Pendências</span></div>
+              <picture>
+                <source type="image/avif" srcset="img/telas/tela-pendencias-960.avif 960w, img/telas/tela-pendencias-1920.avif 1920w" sizes="92vw">
+                <source type="image/webp" srcset="img/telas/tela-pendencias-960.webp 960w, img/telas/tela-pendencias-1920.webp 1920w" sizes="92vw">
+                <img src="img/telas/tela-pendencias-960.jpg" width="960" height="600" loading="lazy" alt="Pendências da obra, cada uma com causa, valor em jogo e ação sugerida">
+              </picture>
+            </div>
+          </article>
+
+        </div>
+
+        <div class="historia__visual" aria-hidden="true">
+          <div class="janela">
+            <div class="janela__barra"><i></i><i></i><i></i><span data-historia-rotulo>Carteira de obras</span></div>
+            <div class="pilha">
+              <picture class="ativo" data-rotulo="Carteira de obras">
+                <source type="image/avif" srcset="img/telas/tela-carteira-960.avif 960w, img/telas/tela-carteira-1920.avif 1920w" sizes="(max-width:1240px) 56vw, 680px">
+                <source type="image/webp" srcset="img/telas/tela-carteira-960.webp 960w, img/telas/tela-carteira-1920.webp 1920w" sizes="(max-width:1240px) 56vw, 680px">
+                <img src="img/telas/tela-carteira-960.jpg" width="960" height="600" loading="lazy" alt="">
+              </picture>
+              <picture data-rotulo="Lançamentos">
+                <source type="image/avif" srcset="img/telas/tela-lancamentos-960.avif 960w, img/telas/tela-lancamentos-1920.avif 1920w" sizes="(max-width:1240px) 56vw, 680px">
+                <source type="image/webp" srcset="img/telas/tela-lancamentos-960.webp 960w, img/telas/tela-lancamentos-1920.webp 1920w" sizes="(max-width:1240px) 56vw, 680px">
+                <img src="img/telas/tela-lancamentos-960.jpg" width="960" height="600" loading="lazy" alt="">
+              </picture>
+              <picture data-rotulo="Fluxo de caixa">
+                <source type="image/avif" srcset="img/telas/tela-fluxo-960.avif 960w, img/telas/tela-fluxo-1920.avif 1920w" sizes="(max-width:1240px) 56vw, 680px">
+                <source type="image/webp" srcset="img/telas/tela-fluxo-960.webp 960w, img/telas/tela-fluxo-1920.webp 1920w" sizes="(max-width:1240px) 56vw, 680px">
+                <img src="img/telas/tela-fluxo-960.jpg" width="960" height="600" loading="lazy" alt="">
+              </picture>
+              <picture data-rotulo="Físico × financeiro">
+                <source type="image/avif" srcset="img/telas/tela-curva-960.avif 960w, img/telas/tela-curva-1920.avif 1920w" sizes="(max-width:1240px) 56vw, 680px">
+                <source type="image/webp" srcset="img/telas/tela-curva-960.webp 960w, img/telas/tela-curva-1920.webp 1920w" sizes="(max-width:1240px) 56vw, 680px">
+                <img src="img/telas/tela-curva-960.jpg" width="960" height="600" loading="lazy" alt="">
+              </picture>
+              <picture data-rotulo="Pendências">
+                <source type="image/avif" srcset="img/telas/tela-pendencias-960.avif 960w, img/telas/tela-pendencias-1920.avif 1920w" sizes="(max-width:1240px) 56vw, 680px">
+                <source type="image/webp" srcset="img/telas/tela-pendencias-960.webp 960w, img/telas/tela-pendencias-1920.webp 1920w" sizes="(max-width:1240px) 56vw, 680px">
+                <img src="img/telas/tela-pendencias-960.jpg" width="960" height="600" loading="lazy" alt="">
+              </picture>
+            </div>
+          </div>
+          <div class="historia__rodape"><span data-historia-num>01 / 05</span><span class="trilho"><i data-historia-trilho></i></span><span>dados de exemplo</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================== COMO FUNCIONA =========================== -->
   <section class="secao secao--elevada" id="como-funciona">
     <div class="wrap">
       <div class="secao__cabecalho rv">
         <span class="eyebrow">Do contrato ao resultado</span>
         <h2 class="titulo">Três etapas, o mesmo lugar</h2>
+        <p class="subtitulo">O menu do sistema segue a vida da obra. O que você lança em um lugar aparece em todos os outros — sem digitar duas vezes.</p>
       </div>
-      <div class="passos rv">
-        <div class="passo">
+      <div class="passos">
+        <div class="passo rv">
           <span class="pnum">01 · Planejar</span>
           <h3>Uma vez, no começo</h3>
-          <p class="d">Tipo de obra, modalidade de contratação e metas antes do primeiro tijolo. Contratos e aditivos, cronograma com dependências e caminho crítico, plano de materiais por etapa.</p>
-          <div class="janela passo-tela">
+          <p class="d">Orçamento e metas, contratos e aditivos, cronograma com dependências e caminho crítico, plano de materiais por etapa.</p>
+          <div class="janela">
             <div class="janela__barra"><i></i><i></i><i></i></div>
             <picture>
-              <source type="image/avif" srcset="img/telas/tela-cronograma-700.avif 700w, img/telas/tela-cronograma-1400.avif 1400w" sizes="(max-width:820px) 88vw, 360px">
-              <source type="image/webp" srcset="img/telas/tela-cronograma-700.webp 700w, img/telas/tela-cronograma-1400.webp 1400w" sizes="(max-width:820px) 88vw, 360px">
-              <img src="img/telas/tela-cronograma-700.jpg" srcset="img/telas/tela-cronograma-700.jpg 700w, img/telas/tela-cronograma-1400.jpg 1400w" sizes="(max-width:820px) 88vw, 360px" width="700" height="551" alt="Cronograma da Casa 14 em linha do tempo, com etapas atrasadas destacadas" loading="lazy">
+              <source type="image/avif" srcset="img/telas/tela-cronograma-960.avif 960w, img/telas/tela-cronograma-1920.avif 1920w" sizes="(max-width:900px) 90vw, 380px">
+              <source type="image/webp" srcset="img/telas/tela-cronograma-960.webp 960w, img/telas/tela-cronograma-1920.webp 1920w" sizes="(max-width:900px) 90vw, 380px">
+              <img src="img/telas/tela-cronograma-960.jpg" width="960" height="600" loading="lazy" alt="Cronograma da obra em linha do tempo, com etapas atrasadas destacadas">
             </picture>
           </div>
         </div>
-        <div class="passo">
+        <div class="passo rv rv-d1">
           <span class="pnum">02 · Executar</span>
           <h3>A cada medição</h3>
-          <p class="d">Medições com trava para não pagar além do contratado, recebimentos — parcela do banco e do cliente —, lançamentos financeiros e diário de obra com fotos, direto do celular.</p>
-          <div class="janela passo-tela">
+          <p class="d">Medições com trava no contrato, compras e taxas lançadas por etapa, recebimentos do cliente ou do banco e diário de obra com fotos.</p>
+          <div class="janela">
             <div class="janela__barra"><i></i><i></i><i></i></div>
             <picture>
-              <source type="image/avif" srcset="img/telas/tela-contratos-700.avif 700w, img/telas/tela-contratos-1400.avif 1400w" sizes="(max-width:820px) 88vw, 360px">
-              <source type="image/webp" srcset="img/telas/tela-contratos-700.webp 700w, img/telas/tela-contratos-1400.webp 1400w" sizes="(max-width:820px) 88vw, 360px">
-              <img src="img/telas/tela-contratos-700.jpg" srcset="img/telas/tela-contratos-700.jpg 700w, img/telas/tela-contratos-1400.jpg 1400w" sizes="(max-width:820px) 88vw, 360px" width="700" height="379" alt="Contratos e aditivos da Casa 14, com prestador, prazo, autorizado e situação de cada contrato" loading="lazy">
+              <source type="image/avif" srcset="img/telas/tela-medicoes-960.avif 960w, img/telas/tela-medicoes-1920.avif 1920w" sizes="(max-width:900px) 90vw, 380px">
+              <source type="image/webp" srcset="img/telas/tela-medicoes-960.webp 960w, img/telas/tela-medicoes-1920.webp 1920w" sizes="(max-width:900px) 90vw, 380px">
+              <img src="img/telas/tela-medicoes-960.jpg" width="960" height="600" loading="lazy" alt="Medições da obra com valor medido, pago e a pagar por prestador">
             </picture>
           </div>
         </div>
-        <div class="passo">
+        <div class="passo rv rv-d2">
           <span class="pnum">03 · Acompanhar</span>
           <h3>Sempre à vista</h3>
-          <p class="d">Físico × financeiro na curva S, fluxo de caixa projetado, pendências que apontam o problema e a ação, relatórios em PDF para cliente e financiador.</p>
-          <div class="janela passo-tela">
-            <div class="janela__barra"><i></i><i></i><i></i></div>
-            <picture>
-              <source type="image/avif" srcset="img/telas/tela-curva-700.avif 700w, img/telas/tela-curva-1400.avif 1400w" sizes="(max-width:820px) 88vw, 360px">
-              <source type="image/webp" srcset="img/telas/tela-curva-700.webp 700w, img/telas/tela-curva-1400.webp 1400w" sizes="(max-width:820px) 88vw, 360px">
-              <img src="img/telas/tela-curva-700.jpg" srcset="img/telas/tela-curva-700.jpg 700w, img/telas/tela-curva-1400.jpg 1400w" sizes="(max-width:820px) 88vw, 360px" width="700" height="551" alt="Curva S da Casa 14 comparando físico previsto, físico realizado e financeiro realizado" loading="lazy">
-            </picture>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ======================= DESTAQUE: CARTEIRA ======================= -->
-  <section class="secao" id="carteira">
-    <div class="wrap">
-      <div class="spot">
-        <div class="rv">
-          <span class="eyebrow">Visão consolidada</span>
-          <h3>Todas as suas obras, num painel só</h3>
-          <p class="texto">Caixa hoje, resultado projetado e avanço de cada obra, lado a lado. Sem abrir planilha por planilha para saber qual obra está segurando o mês e qual está sangrando caixa.</p>
-          <a class="seta" href="#planos">Ver planos</a>
-        </div>
-        <figure class="tela rv">
+          <p class="d">Painel da obra com caixa, resultado e margem; curva S, fluxo de caixa, pendências e relatórios em PDF.</p>
           <div class="janela">
             <div class="janela__barra"><i></i><i></i><i></i></div>
             <picture>
-              <source type="image/avif" srcset="img/telas/tela-carteira-700.avif 700w, img/telas/tela-carteira-1400.avif 1400w" sizes="(max-width:900px) 92vw, 560px">
-              <source type="image/webp" srcset="img/telas/tela-carteira-700.webp 700w, img/telas/tela-carteira-1400.webp 1400w" sizes="(max-width:900px) 92vw, 560px">
-              <img src="img/telas/tela-carteira-700.jpg" srcset="img/telas/tela-carteira-700.jpg 700w, img/telas/tela-carteira-1400.jpg 1400w" sizes="(max-width:900px) 92vw, 560px" width="700" height="551" alt="Painel da Carteira de obras com duas obras fictícias, cada uma com caixa hoje, resultado projetado e avanço físico" loading="lazy">
+              <source type="image/avif" srcset="img/telas/tela-painel-960.avif 960w, img/telas/tela-painel-1920.avif 1920w" sizes="(max-width:900px) 90vw, 380px">
+              <source type="image/webp" srcset="img/telas/tela-painel-960.webp 960w, img/telas/tela-painel-1920.webp 1920w" sizes="(max-width:900px) 90vw, 380px">
+              <img src="img/telas/tela-painel-960.jpg" width="960" height="600" loading="lazy" alt="Painel da obra com caixa hoje, resultado projetado, margem e pendências">
             </picture>
           </div>
-          <figcaption>Carteira — dado de exemplo, obra fictícia.</figcaption>
-        </figure>
-      </div>
-    </div>
-  </section>
-
-  <!-- ======================= DESTAQUE: FÍSICO x FINANCEIRO ======================= -->
-  <section class="secao secao--elevada" id="fisico-financeiro">
-    <div class="wrap">
-      <div class="spot spot--inv">
-        <div class="rv">
-          <span class="eyebrow">Curva S</span>
-          <h3>O que já foi liberado e o que já foi feito</h3>
-          <p class="texto">Medição trava no que está no contrato — não dá para lançar mais do que foi executado. A curva S compara avanço físico ponderado com o desembolso, para o previsto e o realizado não se perderem de vista um do outro.</p>
-          <a class="seta" href="#financiada">Ver obra financiada</a>
         </div>
-        <figure class="tela rv">
-          <div class="janela">
-            <div class="janela__barra"><i></i><i></i><i></i></div>
-            <picture>
-              <source type="image/avif" srcset="img/telas/tela-curva-700.avif 700w, img/telas/tela-curva-1400.avif 1400w" sizes="(max-width:900px) 92vw, 560px">
-              <source type="image/webp" srcset="img/telas/tela-curva-700.webp 700w, img/telas/tela-curva-1400.webp 1400w" sizes="(max-width:900px) 92vw, 560px">
-              <img src="img/telas/tela-curva-700.jpg" srcset="img/telas/tela-curva-700.jpg 700w, img/telas/tela-curva-1400.jpg 1400w" sizes="(max-width:900px) 92vw, 560px" width="700" height="551" alt="Tela Físico x financeiro com a curva S comparando físico previsto, físico realizado e financeiro realizado" loading="lazy">
-            </picture>
-          </div>
-          <figcaption>Físico × financeiro — dado de exemplo, obra fictícia.</figcaption>
-        </figure>
       </div>
     </div>
   </section>
 
-  <!-- ======================= DESTAQUE: PENDÊNCIAS ======================= -->
-  <section class="secao" id="pendencias">
-    <div class="wrap">
-      <div class="spot">
-        <div class="rv">
-          <span class="eyebrow">Pendências</span>
-          <h3>Pendência não é aviso genérico, é problema com nome e ação</h3>
-          <p class="texto">Cada pendência aponta a causa raiz e o próximo passo — não só "algo está errado".</p>
-          <div class="exemplo-pend"><span>Exemplo real do sistema · dado fictício</span>Parcela 3 sem crédito há 41 dias → cobrar o laudo</div>
-        </div>
-        <figure class="tela rv">
-          <div class="janela">
-            <div class="janela__barra"><i></i><i></i><i></i></div>
-            <picture>
-              <source type="image/avif" srcset="img/telas/tela-pendencias-700.avif 700w, img/telas/tela-pendencias-1400.avif 1400w" sizes="(max-width:900px) 92vw, 560px">
-              <source type="image/webp" srcset="img/telas/tela-pendencias-700.webp 700w, img/telas/tela-pendencias-1400.webp 1400w" sizes="(max-width:900px) 92vw, 560px">
-              <img src="img/telas/tela-pendencias-700.jpg" srcset="img/telas/tela-pendencias-700.jpg 700w, img/telas/tela-pendencias-1400.jpg 1400w" sizes="(max-width:900px) 92vw, 560px" width="700" height="551" alt="Painel de Pendências da Casa 14 mostrando parcela sem crédito há 41 dias e outros problemas com a ação sugerida" loading="lazy">
-            </picture>
-          </div>
-          <figcaption>Pendências — dado de exemplo, obra fictícia.</figcaption>
-        </figure>
-      </div>
-    </div>
-  </section>
-
-  <!-- ======================= DESTAQUE: RELATÓRIOS (papel) ======================= -->
+  <!-- ============================ RELATÓRIOS ============================= -->
   <section class="secao secao-papel" id="relatorios">
     <div class="wrap">
-      <div class="spot spot--inv">
+      <div class="spot">
         <div class="rv">
-          <span class="eyebrow">Documentos</span>
-          <h3>O relatório que você manda pro cliente e pro banco</h3>
-          <p class="texto">Status da obra para o cliente, relatório interno, prestação de contas e memória de medição no formato que o financiador pede — gerados a partir dos mesmos dados que você já lançou, sem montar nada à parte.</p>
+          <span class="eyebrow">Prestação de contas</span>
+          <h2 class="titulo">O relatório que você manda para o cliente, o sócio e o banco</h2>
+          <p class="texto">Gerado dos mesmos dados que você já lançou. Sem montar planilha explicativa no fim do mês.</p>
+          <ul class="lista-docs">
+            <li>Status da obra para o cliente — sem custo nem margem</li>
+            <li>Relatório interno com caixa, contratos e pendências</li>
+            <li>Prestação de contas, nota a nota, com saldo final</li>
+            <li>Memória de medição no formato que o financiador pede</li>
+          </ul>
         </div>
-        <figure class="tela rv">
+        <figure class="rv rv-d1" style="margin:0">
           <div class="janela">
-            <div class="janela__barra"><i></i><i></i><i></i></div>
+            <div class="janela__barra"><i></i><i></i><i></i><span>Relatórios</span></div>
             <picture>
-              <source type="image/avif" srcset="img/telas/tela-relatorio-700.avif 700w, img/telas/tela-relatorio-1400.avif 1400w" sizes="(max-width:900px) 92vw, 560px">
-              <source type="image/webp" srcset="img/telas/tela-relatorio-700.webp 700w, img/telas/tela-relatorio-1400.webp 1400w" sizes="(max-width:900px) 92vw, 560px">
-              <img src="img/telas/tela-relatorio-700.jpg" srcset="img/telas/tela-relatorio-700.jpg 700w, img/telas/tela-relatorio-1400.jpg 1400w" sizes="(max-width:900px) 92vw, 560px" width="700" height="637" alt="Prévia do relatório de status em PDF da Casa 14, com situação das etapas e resumo de avanço" loading="lazy">
+              <source type="image/avif" srcset="img/telas/tela-relatorio-960.avif 960w, img/telas/tela-relatorio-1920.avif 1920w" sizes="(max-width:960px) 92vw, 680px">
+              <source type="image/webp" srcset="img/telas/tela-relatorio-960.webp 960w, img/telas/tela-relatorio-1920.webp 1920w" sizes="(max-width:960px) 92vw, 680px">
+              <img src="img/telas/tela-relatorio-960.jpg" srcset="img/telas/tela-relatorio-960.jpg 960w, img/telas/tela-relatorio-1920.jpg 1920w" sizes="(max-width:960px) 92vw, 680px" width="960" height="600" loading="lazy" alt="Tela de relatórios com os quatro documentos em PDF e a prévia do relatório de status">
             </picture>
           </div>
-          <figcaption>Relatórios — prévia de amostra, obra fictícia.</figcaption>
+          <figcaption class="legenda">Relatórios — obra fictícia.</figcaption>
         </figure>
       </div>
     </div>
   </section>
 
-  <!-- ======================= DESTAQUE: CAMPO / CELULAR ======================= -->
+  <!-- ============================== CAMPO ================================ -->
   <section class="secao" id="campo">
     <div class="wrap">
-      <div class="spot">
+      <div class="spot spot--inv">
         <div class="rv">
           <span class="eyebrow">No canteiro</span>
-          <h3>O campo também usa o Souz</h3>
-          <p class="texto">Diário de obra com fotos, registrado direto do canteiro — funciona mesmo sem rede, e sincroniza quando a rede volta. Prestador chamado no WhatsApp em um toque, sem procurar contato.</p>
+          <h2 class="titulo">O que acontece na obra chega no escritório no mesmo dia</h2>
+          <p class="texto">Diário de obra com fotos, direto do celular — funciona sem rede e sincroniza quando a rede volta. Prestador chamado no WhatsApp em um toque. Material que faltou vira pendência antes de parar a frente de serviço.</p>
         </div>
-        <div class="rv" style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
-          <figure class="tela" style="max-width:230px">
+        <div class="celulares">
+          <figure class="rv" data-parallax="-14">
             <div class="janela">
-              <div class="janela__barra"><i></i><i></i><i></i></div>
               <picture>
-                <source type="image/avif" srcset="img/telas/tela-diario-mobile-390.avif 390w, img/telas/tela-diario-mobile-780.avif 780w" sizes="230px">
-                <source type="image/webp" srcset="img/telas/tela-diario-mobile-390.webp 390w, img/telas/tela-diario-mobile-780.webp 780w" sizes="230px">
-                <img src="img/telas/tela-diario-mobile-390.jpg" srcset="img/telas/tela-diario-mobile-390.jpg 390w, img/telas/tela-diario-mobile-780.jpg 780w" sizes="230px" width="390" height="844" alt="Diário de obra da Casa 14 no celular, com registro de atividades e ocorrência de material em falta" loading="lazy">
+                <source type="image/avif" srcset="img/telas/tela-diario-mobile-390.avif 390w, img/telas/tela-diario-mobile-780.avif 780w" sizes="250px">
+                <source type="image/webp" srcset="img/telas/tela-diario-mobile-390.webp 390w, img/telas/tela-diario-mobile-780.webp 780w" sizes="250px">
+                <img src="img/telas/tela-diario-mobile-390.jpg" srcset="img/telas/tela-diario-mobile-390.jpg 390w, img/telas/tela-diario-mobile-780.jpg 780w" sizes="250px" width="390" height="844" loading="lazy" alt="Diário de obra no celular, com registros diários e uma ocorrência de material em falta">
               </picture>
             </div>
-            <figcaption>Diário de obra — celular</figcaption>
+            <figcaption class="legenda">Diário de obra</figcaption>
           </figure>
-          <figure class="tela" style="max-width:230px">
+          <figure class="rv rv-d1" data-parallax="14">
             <div class="janela">
-              <div class="janela__barra"><i></i><i></i><i></i></div>
               <picture>
-                <source type="image/avif" srcset="img/telas/tela-prestadores-mobile-390.avif 390w, img/telas/tela-prestadores-mobile-780.avif 780w" sizes="230px">
-                <source type="image/webp" srcset="img/telas/tela-prestadores-mobile-390.webp 390w, img/telas/tela-prestadores-mobile-780.webp 780w" sizes="230px">
-                <img src="img/telas/tela-prestadores-mobile-390.jpg" srcset="img/telas/tela-prestadores-mobile-390.jpg 390w, img/telas/tela-prestadores-mobile-780.jpg 780w" sizes="230px" width="390" height="500" alt="Lista de prestadores no celular, cada um com botão de WhatsApp em um toque" loading="lazy">
+                <source type="image/avif" srcset="img/telas/tela-prestadores-mobile-390.avif 390w, img/telas/tela-prestadores-mobile-780.avif 780w" sizes="250px">
+                <source type="image/webp" srcset="img/telas/tela-prestadores-mobile-390.webp 390w, img/telas/tela-prestadores-mobile-780.webp 780w" sizes="250px">
+                <img src="img/telas/tela-prestadores-mobile-390.jpg" srcset="img/telas/tela-prestadores-mobile-390.jpg 390w, img/telas/tela-prestadores-mobile-780.jpg 780w" sizes="250px" width="390" height="500" loading="lazy" alt="Lista de prestadores no celular, cada um com botão de WhatsApp">
               </picture>
             </div>
-            <figcaption>Prestadores — celular</figcaption>
+            <figcaption class="legenda">Prestadores</figcaption>
           </figure>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ======================= OBRA FINANCIADA ======================= -->
+  <!-- ============================ FINANCIADA ============================= -->
   <section class="secao secao--elevada" id="financiada">
     <div class="wrap">
-      <div class="financiada-grid">
+      <div class="faixa-fin">
         <div class="rv">
-          <span class="eyebrow">O diferencial pra quem trabalha com MCMV e outros bancos</span>
-          <h2 class="titulo">Financiamento não é só CAIXA — mas se for CAIXA, o Souz sabe lidar</h2>
-          <p class="texto" style="margin-top:16px">
-            Recebimento por marco físico de qualquer financiador — CAIXA, outro banco, consórcio
-            ou o próprio cliente. Cada parcela mostra a etapa em que está. A memória de medição
-            sai no formato que o financiador espera. E o "liberado × executado" mostra, na hora,
-            quanto já dá para solicitar.
-          </p>
-          <div class="etapas-financiador">
+          <span class="eyebrow">Obra financiada</span>
+          <h2 class="titulo">Tem parcela de banco no meio? Também está coberto.</h2>
+          <p class="texto" style="margin-top:18px">Recebimento por marco físico de qualquer financiador — CAIXA, outro banco, consórcio ou o próprio cliente. Cada parcela mostra em que etapa está, e o liberado × executado diz quanto já dá para solicitar.</p>
+          <div class="etapas-f">
             <div class="etapa-f"><span class="k">1</span><b>Solicitada</b></div>
             <div class="etapa-f on"><span class="k">2</span><b>Em vistoria</b></div>
             <div class="etapa-f"><span class="k">3</span><b>Creditada</b></div>
           </div>
         </div>
-        <figure class="tela rv">
-          <div class="foto-guindaste">
+        <figure class="rv rv-d1" style="margin:0">
+          <div class="foto">
             <picture>
-              <source type="image/avif" srcset="img/fotos/obra-guindastes-900.avif 900w, img/fotos/obra-guindastes-1600.avif 1600w" sizes="(max-width:900px) 92vw, 460px">
-              <source type="image/webp" srcset="img/fotos/obra-guindastes-900.webp 900w, img/fotos/obra-guindastes-1600.webp 1600w" sizes="(max-width:900px) 92vw, 460px">
-              <img src="img/fotos/obra-guindastes-900.jpg" srcset="img/fotos/obra-guindastes-900.jpg 900w, img/fotos/obra-guindastes-1600.jpg 1600w" sizes="(max-width:900px) 92vw, 460px" width="900" height="675" alt="Canteiro de obra com duas gruas-torre e edifício em estrutura de concreto, em fase de construção" loading="lazy">
+              <source type="image/avif" srcset="img/fotos/obra-guindastes-900.avif 900w, img/fotos/obra-guindastes-1600.avif 1600w" sizes="(max-width:900px) 92vw, 560px">
+              <source type="image/webp" srcset="img/fotos/obra-guindastes-900.webp 900w, img/fotos/obra-guindastes-1600.webp 1600w" sizes="(max-width:900px) 92vw, 560px">
+              <img data-parallax="-18" src="img/fotos/obra-guindastes-900.jpg" srcset="img/fotos/obra-guindastes-900.jpg 900w, img/fotos/obra-guindastes-1600.jpg 1600w" sizes="(max-width:900px) 92vw, 560px" width="900" height="675" loading="lazy" alt="Canteiro de obra com duas gruas-torre e edifício em estrutura de concreto">
             </picture>
           </div>
         </figure>
@@ -755,24 +818,28 @@
     </div>
   </section>
 
-  <!-- ======================= PARA QUEM É ======================= -->
+  <!-- ============================ PARA QUEM ============================== -->
   <section class="secao" id="para-quem">
     <div class="wrap">
       <div class="secao__cabecalho rv">
-        <h2 class="titulo">Feito para quem toca mais de uma obra ao mesmo tempo</h2>
+        <span class="eyebrow">Para quem é</span>
+        <h2 class="titulo">Para quem assina o cheque e para quem toca a obra</h2>
       </div>
       <div class="quem-grid">
         <div class="quem-bloco rv">
-          <h3>Construtoras pequenas e médias</h3>
-          <p>Carteira com todas as obras num painel, sem depender de planilha paralela por empreendimento.</p>
+          <span class="k">Decide</span>
+          <h3>Dono de construtora</h3>
+          <p>Margem, caixa e resultado de cada obra num painel, sem esperar o contador nem o fechamento.</p>
         </div>
-        <div class="quem-bloco rv">
-          <h3>Engenheiros responsáveis por várias obras</h3>
-          <p>Cronograma, medição e diário de campo de cada obra, acessíveis de qualquer lugar — inclusive do celular, na visita técnica.</p>
+        <div class="quem-bloco rv rv-d1">
+          <span class="k">Toca</span>
+          <h3>Engenheiro de várias obras</h3>
+          <p>Cronograma, medição e diário de cada obra, de qualquer lugar — inclusive do celular, na visita técnica.</p>
         </div>
-        <div class="quem-bloco rv">
-          <h3>Empreiteiros que precisam prestar contas</h3>
-          <p>Relatório de status pronto para mandar ao cliente ou ao financiador, sem montar planilha explicativa toda vez.</p>
+        <div class="quem-bloco rv rv-d2">
+          <span class="k">Presta contas</span>
+          <h3>Empreiteiro</h3>
+          <p>Relatório pronto para o cliente ou para o sócio, sem montar planilha explicativa toda vez.</p>
         </div>
       </div>
       <div class="foto-pequena-wrap rv">
@@ -780,15 +847,15 @@
           <picture>
             <source type="image/avif" srcset="img/fotos/obra-casa-pequena-236.avif">
             <source type="image/webp" srcset="img/fotos/obra-casa-pequena-236.webp">
-            <img src="img/fotos/obra-casa-pequena-236.jpg" width="236" height="315" alt="Casa em construção, alvenaria e vigas de concreto aparentes" loading="lazy">
+            <img src="img/fotos/obra-casa-pequena-236.jpg" width="236" height="315" loading="lazy" alt="Casa em construção, com alvenaria e vigas de concreto aparentes">
           </picture>
         </div>
-        <p class="foto-pequena-legenda">Obra de pequeno porte — o tamanho de obra que o Souz atende todo dia, junto das grandes.</p>
+        <p class="foto-pequena-legenda">Da casa térrea ao prédio com grua: o controle é o mesmo, obra por obra, na mesma carteira.</p>
       </div>
     </div>
   </section>
 
-  <!-- ======================= SEUS DADOS ======================= -->
+  <!-- ============================== DADOS ================================ -->
   <section class="secao secao--elevada" id="dados">
     <div class="wrap">
       <div class="secao__cabecalho rv">
@@ -796,107 +863,101 @@
         <h2 class="titulo">Os dados são seus, e ficam protegidos</h2>
       </div>
       <div class="dados-lista rv">
-        <div class="dado-item"><h3>Acesso separado por empresa</h3><p>Cada cliente enxerga só as próprias obras.</p></div>
-        <div class="dado-item"><h3>Trilha de auditoria</h3><p>Toda alteração fica registrada: quem mudou, o quê e quando.</p></div>
-        <div class="dado-item"><h3>Backup exportável</h3><p>Os dados não ficam presos ao sistema.</p></div>
+        <div class="dado-item"><h3>Acesso por empresa</h3><p>Cada cliente enxerga só as próprias obras.</p></div>
+        <div class="dado-item"><h3>Trilha de auditoria</h3><p>Toda alteração registrada: quem mudou, o quê e quando.</p></div>
+        <div class="dado-item"><h3>Backup exportável</h3><p>Seus dados não ficam presos ao sistema.</p></div>
         <div class="dado-item"><h3>Hospedagem no Brasil</h3><p>Banco de dados na região São Paulo.</p></div>
       </div>
     </div>
   </section>
 
-  <!-- ======================= PLANOS ======================= -->
+  <!-- ============================== PLANOS =============================== -->
   <section class="secao" id="planos">
     <div class="wrap">
       <div class="secao__cabecalho centro rv" style="margin-left:auto;margin-right:auto">
-        <span class="eyebrow">Por quantas obras ativas você toca</span>
+        <span class="eyebrow">Por obras ativas</span>
         <h2 class="titulo">Um plano para cada tamanho de carteira</h2>
       </div>
-      <div class="planos-grid rv">
-        <div class="plano">
+      <div class="planos-grid">
+        <div class="plano rv">
           <span class="pnome">Inicial</span>
           <span class="pfaixa">1 a 3 obras ativas</span>
-          <ul>
-            <li>Todos os módulos do sistema</li>
-            <li>Implantação assistida</li>
-          </ul>
+          <ul><li>Todos os módulos</li><li>Implantação assistida</li><li>Importação da sua planilha</li></ul>
           <div class="ppreco" data-preco="inicial">Sob consulta</div>
           <a class="btn btn--fantasma" data-cta="whatsapp" data-cta-mensagem="Olá! Quero uma proposta do Souz Controle de Obra para o plano Inicial (1 a 3 obras)." href="#">Solicitar proposta</a>
         </div>
-        <div class="plano" style="border-color:var(--accent)">
+        <div class="plano plano--destaque rv rv-d1">
           <span class="pnome">Carteira</span>
           <span class="pfaixa">4 a 12 obras ativas</span>
-          <ul>
-            <li>Todos os módulos do sistema</li>
-            <li>Implantação assistida</li>
-          </ul>
+          <ul><li>Todos os módulos</li><li>Implantação assistida</li><li>Importação da sua planilha</li></ul>
           <div class="ppreco" data-preco="carteira">Sob consulta</div>
           <a class="btn btn--primario" data-cta="whatsapp" data-cta-mensagem="Olá! Quero uma proposta do Souz Controle de Obra para o plano Carteira (4 a 12 obras)." href="#">Solicitar proposta</a>
         </div>
-        <div class="plano">
+        <div class="plano rv rv-d2">
           <span class="pnome">Múltiplas frentes</span>
           <span class="pfaixa">13 ou mais obras</span>
-          <ul>
-            <li>Todos os módulos do sistema</li>
-            <li>Implantação assistida</li>
-          </ul>
+          <ul><li>Todos os módulos</li><li>Implantação assistida</li><li>Importação da sua planilha</li></ul>
           <div class="ppreco" data-preco="multiplas">Sob consulta</div>
           <a class="btn btn--fantasma" data-cta="whatsapp" data-cta-mensagem="Olá! Quero uma proposta do Souz Controle de Obra para o plano Múltiplas frentes (13+ obras)." href="#">Solicitar proposta</a>
         </div>
       </div>
-      <p class="planos-nota rv">Implantação assistida em todos os planos — alguém do time ajuda a importar sua planilha e configurar a primeira obra.</p>
+      <p class="planos-nota rv">Implantação assistida em todos os planos: alguém do time importa sua planilha e configura a primeira obra com você.</p>
     </div>
   </section>
 
-  <!-- ======================= DEPOIMENTOS (condicional) ======================= -->
   <section class="secao secao--elevada" id="depoimentos" hidden>
     <div class="wrap">
       <div class="secao__cabecalho rv"><h2 class="titulo">Quem usa o Souz</h2></div>
-      <div class="depo-grid rv" id="depoimentos-lista"></div>
+      <div class="depo-grid" id="depoimentos-lista"></div>
     </div>
   </section>
 
-  <!-- ======================= FAQ ======================= -->
+  <!-- =============================== FAQ ================================= -->
   <section class="secao" id="duvidas">
     <div class="wrap">
       <div class="secao__cabecalho rv">
         <span class="eyebrow">Dúvidas</span>
-        <h2 class="titulo">Perguntas que quem vai assinar costuma fazer</h2>
+        <h2 class="titulo">O que quem vai assinar costuma perguntar</h2>
       </div>
       <div class="faq rv">
         <details>
-          <summary>Serve para qualquer tipo de obra, ou só MCMV/CAIXA?<span class="chev" aria-hidden="true"></span></summary>
-          <p>Serve para qualquer obra. O módulo de recebimento por financiador funciona com CAIXA, outro banco, consórcio ou o próprio cliente — obra financiada é só o diferencial de profundidade, não uma exigência.</p>
+          <summary>Serve para qualquer obra, ou só para obra financiada?<span class="chev" aria-hidden="true"></span></summary>
+          <p>Qualquer obra: residencial, comercial, reforma, por empreitada ou administração. Obra financiada tem recursos a mais (parcelas do banco, memória de medição), mas não é exigência.</p>
+        </details>
+        <details>
+          <summary>Consigo ver todas as obras juntas?<span class="chev" aria-hidden="true"></span></summary>
+          <p>Sim. A Carteira mostra caixa, resultado projetado, avanço e pendências de todas as obras lado a lado, e você entra em cada uma com um clique.</p>
         </details>
         <details>
           <summary>Funciona no celular?<span class="chev" aria-hidden="true"></span></summary>
-          <p>Sim. O diário de obra e os módulos de campo foram pensados para uso no canteiro, pelo navegador do celular — sem instalar aplicativo.</p>
+          <p>Sim, pelo navegador do celular, sem instalar aplicativo. O diário de obra funciona até sem rede e sincroniza quando a rede volta.</p>
         </details>
         <details>
           <summary>Como é a implantação?<span class="chev" aria-hidden="true"></span></summary>
-          <p>Um período assistido, com ajuda para importar sua planilha atual e configurar a primeira obra dentro do sistema.</p>
+          <p>Assistida: ajudamos a importar sua planilha atual e a configurar a primeira obra dentro do sistema.</p>
         </details>
         <details>
           <summary>Posso importar minha planilha?<span class="chev" aria-hidden="true"></span></summary>
-          <p>Sim, existe importação de planilha no formato MCMV. Para outros formatos, a implantação assistida ajuda a organizar a migração.</p>
+          <p>Sim. Existe importação direta de planilha no modelo MCMV; para outros formatos, a implantação assistida organiza a migração com você.</p>
         </details>
         <details>
           <summary>Onde ficam os meus dados?<span class="chev" aria-hidden="true"></span></summary>
-          <p>Em banco de dados hospedado no Brasil, região São Paulo. Cada empresa só enxerga os próprios dados — o acesso é controlado por obra.</p>
+          <p>Em banco de dados hospedado no Brasil, região São Paulo. Cada empresa só enxerga os próprios dados.</p>
         </details>
         <details>
           <summary>Preciso instalar alguma coisa?<span class="chev" aria-hidden="true"></span></summary>
-          <p>Não. É um sistema web — abre no navegador, no computador ou no celular.</p>
+          <p>Não. É um sistema web: abre no navegador, no computador ou no celular.</p>
         </details>
       </div>
     </div>
   </section>
 
-  <!-- ======================= CTA FINAL ======================= -->
+  <!-- ============================ CTA FINAL ============================== -->
   <section class="cta-final secao" id="contato">
-    <svg class="iso-camada" width="100%" height="100%" aria-hidden="true"><rect width="100%" height="100%"/></svg>
+    <svg class="iso-camada" aria-hidden="true"><rect width="100%" height="100%"/></svg>
     <div class="wrap centro cta-final__inner rv">
       <h2 class="display">Veja sua obra no Souz</h2>
-      <p class="subtitulo" style="margin-top:16px">Agende uma demonstração com uma obra real da sua carteira.</p>
+      <p class="subtitulo" style="margin-top:18px">Traga uma obra de verdade. Na demonstração, você vê o gasto, o caixa e a margem dela numa tela só.</p>
       <div class="cta-final__acoes">
         <a class="btn btn--primario" data-cta="whatsapp" href="#">Agendar demonstração</a>
       </div>
@@ -909,20 +970,7 @@
   <div class="wrap">
     <div class="rodape__topo">
       <div class="rodape__marca">
-        <svg viewBox="0 0 340 342" aria-hidden="true">
-          <g stroke="#686868" stroke-width="7" stroke-linejoin="round">
-            <g transform="translate(90,103)">
-              <polygon points="0,-100 86.6,-50 0,0 -86.6,-50" fill="#D6D6D6" />
-              <polygon points="-86.6,-50 0,0 0,100 -86.6,50" fill="#ADADAD" />
-              <polygon points="86.6,-50 86.6,50 0,100 0,0" fill="#E8E8E8" />
-            </g>
-            <g transform="translate(250,239)">
-              <polygon points="0,-100 86.6,-50 0,0 -86.6,-50" fill="#D6D6D6" />
-              <polygon points="-86.6,-50 0,0 0,100 -86.6,50" fill="#ADADAD" />
-              <polygon points="86.6,-50 86.6,50 0,100 0,0" fill="#E8E8E8" />
-            </g>
-          </g>
-        </svg>
+        <svg aria-hidden="true"><use href="#cubo" /></svg>
         <div><span>SouZ</span><small>Controle de Obra</small></div>
       </div>
       <ul class="rodape__links">

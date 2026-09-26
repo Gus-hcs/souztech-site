@@ -1,5 +1,8 @@
 # Copy do site — souztech.com
 
+> **Versão 1 da copy — superada.** A v2 (foco no dono da construtora: gasto, caixa e
+> margem; obra financiada como seção secundária) está direto no `index.html`.
+
 > Rascunho para aprovação antes de montar o layout final. Nada aqui é
 > definitivo — é o texto que vai entrar em cada seção, na ordem da página.
 > Onde há um valor que eu ainda não tenho (WhatsApp, CNPJ, preço), marquei

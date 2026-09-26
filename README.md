@@ -8,10 +8,11 @@ build, servida pelo GitHub Pages — segue o [Manual da Marca Souz](../souz-cont
 - `404.html` — página de erro do GitHub Pages.
 - `config.js` — WhatsApp, e-mail, Instagram, CNPJ, preços e depoimentos. Preencha os `TODO`
   quando tiver a informação; até lá, o elemento correspondente fica escondido.
-- `site.js` — nav ao rolar, menu de gaveta no celular, revelar ao entrar na tela e montagem
-  dos links de WhatsApp a partir de `config.js`.
-- `img/telas/` — recortes reais do sistema (Playwright, obra fictícia "Casa 14 — Vila Nova
-  Esperança"), em AVIF/WebP/JPG.
+- `site.js` — links de WhatsApp a partir de `config.js`, nav, menu de gaveta e os efeitos de
+  rolagem (tela do topo que assenta, manifesto que acende, história com tela fixa, paralaxe,
+  barra de progresso). Tudo desliga com `prefers-reduced-motion`.
+- `img/telas/` — telas reais do sistema em modo escuro, com a barra lateral (Playwright, obras
+  fictícias "Casa 14" e "Casa 42"), em AVIF/WebP/JPG, 960 e 1920 px.
 - `img/fotos/` — fotos de obra enviadas, tratadas e otimizadas.
 - `favicon.svg`, `icon-32.png`, `icon-180.png`, `icon-512.png`, `og.png` — ícones e imagem de
   compartilhamento, gerados a partir do símbolo da marca.
