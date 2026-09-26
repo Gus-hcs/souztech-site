@@ -11,8 +11,9 @@ build, servida pelo GitHub Pages — segue o [Manual da Marca Souz](../souz-cont
 - `site.js` — links de WhatsApp a partir de `config.js`, nav, menu de gaveta e os efeitos de
   rolagem (tela do topo que assenta, manifesto que acende, história com tela fixa, paralaxe,
   barra de progresso). Tudo desliga com `prefers-reduced-motion`.
-- `img/telas/` — telas reais do sistema em modo escuro, com a barra lateral (Playwright, obras
-  fictícias "Casa 14" e "Casa 42"), em AVIF/WebP/JPG, 960 e 1920 px.
+- `img/telas/` — telas reais do sistema em modo escuro, sem a barra lateral (Playwright, obras
+  fictícias "Casa 14" e "Casa 42"), em AVIF/WebP/JPG, 1280 e 2560 px; celular em 390/780/1170.
+  Clicar numa tela abre a versão de 2560 px.
 - `img/fotos/` — fotos de obra enviadas, tratadas e otimizadas.
 - `favicon.svg`, `icon-32.png`, `icon-180.png`, `icon-512.png`, `og.png` — ícones e imagem de
   compartilhamento, gerados a partir do símbolo da marca.

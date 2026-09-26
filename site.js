@@ -221,9 +221,56 @@
     quadro();
   }
 
+  /* ------------------------------------------------------------ ampliar tela */
+  function iniciarZoom() {
+    var dialogo = document.getElementById('zoom');
+    if (!dialogo || typeof dialogo.showModal !== 'function') return;
+    var imagem = dialogo.querySelector('img');
+
+    function maior(src) {
+      if (/-mobile-\d+\./.test(src)) return src.replace(/-(390|780|1170)\.(avif|webp|jpg)$/, '-1170.webp');
+      return src.replace(/-(1280|2560)\.(avif|webp|jpg)$/, '-2560.webp');
+    }
+    function abrir(janela) {
+      var img = janela.querySelector('picture img');
+      var origem = img.currentSrc || img.src;
+      imagem.src = maior(origem);
+      imagem.alt = img.alt || janela.getAttribute('data-rotulo') || '';
+      dialogo.showModal();
+    }
+
+    document.querySelectorAll('.janela').forEach(function (janela) {
+      if (!janela.querySelector('picture img') || janela.closest('.historia__visual')) return;
+      janela.setAttribute('data-zoom', '');
+      janela.setAttribute('tabindex', '0');
+      janela.setAttribute('role', 'button');
+      janela.setAttribute('aria-label', 'Ampliar tela');
+      janela.addEventListener('click', function () { abrir(janela); });
+      janela.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); abrir(janela); }
+      });
+    });
+
+    var visual = document.querySelector('.historia__visual .janela');
+    if (visual) {
+      visual.setAttribute('data-zoom', '');
+      visual.addEventListener('click', function () {
+        var ativa = visual.querySelector('.pilha > picture.ativo img');
+        if (!ativa) return;
+        imagem.src = maior(ativa.currentSrc || ativa.src);
+        imagem.alt = '';
+        dialogo.showModal();
+      });
+    }
+
+    dialogo.querySelector('[data-acao="fechar-zoom"]').addEventListener('click', function () { dialogo.close(); });
+    dialogo.addEventListener('click', function (ev) { if (ev.target === dialogo) dialogo.close(); });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     ligarBotoesWhatsapp();
     aplicarConfig();
+    iniciarZoom();
     iniciarGaveta();
     iniciarRevelar();
     iniciarHistoria();
