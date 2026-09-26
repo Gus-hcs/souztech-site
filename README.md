@@ -1,7 +1,9 @@
 # souztech.com
 
 Site institucional do Souz Controle de Obra. Página estática, sem framework nem passo de
-build, servida pelo GitHub Pages — segue o [Manual da Marca Souz](../souz-controle-obra) v1.0.
+build, servida pelo GitHub Pages — segue o [Manual da Marca Souz](../souz-controle-obra) v1.1: moldura em Souz Preto
+(topo, capa, manifesto, chamada final e rodapé) e conteúdo em chumbo neutro; a seção de relatórios
+usa a paleta clara do manual. Vermelho e âmbar não aparecem no site.
 
 - `index.html` — a página.
 - `privacidade.html` — política de privacidade (LGPD).

@@ -99,6 +99,12 @@
     --preto: #05100e;
     --grafite: #0e1a17;
     --elevado: #0e2824;
+    --chumbo: #121416;
+    --chumbo-cartao: #181b1e;
+    --chumbo-alto: #202326;
+    --fio: #26292d;
+    --fio-forte: #33373c;
+    --tinta-3: #8a9894;
     --ciano: #0b7d72;
     --ciano-claro: #2fd4c4;
     --nevoa: #e8e8e8;
@@ -106,11 +112,12 @@
     --traco: #686868;
     --papel: #edefee;
 
-    --ground: var(--preto);
-    --surface: var(--grafite);
-    --surface-2: var(--elevado);
-    --line: #1c2e2a;
-    --line-strong: #2a423d;
+    /* v1.1: preta por fora (moldura), chumbo por dentro (conteúdo) */
+    --ground: var(--chumbo);
+    --surface: var(--chumbo-cartao);
+    --surface-2: var(--chumbo-alto);
+    --line: var(--fio);
+    --line-strong: var(--fio-forte);
     --ink: #fbfcfb;
     --ink-2: var(--nevoa);
     --ink-3: var(--cinza);
@@ -118,7 +125,7 @@
     --accent-solid: var(--ciano);
     --on-accent: #fbfcfb;
     --grid: rgba(47, 212, 196, 0.08);
-    --warn: #e0a44a;
+    --muted: var(--tinta-3);
 
     --sans: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
     --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
@@ -134,10 +141,18 @@
     --line-strong: #b7c2be;
     --ink: #05100e;
     --ink-2: #3e4b48;
-    --ink-3: #5f6b68;
-    --accent: var(--ciano);
+    --ink-3: #626d6a;
+    --accent: #0a6b62;
     background: var(--ground);
     color: var(--ink-2);
+  }
+
+  /* Moldura: Souz Preto com fio de verde — topo, capa, manifesto, chamada final e rodapé */
+  .moldura {
+    --ground: var(--preto);
+    --line: #1c2e2a;
+    --line-strong: #2a423d;
+    background: var(--ground);
   }
 
   * { box-sizing: border-box; }
@@ -191,7 +206,7 @@
   .btn:active { transform: translateY(1px); }
 
   /* ----------------------------------------------------------------- nav */
-  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 90; border-bottom: 1px solid transparent; transition: background-color 0.3s ease, border-color 0.3s ease; }
+  .nav { --line: #1c2e2a; position: fixed; top: 0; left: 0; right: 0; z-index: 90; border-bottom: 1px solid transparent; transition: background-color 0.3s ease, border-color 0.3s ease; }
   .nav--solido {
     background: color-mix(in srgb, var(--preto) 82%, transparent);
     -webkit-backdrop-filter: saturate(140%) blur(14px); backdrop-filter: saturate(140%) blur(14px);
@@ -209,7 +224,7 @@
     .nav__links { display: none; }
     .nav__gaveta-btn { display: inline-flex; margin-left: auto; }
   }
-  .gaveta { position: fixed; inset: 0; z-index: 95; background: var(--preto); display: flex; flex-direction: column; padding: 24px; gap: 8px; transform: translateX(100%); transition: transform 0.28s var(--ease); visibility: hidden; }
+  .gaveta { --line: #1c2e2a; position: fixed; inset: 0; z-index: 95; background: var(--preto); display: flex; flex-direction: column; padding: 24px; gap: 8px; transform: translateX(100%); transition: transform 0.28s var(--ease); visibility: hidden; }
   .gaveta.aberta { transform: none; visibility: visible; }
   .gaveta__topo { display: flex; justify-content: flex-end; }
   .gaveta__topo button { background: none; border: 0; color: #fff; padding: 8px; cursor: pointer; }
@@ -229,7 +244,8 @@
   .rv-d1 { transition-delay: 0.06s; } .rv-d2 { transition-delay: 0.12s; } .rv-d3 { transition-delay: 0.18s; }
 
   /* janela mínima para as telas reais */
-  .janela { background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r); overflow: hidden; text-align: left; }
+  /* a janela é sempre a tela escura do sistema: chumbo, mesmo dentro da moldura ou do papel */
+  .janela { --surface: var(--chumbo-cartao); --surface-2: var(--chumbo-alto); --line: var(--fio); --line-strong: var(--fio-forte); --ink-3: var(--cinza); background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r); overflow: hidden; text-align: left; }
   .janela__barra { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
   .janela__barra i { width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong); }
   .janela__barra span { margin-left: 10px; font-family: var(--mono); font-size: 11px; color: var(--ink-3); letter-spacing: 0.04em; }
@@ -279,14 +295,14 @@
   .fatos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--line); border: 1px solid var(--line); }
   @media (max-width: 760px) { .fatos { grid-template-columns: 1fr; } }
   .fato { background: var(--surface); padding: 32px 28px; }
-  .fato .num { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: var(--warn); }
+  .fato .num { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: var(--muted); }
   .fato h3 { font-size: 19px; margin-top: 14px; line-height: 1.25; }
   .fato p { margin-top: 10px; font-size: 15px; line-height: 1.55; color: var(--ink-3); }
   .virada { margin-top: 64px; padding-top: 48px; border-top: 1px solid var(--line); display: grid; gap: 18px; }
   .fecho { font-size: clamp(30px, 4.6vw, 52px); line-height: 1.04; font-weight: 800; letter-spacing: -0.035em; color: var(--ink); }
   .substitui { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
   .substitui .item { position: relative; font-family: var(--mono); font-size: 13px; color: var(--ink-3); border: 1px solid var(--line-strong); border-radius: var(--r); padding: 9px 14px; }
-  .substitui .item::after { content: ''; position: absolute; left: 10px; right: 10px; top: 50%; height: 1.5px; background: var(--warn); transform: scaleX(0); transform-origin: 0 50%; transition: transform 0.5s var(--ease); }
+  .substitui .item::after { content: ''; position: absolute; left: 10px; right: 10px; top: 50%; height: 1.5px; background: var(--muted); transform: scaleX(0); transform-origin: 0 50%; transition: transform 0.5s var(--ease); }
   .substitui.on .item::after { transform: scaleX(1); }
   .substitui.on .item:nth-child(2)::after { transition-delay: 0.12s; }
   .substitui.on .item:nth-child(3)::after { transition-delay: 0.24s; }
@@ -316,7 +332,7 @@
   .passo-h h3 { font-size: clamp(28px, 3.4vw, 40px); line-height: 1.08; letter-spacing: -0.03em; font-weight: 800; margin-top: 14px; }
   .passo-h .texto { margin-top: 18px; }
   .passo-h .tela-inline { display: none; margin-top: 24px; }
-  .exemplo-pend { margin-top: 24px; background: var(--surface); border-left: 3px solid var(--warn); border-radius: 0 var(--r) var(--r) 0; padding: 16px 18px; font-family: var(--mono); font-size: 13.5px; line-height: 1.55; color: var(--ink); }
+  .exemplo-pend { margin-top: 24px; background: var(--surface); border-left: 3px solid var(--muted); border-radius: 0 var(--r) var(--r) 0; padding: 16px 18px; font-family: var(--mono); font-size: 13.5px; line-height: 1.55; color: var(--ink); }
   .exemplo-pend span { color: var(--ink-3); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 8px; }
   .historia__visual { position: sticky; top: 88px; height: calc(100vh - 112px); display: flex; flex-direction: column; justify-content: center; }
   .pilha { display: grid; }
@@ -502,7 +518,7 @@
 <main id="conteudo">
 
   <!-- =============================== HERO =============================== -->
-  <header class="hero" id="topo">
+  <header class="hero moldura" id="topo">
     <div class="hero__fundo" aria-hidden="true"></div>
     <div class="wrap hero__inner">
       <span class="eyebrow rv">Gestão de obra para construtoras</span>
@@ -538,7 +554,7 @@
   </header>
 
   <!-- ============================= MANIFESTO ============================= -->
-  <section class="manifesto" aria-label="O que o Souz resolve">
+  <section class="manifesto moldura" aria-label="O que o Souz resolve">
     <div class="wrap">
       <p data-manifesto>Imagine abrir um painel e saber, em segundos, quanto cada obra gastou, quanto ainda vai entrar e quanto vai sobrar no fim. Sem planilha. Sem caderno. Sem ligar para o mestre de obras. Tudo num lugar só — <span class="acc">e você no controle da obra inteira.</span></p>
     </div>
@@ -548,7 +564,7 @@
   <section class="secao secao--elevada" id="problema">
     <div class="wrap">
       <div class="secao__cabecalho rv">
-        <span class="eyebrow" style="color:var(--warn)">Obra controlada na planilha</span>
+        <span class="eyebrow" style="color:var(--muted)">Obra controlada na planilha</span>
         <h2 class="titulo">O prejuízo não aparece na obra. Aparece no fechamento.</h2>
         <p class="subtitulo">Planilha por obra, print de WhatsApp, caderno de campo. Com uma obra, dá. Com três tocando ao mesmo tempo, ninguém sabe qual está dando dinheiro — até a conta não fechar.</p>
       </div>
@@ -986,7 +1002,7 @@
   </section>
 
   <!-- ============================ CTA FINAL ============================== -->
-  <section class="cta-final secao" id="contato">
+  <section class="cta-final secao moldura" id="contato">
     <div class="wrap centro cta-final__inner rv">
       <h2 class="display">Veja sua obra no Souz</h2>
       <p class="subtitulo" style="margin-top:18px">Traga uma obra de verdade. Na demonstração, você vê o gasto, o caixa e a margem dela numa tela só.</p>
@@ -998,7 +1014,7 @@
   </section>
 </main>
 
-<footer class="rodape">
+<footer class="rodape moldura">
   <div class="wrap">
     <div class="rodape__topo">
       <div class="rodape__marca">
@@ -1029,7 +1045,7 @@
   <p>Tela real do sistema · dados de exemplo, obras fictícias</p>
 </dialog>
 
-<script src="config.js?v=4"></script>
-<script src="site.js?v=4"></script>
+<script src="config.js?v=5"></script>
+<script src="site.js?v=5"></script>
 </body>
 </html>
