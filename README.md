@@ -46,7 +46,6 @@ usa a paleta clara do manual. Vermelho e âmbar não aparecem no site.
 - `favicon.svg`, `icon-32.png`, `icon-180.png`, `icon-512.png`, `og.png` — ícones e imagem de
   compartilhamento, gerados a partir do símbolo da marca.
 - `sitemap.xml`, `robots.txt` — SEO.
-- `conteudo.md` — rascunho da copy, mantido como referência.
 - `CNAME` — o domínio.
 
 Para publicar: GitHub Pages -> Deploy from a branch -> `main` / `(root)`.
