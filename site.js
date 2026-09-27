@@ -362,7 +362,7 @@
       var t = MOVIMENTO ? Math.min(1, (agora - this.inicio) / 1800) : 1;
       var abre = 1 - Math.pow(1 - t, 3);
       var diag = Math.sqrt(w * w + h * h) / 2;
-      ctx.globalAlpha = 0.07;
+      ctx.globalAlpha = 0.11;
       ctx.drawImage(this.base, 0, 0);
       if (abre < 1) {
         ctx.globalAlpha = 1;
