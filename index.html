@@ -75,12 +75,13 @@
 
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; upgrade-insecure-requests" />
 <meta name="theme-color" content="#05100E" />
+<script src="mov.js?v=6"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png" />
 <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png" />
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
 
-<link rel="preload" as="image" type="image/avif" imagesrcset="img/telas/tela-carteira-1280.avif 1280w, img/telas/tela-carteira-2560.avif 2560w" imagesizes="(max-width:1240px) 94vw, 1160px" fetchpriority="high" />
+<link rel="preload" as="image" type="image/avif" imagesrcset="img/telas/tela-carteira-1280.avif 1280w, img/telas/tela-carteira-1680.avif 1680w" imagesizes="(max-width:1240px) 94vw, 1160px" fetchpriority="high" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
@@ -272,14 +273,14 @@
   .hero__fatos { margin-top: 26px; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 10px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
   .hero__fatos span { display: inline-flex; align-items: center; gap: 10px; }
   .hero__fatos span + span::before { content: ''; width: 3px; height: 3px; background: var(--line-strong); }
-  .hero__palco { position: relative; z-index: 2; max-width: 1200px; margin: 64px auto 0; padding: 0 20px; perspective: 1600px; }
+  .hero__palco { position: relative; z-index: 2; max-width: 1200px; margin: 64px auto 0; padding: 0 20px; }
   .hero__palco::before {
     content: ''; position: absolute; left: 10%; right: 10%; top: 12%; bottom: -4%; z-index: -1;
     background: radial-gradient(50% 50% at 50% 50%, rgba(47, 212, 196, 0.10), transparent 70%);
   }
   .hero__tela {
     transform-origin: 50% 0;
-    transform: rotateX(calc((1 - var(--p, 1)) * 20deg)) scale(calc(0.88 + var(--p, 1) * 0.12));
+    transform: scale(calc(0.94 + var(--p, 1) * 0.06));
     will-change: transform;
   }
   .hero__tela .janela { box-shadow: 0 50px 100px -60px rgba(0, 0, 0, 0.9); }
@@ -312,16 +313,6 @@
   .substitui .quebra { flex-basis: 100%; height: 6px; }
   .substitui .souz { display: inline-flex; align-items: center; gap: 10px; background: var(--accent-solid); color: var(--on-accent); font-weight: 700; font-size: 15px; border-radius: var(--r); padding: 10px 18px; }
   .substitui .souz svg { width: 20px; height: 20px; }
-
-  /* ------------------------------------------------------- como funciona */
-  .passos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  @media (max-width: 900px) { .passos { grid-template-columns: 1fr; } }
-  .passo { background: var(--ground); border: 1px solid var(--line); border-radius: var(--r); padding: 28px 24px 24px; display: grid; gap: 14px; align-content: start; transition: border-color 0.25s ease, transform 0.35s var(--ease); }
-  .passo:hover { border-color: var(--line-strong); transform: translateY(-3px); }
-  .passo .pnum { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
-  .passo h3 { font-size: 21px; }
-  .passo p.d { font-size: 14.5px; color: var(--ink-3); line-height: 1.55; }
-  .passo .janela { margin-top: 8px; }
 
   /* ------------------------------------------ história com tela fixa */
   .historia { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 64px; align-items: start; }
@@ -450,12 +441,148 @@
   .whats-flut { position: fixed; right: 20px; bottom: 20px; z-index: 80; width: 54px; height: 54px; border-radius: 50%; background: var(--accent-solid); color: var(--on-accent); display: flex; align-items: center; justify-content: center; }
   .whats-flut:hover { background: var(--ciano-claro); color: #05100e; }
 
+
+  /* ==================================================================
+     v4 — gabarito e nível a laser. A malha isométrica de 30° (Manual,
+     prancha 04: textura quase invisível) é locada a partir do centro e
+     acende sob o cursor, como estacas de gabarito; as telas entram por um
+     corte diagonal de 30° com a linha de um nível a laser. Nada gira,
+     nada inclina em 3D, o símbolo não ganha efeito.
+     ================================================================== */
+  .gabarito { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; pointer-events: none; }
+  .hero__fundo { z-index: 0; }
+  .cta-final .gabarito { z-index: 0; }
+
+  /* o símbolo se constrói: contorno traço a traço, depois as três faces */
+  .hero__cubo { width: 64px; height: 64px; margin: 0 auto 26px; overflow: visible; }
+  .js-mov .hero__cubo polygon { stroke-dasharray: 1; stroke-dashoffset: 1; fill-opacity: 0; animation: cubo-traco 0.9s var(--ease) forwards, cubo-face 0.5s ease forwards; }
+  .js-mov .hero__cubo g g:first-child polygon:nth-child(1) { animation-delay: 0s, 0.95s; }
+  .js-mov .hero__cubo g g:first-child polygon:nth-child(2) { animation-delay: 0.12s, 1.02s; }
+  .js-mov .hero__cubo g g:first-child polygon:nth-child(3) { animation-delay: 0.24s, 1.09s; }
+  .js-mov .hero__cubo g g:last-child polygon:nth-child(1) { animation-delay: 0.36s, 1.16s; }
+  .js-mov .hero__cubo g g:last-child polygon:nth-child(2) { animation-delay: 0.48s, 1.23s; }
+  .js-mov .hero__cubo g g:last-child polygon:nth-child(3) { animation-delay: 0.6s, 1.3s; }
+  @keyframes cubo-traco { to { stroke-dashoffset: 0; } }
+  @keyframes cubo-face { to { fill-opacity: 1; } }
+
+  /* corte a laser: a tela aparece atrás de uma diagonal de 30° que varre
+     do canto de cima à esquerda; a linha do laser vai na borda do corte */
+  @property --corte { syntax: '<percentage>'; inherits: false; initial-value: 112%; }
+  .corte {
+    position: relative; --corte: 112%;
+    -webkit-mask-image: linear-gradient(150deg, #000 var(--corte), transparent calc(var(--corte) + 0.2%));
+    mask-image: linear-gradient(150deg, #000 var(--corte), transparent calc(var(--corte) + 0.2%));
+    transition: --corte 1.25s cubic-bezier(0.65, 0, 0.25, 1);
+  }
+  .corte::after {
+    content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none;
+    background: linear-gradient(150deg,
+      transparent calc(var(--corte) - 7%),
+      rgba(47, 212, 196, 0.10) calc(var(--corte) - 2.4%),
+      rgba(47, 212, 196, 0.95) calc(var(--corte) - 0.25%),
+      #eafffc var(--corte),
+      transparent calc(var(--corte) + 0.2%));
+  }
+  .js-mov .corte:not(.on) { --corte: -12%; }
+
+  /* cotas na tela do topo: pontos numerados, como cota de projeto */
+  .marcas { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+  .marca-ponto { pointer-events: auto; cursor: help; }
+  .marca-ponto {
+    position: absolute; left: var(--x); top: calc(var(--y) * 0.955 + 4.5%);
+    width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%;
+    display: grid; place-items: center; background: var(--ciano); color: #fbfcfb;
+    font-family: var(--mono); font-size: 11px; font-weight: 500;
+    box-shadow: 0 0 0 3px rgba(5, 16, 14, 0.85);
+    opacity: 0; transform: scale(0.4); transition: opacity 0.3s ease, transform 0.45s var(--ease), background-color 0.2s ease;
+  }
+  .marca-ponto b { font-weight: 500; color: inherit; }
+  .marca-ponto::before {
+    content: ''; position: absolute; inset: -7px; border-radius: 50%; border: 1px solid rgba(47, 212, 196, 0.7);
+    animation: marca-pulso 2.4s ease-out infinite; animation-delay: inherit;
+  }
+  @keyframes marca-pulso { 0% { transform: scale(0.6); opacity: 1; } 80%, 100% { transform: scale(1.5); opacity: 0; } }
+  .cotado.marcado .marca-ponto { opacity: 1; transform: none; }
+  .cotado.marcado .marca-ponto[data-marca="2"] { transition-delay: 0.12s; }
+  .cotado.marcado .marca-ponto[data-marca="3"] { transition-delay: 0.24s; }
+  .cotado.marcado .marca-ponto[data-marca="4"] { transition-delay: 0.36s; }
+  .marca-ponto.foco { background: var(--ciano-claro); color: #05100e; transform: scale(1.18); }
+  .js-mov .cotado:not(.marcado) .marca-ponto { opacity: 0; }
+  .cotas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-top: 18px; border-top: 1px solid var(--line); text-align: left; counter-reset: none; }
+  .cotas li { display: flex; gap: 10px; align-items: flex-start; padding: 14px 16px 4px 0; font-size: 13.5px; line-height: 1.45; color: var(--ink-3); cursor: default; transition: color 0.2s ease; }
+  .cotas li b { flex: none; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line-strong); font-family: var(--mono); font-size: 10.5px; font-weight: 500; color: var(--accent); transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
+  .cotas li.foco { color: var(--ink); }
+  .cotas li.foco b { background: var(--ciano-claro); border-color: var(--ciano-claro); color: #05100e; }
+  @media (max-width: 860px) { .cotas { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .cotas { grid-template-columns: 1fr; } .marca-ponto { width: 18px; height: 18px; margin: -9px 0 0 -9px; font-size: 9.5px; } }
+
+  /* história com tela fixa: a tela nova entra pelo corte sobre a anterior */
+  .pilha > picture { opacity: 1; transform: none; transition: --corte 1.1s cubic-bezier(0.65, 0, 0.25, 1); position: relative; z-index: 1; }
+  .pilha > picture:not(.ativo):not(.anterior) { visibility: hidden; transition: none; --corte: -12%; }
+  .pilha > picture.anterior { z-index: 1; --corte: 112%; transition: none; }
+  .pilha > picture.ativo { z-index: 2; --corte: 112%; }
+  .pilha > picture {
+    -webkit-mask-image: linear-gradient(150deg, #000 var(--corte), transparent calc(var(--corte) + 0.2%));
+    mask-image: linear-gradient(150deg, #000 var(--corte), transparent calc(var(--corte) + 0.2%));
+  }
+  .pilha > picture::after { display: none; }
+  .historia__visual .janela { position: relative; }
+  .laser-pilha { position: absolute; left: 0; right: 0; bottom: 0; top: 37px; z-index: 5; pointer-events: none; --corte: 112%;
+    background: linear-gradient(150deg, transparent calc(var(--corte) - 7%), rgba(47, 212, 196, 0.10) calc(var(--corte) - 2.4%), rgba(47, 212, 196, 0.95) calc(var(--corte) - 0.25%), #eafffc var(--corte), transparent calc(var(--corte) + 0.2%));
+    -webkit-mask-image: linear-gradient(150deg, #000 var(--corte), transparent calc(var(--corte) + 0.2%));
+    mask-image: linear-gradient(150deg, #000 var(--corte), transparent calc(var(--corte) + 0.2%));
+  }
+  .laser-pilha.varre { --corte: 112%; transition: --corte 1.1s cubic-bezier(0.65, 0, 0.25, 1); }
+  .laser-pilha.zera { --corte: -12%; transition: none; }
+
+  /* ------------------------------------------------- linha da obra
+     A seção fica presa na tela e a faixa de etapas corre na horizontal
+     com a rolagem; em cima, um cronograma de três fases enche junto (a
+     barra de hoje é a rolagem). No celular, e com movimento reduzido, a
+     faixa vira uma lista vertical e nada fica preso. */
+  .linha-obra { position: relative; }
+  .trilha__fixo { padding: 120px 0 96px; }
+  .trilha__cab { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); gap: 48px; align-items: end; }
+  .trilha__cab .titulo { max-width: 18ch; }
+  .gantt { position: relative; display: grid; grid-template-columns: 2fr 2fr 1.2fr; gap: 6px; }
+  .gantt__fase span { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; transition: color 0.3s ease; }
+  .gantt__fase i { display: block; height: 8px; border-radius: 2px; background: var(--line); position: relative; overflow: hidden; }
+  .gantt__fase i::after { content: ''; position: absolute; inset: 0; background: var(--ciano); transform-origin: 0 50%; transform: scaleX(var(--enche, 0)); }
+  .gantt__fase.ativa span { color: var(--accent); }
+  .gantt__fase.feita i::after { background: var(--fio-forte); }
+  .trilha__faixa { display: flex; gap: 28px; padding: 56px max(24px, calc((100vw - 1200px) / 2 + 24px)) 8px; }
+  .trilha__painel { flex: none; width: min(78vw, 820px); display: grid; gap: 22px; align-content: start; }
+  .trilha__texto { max-width: 56ch; }
+  .trilha__texto .pnum { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  .trilha__texto h3 { font-size: clamp(24px, 2.6vw, 30px); letter-spacing: -0.028em; font-weight: 800; margin-top: 10px; }
+  .trilha__texto p { margin-top: 10px; font-size: 16px; color: var(--ink-3); line-height: 1.55; }
+  .trilha__fim { width: min(78vw, 460px); align-content: center; border-left: 1px solid var(--line-strong); padding-left: 36px; }
+  .trilha__fim .btn { margin-top: 24px; justify-self: start; }
+  /* presa: abaixo da barra do topo, texto ao lado da tela; a tela tem a
+     largura que a altura da janela comporta (proporção das capturas) */
+  .linha-obra.presa .trilha__fixo { position: sticky; top: 0; height: 100vh; min-height: 620px; display: flex; flex-direction: column; justify-content: center; gap: 40px; padding: 88px 0 28px; overflow: hidden; }
+  .linha-obra.presa .trilha__cab .titulo { max-width: none; font-size: clamp(28px, 3vw, 40px); }
+  .linha-obra.presa .trilha__faixa { will-change: transform; padding-top: 0; align-items: center; }
+  .linha-obra.presa .trilha__painel { --tela: min(56vw, (100vh - 330px) * 1.875, 980px); width: calc(var(--tela) + 300px); grid-template-columns: 272px var(--tela); gap: 28px; align-items: center; }
+  .linha-obra.presa .trilha__painel .trilha__texto p { font-size: 15px; }
+  .linha-obra.presa .trilha__fim { width: min(40vw, 420px); grid-template-columns: 1fr; }
+  @media (max-width: 900px) {
+    .trilha__fixo { padding: 80px 0 64px; }
+    .trilha__cab { grid-template-columns: 1fr; gap: 28px; }
+    .trilha__faixa { flex-direction: column; gap: 48px; padding: 40px 18px 0; }
+    .trilha__painel, .trilha__fim { width: auto; }
+    .trilha__fim { border-left: 0; border-top: 1px solid var(--line-strong); padding: 32px 0 0; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .rv { opacity: 1; transform: none; transition: none; }
     .hero__tela { transform: none; }
+    .corte, .pilha > picture, .laser-pilha { transition: none; }
+    .corte::after, .laser-pilha { display: none; }
+    .marca-ponto::before { animation: none; }
     .manifesto .w { opacity: 1; }
     .passo-h { opacity: 1; }
-    .pilha > picture { transition: none; }
+
     .foto img { transform: none; }
   }
 </style>
@@ -520,7 +647,22 @@
   <!-- =============================== HERO =============================== -->
   <header class="hero moldura" id="topo">
     <div class="hero__fundo" aria-hidden="true"></div>
+    <canvas class="gabarito" data-gabarito aria-hidden="true"></canvas>
     <div class="wrap hero__inner">
+      <svg class="hero__cubo" data-cubo-obra viewBox="0 0 340 342" aria-hidden="true">
+        <g stroke="#686868" stroke-width="7" stroke-linejoin="round">
+          <g transform="translate(90,103)">
+            <polygon pathLength="1" points="0,-100 86.6,-50 0,0 -86.6,-50" fill="#D6D6D6" />
+            <polygon pathLength="1" points="-86.6,-50 0,0 0,100 -86.6,50" fill="#ADADAD" />
+            <polygon pathLength="1" points="86.6,-50 86.6,50 0,100 0,0" fill="#E8E8E8" />
+          </g>
+          <g transform="translate(250,239)">
+            <polygon pathLength="1" points="0,-100 86.6,-50 0,0 -86.6,-50" fill="#D6D6D6" />
+            <polygon pathLength="1" points="-86.6,-50 0,0 0,100 -86.6,50" fill="#ADADAD" />
+            <polygon pathLength="1" points="86.6,-50 86.6,50 0,100 0,0" fill="#E8E8E8" />
+          </g>
+        </g>
+      </svg>
       <span class="eyebrow rv">Gestão de obra para construtoras</span>
       <h1 class="rv rv-d1">Sua obra fecha <span class="acc">no azul?</span></h1>
       <p class="subtitulo hero__lede rv rv-d2">
@@ -540,14 +682,26 @@
     </div>
     <div class="hero__palco">
       <div class="hero__tela" data-hero-tela>
-        <div class="janela">
+        <div class="janela corte cotado" data-corte>
           <div class="janela__barra"><i></i><i></i><i></i><span>Carteira de obras</span></div>
           <picture>
-            <source type="image/avif" srcset="img/telas/tela-carteira-1280.avif 1280w, img/telas/tela-carteira-2560.avif 2560w" sizes="(max-width:1240px) 94vw, 1160px">
-            <source type="image/webp" srcset="img/telas/tela-carteira-1280.webp 1280w, img/telas/tela-carteira-2560.webp 2560w" sizes="(max-width:1240px) 94vw, 1160px">
-            <img src="img/telas/tela-carteira-1280.jpg" srcset="img/telas/tela-carteira-1280.jpg 1280w, img/telas/tela-carteira-2560.jpg 2560w" sizes="(max-width:1240px) 94vw, 1160px" width="1280" height="800" fetchpriority="high" alt="Carteira de obras do Souz: duas obras lado a lado com caixa hoje, resultado projetado, avanço físico e pendências de cada uma">
+            <source type="image/avif" srcset="img/telas/tela-carteira-1280.avif 1280w, img/telas/tela-carteira-1680.avif 1680w" sizes="(max-width:1240px) 94vw, 1160px">
+            <source type="image/webp" srcset="img/telas/tela-carteira-1280.webp 1280w, img/telas/tela-carteira-1680.webp 1680w" sizes="(max-width:1240px) 94vw, 1160px">
+            <img src="img/telas/tela-carteira-1280.jpg" srcset="img/telas/tela-carteira-1280.jpg 1280w, img/telas/tela-carteira-1680.jpg 1680w" sizes="(max-width:1240px) 94vw, 1160px" width="1280" height="683" fetchpriority="high" alt="Carteira de obras do Souz: cinco obras lado a lado com saúde, avanço, custo, caixa hoje e resultado, e o painel de pendências à direita">
           </picture>
+          <div class="marcas" aria-hidden="true">
+            <span class="marca-ponto" data-marca="1" style="--x:17.6%;--y:10.2%"><b>1</b></span>
+            <span class="marca-ponto" data-marca="2" style="--x:12.6%;--y:34.6%"><b>2</b></span>
+            <span class="marca-ponto" data-marca="3" style="--x:26.2%;--y:52.9%"><b>3</b></span>
+            <span class="marca-ponto" data-marca="4" style="--x:89.6%;--y:7.6%"><b>4</b></span>
+          </div>
         </div>
+        <ol class="cotas" aria-label="O que a Carteira mostra">
+          <li data-marca="1"><b>1</b>Quantas obras estão em risco — e o porquê de cada uma</li>
+          <li data-marca="2"><b>2</b>O caixa de todas as obras nos próximos 30 dias</li>
+          <li data-marca="3"><b>3</b>Qual obra atrasou, e quantos dias</li>
+          <li data-marca="4"><b>4</b>O que resolver primeiro, com o botão que resolve</li>
+        </ol>
         <p class="legenda">Tela real do sistema · dados de exemplo, obras fictícias · clique para ampliar</p>
       </div>
     </div>
@@ -607,7 +761,7 @@
     <div class="wrap wrap--largo">
       <div class="secao__cabecalho rv">
         <span class="eyebrow">O que o dono da obra vê</span>
-        <h2 class="titulo">Cinco perguntas que a planilha não responde</h2>
+        <h2 class="titulo">Quatro perguntas que a planilha não responde</h2>
       </div>
 
       <div class="historia" data-historia>
@@ -616,71 +770,65 @@
           <article class="passo-h" data-passo="0">
             <span class="q">01 · Carteira</span>
             <h3>Qual obra está dando dinheiro?</h3>
-            <p class="texto">Todas as obras lado a lado: caixa hoje, resultado projetado, margem e avanço físico. A que está segurando o mês aparece primeiro, com o motivo.</p>
-            <div class="tela-inline janela">
-              <div class="janela__barra"><i></i><i></i><i></i><span>Carteira de obras</span></div>
-              <picture>
-                <source type="image/avif" srcset="img/telas/tela-carteira-1280.avif 1280w, img/telas/tela-carteira-2560.avif 2560w" sizes="92vw">
-                <source type="image/webp" srcset="img/telas/tela-carteira-1280.webp 1280w, img/telas/tela-carteira-2560.webp 2560w" sizes="92vw">
-                <img src="img/telas/tela-carteira-1280.jpg" width="1280" height="800" loading="lazy" alt="Carteira de obras com caixa, resultado projetado e avanço de cada obra">
-              </picture>
+            <p class="texto">Todas as obras lado a lado: saúde, avanço, custo, caixa hoje e resultado. A que está segurando o mês aparece primeiro, com o motivo — e as pendências de todas ficam à direita.</p>
+            
+            <div class="tela-inline">
+        <div class="janela corte" data-corte>
+          <div class="janela__barra"><i></i><i></i><i></i><span>Carteira de obras</span></div>
+          <picture>
+            <source type="image/avif" srcset="img/telas/tela-carteira-1280.avif 1280w, img/telas/tela-carteira-1680.avif 1680w" sizes="92vw">
+            <source type="image/webp" srcset="img/telas/tela-carteira-1280.webp 1280w, img/telas/tela-carteira-1680.webp 1680w" sizes="92vw">
+            <img src="img/telas/tela-carteira-1280.jpg" srcset="img/telas/tela-carteira-1280.jpg 1280w, img/telas/tela-carteira-1680.jpg 1680w" sizes="92vw" width="1280" height="683" loading="lazy" alt="Carteira de obras com saúde, avanço, custo, caixa e resultado de cada obra">
+          </picture>
+        </div>
             </div>
           </article>
-
           <article class="passo-h" data-passo="1">
             <span class="q">02 · Lançamentos</span>
             <h3>Para onde foi o dinheiro?</h3>
-            <p class="texto">Cada compra, taxa e serviço lançado na etapa certa. O orçado × realizado por etapa mostra qual estourou — enquanto a etapa ainda está em andamento.</p>
-            <div class="tela-inline janela">
-              <div class="janela__barra"><i></i><i></i><i></i><span>Lançamentos</span></div>
-              <picture>
-                <source type="image/avif" srcset="img/telas/tela-lancamentos-1280.avif 1280w, img/telas/tela-lancamentos-2560.avif 2560w" sizes="92vw">
-                <source type="image/webp" srcset="img/telas/tela-lancamentos-1280.webp 1280w, img/telas/tela-lancamentos-2560.webp 2560w" sizes="92vw">
-                <img src="img/telas/tela-lancamentos-1280.jpg" width="1280" height="800" loading="lazy" alt="Lançamentos da obra com gráfico de para onde foi o dinheiro e tabela de orçado por etapa">
-              </picture>
+            <p class="texto">Cada compra, taxa e serviço lançado na etapa certa. Gasto por etapa, composição por tipo e gasto por mês logo no topo — dá para ver qual etapa está pesando enquanto ela ainda está em andamento.</p>
+            
+            <div class="tela-inline">
+        <div class="janela corte" data-corte>
+          <div class="janela__barra"><i></i><i></i><i></i><span>Lançamentos</span></div>
+          <picture>
+            <source type="image/avif" srcset="img/telas/tela-lancamentos-1280.avif 1280w, img/telas/tela-lancamentos-1680.avif 1680w" sizes="92vw">
+            <source type="image/webp" srcset="img/telas/tela-lancamentos-1280.webp 1280w, img/telas/tela-lancamentos-1680.webp 1680w" sizes="92vw">
+            <img src="img/telas/tela-lancamentos-1280.jpg" srcset="img/telas/tela-lancamentos-1280.jpg 1280w, img/telas/tela-lancamentos-1680.jpg 1680w" sizes="92vw" width="1280" height="683" loading="lazy" alt="Lançamentos da obra com gasto por etapa, composição por tipo e gasto por mês">
+          </picture>
+        </div>
             </div>
           </article>
-
           <article class="passo-h" data-passo="2">
-            <span class="q">03 · Fluxo de caixa</span>
-            <h3>Quando o caixa vai apertar?</h3>
-            <p class="texto">O fluxo projetado mostra o vale de caixa: o dia em que o saldo chega no mínimo. Dá tempo de antecipar um recebimento ou segurar uma compra.</p>
-            <div class="tela-inline janela">
-              <div class="janela__barra"><i></i><i></i><i></i><span>Fluxo de caixa</span></div>
-              <picture>
-                <source type="image/avif" srcset="img/telas/tela-fluxo-1280.avif 1280w, img/telas/tela-fluxo-2560.avif 2560w" sizes="92vw">
-                <source type="image/webp" srcset="img/telas/tela-fluxo-1280.webp 1280w, img/telas/tela-fluxo-2560.webp 2560w" sizes="92vw">
-                <img src="img/telas/tela-fluxo-1280.jpg" width="1280" height="800" loading="lazy" alt="Fluxo de caixa com entradas e saídas mês a mês, saldo acumulado e próximos pagamentos">
-              </picture>
-            </div>
-          </article>
-
-          <article class="passo-h" data-passo="3">
-            <span class="q">04 · Físico × financeiro</span>
+            <span class="q">03 · Medições</span>
             <h3>O que eu paguei já está feito?</h3>
-            <p class="texto">A curva S cruza o avanço físico com o dinheiro que saiu. E a medição trava no contrato: não dá para pagar mais do que foi executado.</p>
-            <div class="tela-inline janela">
-              <div class="janela__barra"><i></i><i></i><i></i><span>Físico × financeiro</span></div>
-              <picture>
-                <source type="image/avif" srcset="img/telas/tela-curva-1280.avif 1280w, img/telas/tela-curva-2560.avif 2560w" sizes="92vw">
-                <source type="image/webp" srcset="img/telas/tela-curva-1280.webp 1280w, img/telas/tela-curva-2560.webp 2560w" sizes="92vw">
-                <img src="img/telas/tela-curva-1280.jpg" width="1280" height="800" loading="lazy" alt="Curva S comparando físico previsto, físico realizado e financeiro realizado">
-              </picture>
+            <p class="texto">A medição trava no contrato e é comparada com o físico da obra. Se o empreiteiro recebeu à frente do que executou, o sistema mostra quanto foi adiantado.</p>
+            <div class="exemplo-pend"><span>Exemplo real do sistema · obra fictícia</span>CT-001 medido 12 p.p. à frente do físico · R$ 5.780 adiantados → segurar a próxima medição até o físico alcançar</div>
+            <div class="tela-inline">
+        <div class="janela corte" data-corte>
+          <div class="janela__barra"><i></i><i></i><i></i><span>Medições</span></div>
+          <picture>
+            <source type="image/avif" srcset="img/telas/tela-medicoes-1280.avif 1280w, img/telas/tela-medicoes-1680.avif 1680w" sizes="92vw">
+            <source type="image/webp" srcset="img/telas/tela-medicoes-1280.webp 1280w, img/telas/tela-medicoes-1680.webp 1680w" sizes="92vw">
+            <img src="img/telas/tela-medicoes-1280.jpg" srcset="img/telas/tela-medicoes-1280.jpg 1280w, img/telas/tela-medicoes-1680.jpg 1680w" sizes="92vw" width="1280" height="683" loading="lazy" alt="Medições por contrato com medido, pago e a pagar, e o comparativo de medido contra físico">
+          </picture>
+        </div>
             </div>
           </article>
-
-          <article class="passo-h" data-passo="4">
-            <span class="q">05 · Pendências</span>
-            <h3>O que eu faço agora?</h3>
-            <p class="texto">Cada pendência vem com a causa, o valor em jogo e a ação. Não é "algo está errado" — é o que resolver primeiro.</p>
-            <div class="exemplo-pend"><span>Exemplo real do sistema · obra fictícia</span>Contrato medido à frente do físico · R$ 3.082 adiantados → segurar a próxima medição até o físico alcançar</div>
-            <div class="tela-inline janela">
-              <div class="janela__barra"><i></i><i></i><i></i><span>Pendências</span></div>
-              <picture>
-                <source type="image/avif" srcset="img/telas/tela-pendencias-1280.avif 1280w, img/telas/tela-pendencias-2560.avif 2560w" sizes="92vw">
-                <source type="image/webp" srcset="img/telas/tela-pendencias-1280.webp 1280w, img/telas/tela-pendencias-2560.webp 2560w" sizes="92vw">
-                <img src="img/telas/tela-pendencias-1280.jpg" width="1280" height="800" loading="lazy" alt="Pendências da obra, cada uma com causa, valor em jogo e ação sugerida">
-              </picture>
+          <article class="passo-h" data-passo="3">
+            <span class="q">04 · Painel</span>
+            <h3>Quando o caixa aperta — e o que eu faço agora?</h3>
+            <p class="texto">Caixa hoje, resultado, avanço e curva S à esquerda; à direita, a tendência, as pendências com a ação de cada uma e o financiamento. O vale de caixa mostra o dia em que o saldo chega no mínimo.</p>
+            
+            <div class="tela-inline">
+        <div class="janela corte" data-corte>
+          <div class="janela__barra"><i></i><i></i><i></i><span>Painel da obra</span></div>
+          <picture>
+            <source type="image/avif" srcset="img/telas/tela-painel-1280.avif 1280w, img/telas/tela-painel-1680.avif 1680w" sizes="92vw">
+            <source type="image/webp" srcset="img/telas/tela-painel-1280.webp 1280w, img/telas/tela-painel-1680.webp 1680w" sizes="92vw">
+            <img src="img/telas/tela-painel-1280.jpg" srcset="img/telas/tela-painel-1280.jpg 1280w, img/telas/tela-painel-1680.jpg 1680w" sizes="92vw" width="1280" height="683" loading="lazy" alt="Painel da obra com indicadores, curva S, andamento, caixa projetado e as pendências à direita">
+          </picture>
+        </div>
             </div>
           </article>
 
@@ -691,86 +839,116 @@
             <div class="janela__barra"><i></i><i></i><i></i><span data-historia-rotulo>Carteira de obras</span></div>
             <div class="pilha">
               <picture class="ativo" data-rotulo="Carteira de obras">
-                <source type="image/avif" srcset="img/telas/tela-carteira-1280.avif 1280w, img/telas/tela-carteira-2560.avif 2560w" sizes="(max-width:1320px) 62vw, 800px">
-                <source type="image/webp" srcset="img/telas/tela-carteira-1280.webp 1280w, img/telas/tela-carteira-2560.webp 2560w" sizes="(max-width:1320px) 62vw, 800px">
-                <img src="img/telas/tela-carteira-1280.jpg" width="1280" height="800" loading="lazy" alt="">
+                <source type="image/avif" srcset="img/telas/tela-carteira-1280.avif 1280w, img/telas/tela-carteira-1680.avif 1680w" sizes="(max-width:1320px) 62vw, 800px">
+                <source type="image/webp" srcset="img/telas/tela-carteira-1280.webp 1280w, img/telas/tela-carteira-1680.webp 1680w" sizes="(max-width:1320px) 62vw, 800px">
+                <img src="img/telas/tela-carteira-1280.jpg" width="1280" height="683" loading="lazy" alt="">
               </picture>
               <picture data-rotulo="Lançamentos">
-                <source type="image/avif" srcset="img/telas/tela-lancamentos-1280.avif 1280w, img/telas/tela-lancamentos-2560.avif 2560w" sizes="(max-width:1320px) 62vw, 800px">
-                <source type="image/webp" srcset="img/telas/tela-lancamentos-1280.webp 1280w, img/telas/tela-lancamentos-2560.webp 2560w" sizes="(max-width:1320px) 62vw, 800px">
-                <img src="img/telas/tela-lancamentos-1280.jpg" width="1280" height="800" loading="lazy" alt="">
+                <source type="image/avif" srcset="img/telas/tela-lancamentos-1280.avif 1280w, img/telas/tela-lancamentos-1680.avif 1680w" sizes="(max-width:1320px) 62vw, 800px">
+                <source type="image/webp" srcset="img/telas/tela-lancamentos-1280.webp 1280w, img/telas/tela-lancamentos-1680.webp 1680w" sizes="(max-width:1320px) 62vw, 800px">
+                <img src="img/telas/tela-lancamentos-1280.jpg" width="1280" height="683" loading="lazy" alt="">
               </picture>
-              <picture data-rotulo="Fluxo de caixa">
-                <source type="image/avif" srcset="img/telas/tela-fluxo-1280.avif 1280w, img/telas/tela-fluxo-2560.avif 2560w" sizes="(max-width:1320px) 62vw, 800px">
-                <source type="image/webp" srcset="img/telas/tela-fluxo-1280.webp 1280w, img/telas/tela-fluxo-2560.webp 2560w" sizes="(max-width:1320px) 62vw, 800px">
-                <img src="img/telas/tela-fluxo-1280.jpg" width="1280" height="800" loading="lazy" alt="">
+              <picture data-rotulo="Medições">
+                <source type="image/avif" srcset="img/telas/tela-medicoes-1280.avif 1280w, img/telas/tela-medicoes-1680.avif 1680w" sizes="(max-width:1320px) 62vw, 800px">
+                <source type="image/webp" srcset="img/telas/tela-medicoes-1280.webp 1280w, img/telas/tela-medicoes-1680.webp 1680w" sizes="(max-width:1320px) 62vw, 800px">
+                <img src="img/telas/tela-medicoes-1280.jpg" width="1280" height="683" loading="lazy" alt="">
               </picture>
-              <picture data-rotulo="Físico × financeiro">
-                <source type="image/avif" srcset="img/telas/tela-curva-1280.avif 1280w, img/telas/tela-curva-2560.avif 2560w" sizes="(max-width:1320px) 62vw, 800px">
-                <source type="image/webp" srcset="img/telas/tela-curva-1280.webp 1280w, img/telas/tela-curva-2560.webp 2560w" sizes="(max-width:1320px) 62vw, 800px">
-                <img src="img/telas/tela-curva-1280.jpg" width="1280" height="800" loading="lazy" alt="">
-              </picture>
-              <picture data-rotulo="Pendências">
-                <source type="image/avif" srcset="img/telas/tela-pendencias-1280.avif 1280w, img/telas/tela-pendencias-2560.avif 2560w" sizes="(max-width:1320px) 62vw, 800px">
-                <source type="image/webp" srcset="img/telas/tela-pendencias-1280.webp 1280w, img/telas/tela-pendencias-2560.webp 2560w" sizes="(max-width:1320px) 62vw, 800px">
-                <img src="img/telas/tela-pendencias-1280.jpg" width="1280" height="800" loading="lazy" alt="">
+              <picture data-rotulo="Painel da obra">
+                <source type="image/avif" srcset="img/telas/tela-painel-1280.avif 1280w, img/telas/tela-painel-1680.avif 1680w" sizes="(max-width:1320px) 62vw, 800px">
+                <source type="image/webp" srcset="img/telas/tela-painel-1280.webp 1280w, img/telas/tela-painel-1680.webp 1680w" sizes="(max-width:1320px) 62vw, 800px">
+                <img src="img/telas/tela-painel-1280.jpg" width="1280" height="683" loading="lazy" alt="">
               </picture>
             </div>
           </div>
-          <div class="historia__rodape"><span data-historia-num>01 / 05</span><span class="trilho"><i data-historia-trilho></i></span><span>dados de exemplo</span></div>
+          <div class="historia__rodape"><span data-historia-num>01 / 04</span><span class="trilho"><i data-historia-trilho></i></span><span>dados de exemplo</span></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- =========================== COMO FUNCIONA =========================== -->
-  <section class="secao secao--elevada" id="como-funciona">
-    <div class="wrap">
-      <div class="secao__cabecalho rv">
-        <span class="eyebrow">Do contrato ao resultado</span>
-        <h2 class="titulo">Três etapas, o mesmo lugar</h2>
-        <p class="subtitulo">O menu do sistema segue a vida da obra. O que você lança em um lugar aparece em todos os outros — sem digitar duas vezes.</p>
+  <!-- ====================== COMO FUNCIONA: LINHA DA OBRA ===================== -->
+  <section class="linha-obra secao--elevada" id="como-funciona" data-trilha>
+    <div class="trilha__fixo">
+      <div class="wrap trilha__cab">
+        <div>
+          <span class="eyebrow">Do contrato ao resultado</span>
+          <h2 class="titulo">Da primeira estaca ao habite-se, no mesmo lugar</h2>
+        </div>
+        <div class="gantt" aria-hidden="true">
+          <div class="gantt__fase" data-fase="planejar"><span>Planejar</span><i></i></div>
+          <div class="gantt__fase" data-fase="executar"><span>Executar</span><i></i></div>
+          <div class="gantt__fase" data-fase="acompanhar"><span>Acompanhar</span><i></i></div>
+        </div>
       </div>
-      <div class="passos">
-        <div class="passo rv">
-          <span class="pnum">01 · Planejar</span>
-          <h3>Uma vez, no começo</h3>
-          <p class="d">Orçamento e metas, contratos e aditivos, cronograma com dependências e caminho crítico, plano de materiais por etapa.</p>
-          <div class="janela">
-            <div class="janela__barra"><i></i><i></i><i></i></div>
-            <picture>
-              <source type="image/avif" srcset="img/telas/tela-cronograma-1280.avif 1280w, img/telas/tela-cronograma-2560.avif 2560w" sizes="(max-width:900px) 90vw, 380px">
-              <source type="image/webp" srcset="img/telas/tela-cronograma-1280.webp 1280w, img/telas/tela-cronograma-2560.webp 2560w" sizes="(max-width:900px) 90vw, 380px">
-              <img src="img/telas/tela-cronograma-1280.jpg" width="1280" height="800" loading="lazy" alt="Cronograma da obra em linha do tempo, com etapas atrasadas destacadas">
-            </picture>
+      <div class="trilha__faixa" data-trilha-faixa>
+        <article class="trilha__painel" data-fase="planejar">
+          <div class="trilha__texto">
+            <span class="pnum">01 · Planejar</span>
+            <h3>Cronograma</h3>
+            <p>Etapas com dependências, responsável e caminho crítico. Atrasou uma, o término projetado anda sozinho — e você vê antes do cliente perguntar.</p>
           </div>
+        <div class="janela corte" data-corte>
+          <div class="janela__barra"><i></i><i></i><i></i><span>Cronograma da obra</span></div>
+          <picture>
+            <source type="image/avif" srcset="img/telas/tela-cronograma-1280.avif 1280w, img/telas/tela-cronograma-1680.avif 1680w" sizes="(max-width:900px) 92vw, 760px">
+            <source type="image/webp" srcset="img/telas/tela-cronograma-1280.webp 1280w, img/telas/tela-cronograma-1680.webp 1680w" sizes="(max-width:900px) 92vw, 760px">
+            <img src="img/telas/tela-cronograma-1280.jpg" srcset="img/telas/tela-cronograma-1280.jpg 1280w, img/telas/tela-cronograma-1680.jpg 1680w" sizes="(max-width:900px) 92vw, 760px" width="1280" height="683" loading="lazy" alt="Cronograma em linha do tempo, com a linha de hoje, os próximos 14 dias e os responsáveis">
+          </picture>
         </div>
-        <div class="passo rv rv-d1">
-          <span class="pnum">02 · Executar</span>
-          <h3>A cada medição</h3>
-          <p class="d">Medições com trava no contrato, compras e taxas lançadas por etapa, recebimentos do cliente ou do banco e diário de obra com fotos.</p>
-          <div class="janela">
-            <div class="janela__barra"><i></i><i></i><i></i></div>
-            <picture>
-              <source type="image/avif" srcset="img/telas/tela-medicoes-1280.avif 1280w, img/telas/tela-medicoes-2560.avif 2560w" sizes="(max-width:900px) 90vw, 380px">
-              <source type="image/webp" srcset="img/telas/tela-medicoes-1280.webp 1280w, img/telas/tela-medicoes-2560.webp 2560w" sizes="(max-width:900px) 90vw, 380px">
-              <img src="img/telas/tela-medicoes-1280.jpg" width="1280" height="800" loading="lazy" alt="Medições da obra com valor medido, pago e a pagar por prestador">
-            </picture>
+        </article>
+        <article class="trilha__painel" data-fase="planejar">
+          <div class="trilha__texto">
+            <span class="pnum">02 · Planejar</span>
+            <h3>Plano de materiais</h3>
+            <p>O que comprar, quanto e até quando, por etapa. Falta comprar, vencidos e desvio de orçamento no topo — a compra não para a frente de serviço.</p>
           </div>
+        <div class="janela corte" data-corte>
+          <div class="janela__barra"><i></i><i></i><i></i><span>Plano de materiais</span></div>
+          <picture>
+            <source type="image/avif" srcset="img/telas/tela-materiais-1280.avif 1280w, img/telas/tela-materiais-1680.avif 1680w" sizes="(max-width:900px) 92vw, 760px">
+            <source type="image/webp" srcset="img/telas/tela-materiais-1280.webp 1280w, img/telas/tela-materiais-1680.webp 1680w" sizes="(max-width:900px) 92vw, 760px">
+            <img src="img/telas/tela-materiais-1280.jpg" srcset="img/telas/tela-materiais-1280.jpg 1280w, img/telas/tela-materiais-1680.jpg 1680w" sizes="(max-width:900px) 92vw, 760px" width="1280" height="683" loading="lazy" alt="Plano de materiais com o que falta comprar, as datas e o desvio de orçamento">
+          </picture>
         </div>
-        <div class="passo rv rv-d2">
-          <span class="pnum">03 · Acompanhar</span>
-          <h3>Sempre à vista</h3>
-          <p class="d">Painel da obra com caixa, resultado e margem; curva S, fluxo de caixa, pendências e relatórios em PDF.</p>
-          <div class="janela">
-            <div class="janela__barra"><i></i><i></i><i></i></div>
-            <picture>
-              <source type="image/avif" srcset="img/telas/tela-painel-1280.avif 1280w, img/telas/tela-painel-2560.avif 2560w" sizes="(max-width:900px) 90vw, 380px">
-              <source type="image/webp" srcset="img/telas/tela-painel-1280.webp 1280w, img/telas/tela-painel-2560.webp 2560w" sizes="(max-width:900px) 90vw, 380px">
-              <img src="img/telas/tela-painel-1280.jpg" width="1280" height="800" loading="lazy" alt="Painel da obra com caixa hoje, resultado projetado, margem e pendências">
-            </picture>
+        </article>
+        <article class="trilha__painel" data-fase="executar">
+          <div class="trilha__texto">
+            <span class="pnum">03 · Executar</span>
+            <h3>Diário de obra</h3>
+            <p>Clima, efetivo, atividades e ocorrências de cada dia, com fotos. Lançado do celular, no canteiro — funciona até sem sinal.</p>
           </div>
+        <div class="janela corte" data-corte>
+          <div class="janela__barra"><i></i><i></i><i></i><span>Diário de obra</span></div>
+          <picture>
+            <source type="image/avif" srcset="img/telas/tela-diario-1280.avif 1280w, img/telas/tela-diario-1680.avif 1680w" sizes="(max-width:900px) 92vw, 760px">
+            <source type="image/webp" srcset="img/telas/tela-diario-1280.webp 1280w, img/telas/tela-diario-1680.webp 1680w" sizes="(max-width:900px) 92vw, 760px">
+            <img src="img/telas/tela-diario-1280.jpg" srcset="img/telas/tela-diario-1280.jpg 1280w, img/telas/tela-diario-1680.jpg 1680w" sizes="(max-width:900px) 92vw, 760px" width="1280" height="683" loading="lazy" alt="Diário de obra com os registros de cada dia, atividades e ocorrências">
+          </picture>
         </div>
+        </article>
+        <article class="trilha__painel" data-fase="executar">
+          <div class="trilha__texto">
+            <span class="pnum">04 · Executar</span>
+            <h3>Recebimentos</h3>
+            <p>Cada parcela do banco ou do cliente: prevista, solicitada, creditada. Previsto × recebido acumulado e quanto já dá para pedir.</p>
+          </div>
+        <div class="janela corte" data-corte>
+          <div class="janela__barra"><i></i><i></i><i></i><span>Recebimentos</span></div>
+          <picture>
+            <source type="image/avif" srcset="img/telas/tela-recebimentos-1280.avif 1280w, img/telas/tela-recebimentos-1680.avif 1680w" sizes="(max-width:900px) 92vw, 760px">
+            <source type="image/webp" srcset="img/telas/tela-recebimentos-1280.webp 1280w, img/telas/tela-recebimentos-1680.webp 1680w" sizes="(max-width:900px) 92vw, 760px">
+            <img src="img/telas/tela-recebimentos-1280.jpg" srcset="img/telas/tela-recebimentos-1280.jpg 1280w, img/telas/tela-recebimentos-1680.jpg 1680w" sizes="(max-width:900px) 92vw, 760px" width="1280" height="683" loading="lazy" alt="Recebimentos com as parcelas do cliente e da CAIXA, previsto contra recebido e a receber por mês">
+          </picture>
+        </div>
+        </article>
+        <article class="trilha__painel trilha__fim" data-fase="acompanhar">
+          <div class="trilha__texto">
+            <span class="pnum">05 · Acompanhar</span>
+            <h3>E no fim do mês?</h3>
+            <p>O que foi lançado vira relatório: status para o cliente, prestação de contas para o sócio, memória de medição para o banco. Sem montar planilha explicativa.</p>
+            <a class="btn btn--fantasma" href="#relatorios">Ver os relatórios</a>
+          </div>
+        </article>
       </div>
     </div>
   </section>
@@ -791,14 +969,14 @@
           </ul>
         </div>
         <figure class="rv rv-d1" style="margin:0">
-          <div class="janela">
-            <div class="janela__barra"><i></i><i></i><i></i><span>Relatórios</span></div>
-            <picture>
-              <source type="image/avif" srcset="img/telas/tela-relatorio-1280.avif 1280w, img/telas/tela-relatorio-2560.avif 2560w" sizes="(max-width:960px) 92vw, 680px">
-              <source type="image/webp" srcset="img/telas/tela-relatorio-1280.webp 1280w, img/telas/tela-relatorio-2560.webp 2560w" sizes="(max-width:960px) 92vw, 680px">
-              <img src="img/telas/tela-relatorio-1280.jpg" srcset="img/telas/tela-relatorio-1280.jpg 1280w, img/telas/tela-relatorio-2560.jpg 2560w" sizes="(max-width:960px) 92vw, 680px" width="1280" height="800" loading="lazy" alt="Tela de relatórios com os quatro documentos em PDF e a prévia do relatório de status">
-            </picture>
-          </div>
+          <div class="janela corte" data-corte>
+          <div class="janela__barra"><i></i><i></i><i></i><span>Relatórios</span></div>
+          <picture>
+            <source type="image/avif" srcset="img/telas/tela-relatorio-1280.avif 1280w, img/telas/tela-relatorio-1680.avif 1680w" sizes="(max-width:960px) 92vw, 680px">
+            <source type="image/webp" srcset="img/telas/tela-relatorio-1280.webp 1280w, img/telas/tela-relatorio-1680.webp 1680w" sizes="(max-width:960px) 92vw, 680px">
+            <img src="img/telas/tela-relatorio-1280.jpg" srcset="img/telas/tela-relatorio-1280.jpg 1280w, img/telas/tela-relatorio-1680.jpg 1680w" sizes="(max-width:960px) 92vw, 680px" width="1280" height="655" loading="lazy" alt="Tela de relatórios com os quatro documentos em PDF e a prévia do relatório de status">
+          </picture>
+        </div>
           <figcaption class="legenda">Relatórios — obra fictícia.</figcaption>
         </figure>
       </div>
@@ -1003,6 +1181,7 @@
 
   <!-- ============================ CTA FINAL ============================== -->
   <section class="cta-final secao moldura" id="contato">
+    <canvas class="gabarito" data-gabarito aria-hidden="true"></canvas>
     <div class="wrap centro cta-final__inner rv">
       <h2 class="display">Veja sua obra no Souz</h2>
       <p class="subtitulo" style="margin-top:18px">Traga uma obra de verdade. Na demonstração, você vê o gasto, o caixa e a margem dela numa tela só.</p>
@@ -1045,7 +1224,7 @@
   <p>Tela real do sistema · dados de exemplo, obras fictícias</p>
 </dialog>
 
-<script src="config.js?v=5"></script>
-<script src="site.js?v=5"></script>
+<script src="config.js?v=6"></script>
+<script src="site.js?v=6"></script>
 </body>
 </html>

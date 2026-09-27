@@ -1,7 +1,9 @@
 /**
  * site.js — links de WhatsApp a partir de config.js, nav, gaveta e os
- * efeitos de rolagem. Movimento só em transform/opacity; tudo desliga com
- * prefers-reduced-motion.
+ * efeitos: o gabarito (malha isométrica que acende sob o cursor), o corte
+ * a laser das telas, as cotas da tela do topo, a história com tela fixa, a
+ * linha da obra presa na horizontal, paralaxe e barra de progresso. Tudo
+ * desliga com prefers-reduced-motion.
  */
 (function () {
   'use strict';
@@ -145,10 +147,34 @@
     var num = raiz.querySelector('[data-historia-num]');
     var trilho = raiz.querySelector('[data-historia-trilho]');
     var total = passos.length;
+    var atual = -1;
+
+    /* a linha do laser que varre a troca de tela (corte de 30°) */
+    var janela = raiz.querySelector('.historia__visual .janela');
+    var laser = null;
+    if (janela && MOVIMENTO) {
+      laser = document.createElement('div');
+      laser.className = 'laser-pilha';
+      janela.appendChild(laser);
+    }
 
     function ativar(i) {
+      if (i === atual) return;
       passos.forEach(function (p, j) { p.classList.toggle('ativo', j === i); });
-      telas.forEach(function (t, j) { t.classList.toggle('ativo', j === i); });
+      /* a tela nova entra pelo corte por cima da anterior, que fica
+         embaixo até ser coberta; as outras somem */
+      telas.forEach(function (t, j) {
+        t.classList.toggle('anterior', j === atual && atual !== -1);
+        t.classList.toggle('ativo', j === i);
+      });
+      if (laser && atual !== -1) {
+        laser.classList.remove('varre');
+        laser.classList.add('zera');
+        void laser.offsetWidth;
+        laser.classList.remove('zera');
+        laser.classList.add('varre');
+      }
+      atual = i;
       if (rotulo && telas[i]) rotulo.textContent = telas[i].getAttribute('data-rotulo');
       if (num) num.textContent = '0' + (i + 1) + ' / 0' + total;
       if (trilho) trilho.style.transform = 'scaleX(' + (i + 1) / total + ')';
@@ -174,6 +200,7 @@
     var heroTela = document.querySelector('[data-hero-tela]');
     var paralaxe = Array.prototype.slice.call(document.querySelectorAll('[data-parallax]'));
     var manifesto = MOVIMENTO ? prepararManifesto() : null;
+    var trilha = iniciarTrilha();
     var pendente = false;
 
     function quadro() {
@@ -186,6 +213,7 @@
       if (!MOVIMENTO) return;
 
       if (barra) barra.style.transform = 'scaleX(' + (doc > 0 ? Math.min(1, y / doc) : 0) + ')';
+      if (trilha) trilha();
 
       if (heroTela) {
         var r = heroTela.getBoundingClientRect();
@@ -221,6 +249,271 @@
     quadro();
   }
 
+  /* ------------------------------------------------------------ corte a laser
+     Cada tela entra por uma diagonal de 30° que varre do canto de cima
+     (CSS: .corte, --corte); a do topo espera o texto e, depois do corte,
+     acende as cotas. */
+  function iniciarCorte() {
+    var telas = document.querySelectorAll('[data-corte]');
+    if (!MOVIMENTO || !('IntersectionObserver' in window)) {
+      telas.forEach(function (el) { el.classList.add('on', 'marcado'); });
+      return;
+    }
+    function abrir(el) {
+      var atraso = el.closest('.hero') ? 650 : 0;
+      setTimeout(function () {
+        el.classList.add('on');
+        if (el.classList.contains('cotado')) {
+          setTimeout(function () { el.classList.add('marcado'); }, 1150);
+        }
+      }, atraso);
+    }
+    var obs = new IntersectionObserver(
+      function (entradas) {
+        entradas.forEach(function (e) {
+          if (e.isIntersecting) { abrir(e.target); obs.unobserve(e.target); }
+        });
+      },
+      { threshold: 0.18 }
+    );
+    telas.forEach(function (el) { obs.observe(el); });
+  }
+
+  /* ------------------------------------------------------------ cotas do topo */
+  function iniciarCotas() {
+    var itens = document.querySelectorAll('.cotas [data-marca]');
+    var pontos = document.querySelectorAll('.marcas [data-marca]');
+    function focar(n) {
+      itens.forEach(function (el) { el.classList.toggle('foco', el.getAttribute('data-marca') === n); });
+      pontos.forEach(function (el) { el.classList.toggle('foco', el.getAttribute('data-marca') === n); });
+    }
+    [itens, pontos].forEach(function (lista) {
+      lista.forEach(function (el) {
+        el.addEventListener('mouseenter', function () { focar(el.getAttribute('data-marca')); });
+        el.addEventListener('mouseleave', function () { focar(''); });
+      });
+    });
+  }
+
+  /* ------------------------------------------------------------ gabarito
+     A malha isométrica do Manual (prancha 04): três famílias de linhas —
+     verticais e ±30° — que se cruzam nos mesmos pontos. Ela é "locada" a
+     partir do centro quando aparece e, sob o cursor, acende as linhas e as
+     estacas (os cruzamentos). Sem cursor (celular, ou parado), a luz passeia
+     devagar. Base quase invisível; o acento nunca passa do conteúdo. */
+  function iniciarGabarito() {
+    var telas = Array.prototype.slice.call(document.querySelectorAll('[data-gabarito]'));
+    if (!telas.length || !telas[0].getContext) return;
+    var TAN = Math.tan(Math.PI / 6);
+    var LADO = 64; // distância entre cruzamentos
+    var COL = LADO * Math.cos(Math.PI / 6); // distância entre verticais
+    var RAIO = 260;
+    var ponteiro = { x: -9999, y: -9999, quando: 0 };
+    var ciano = '47, 212, 196';
+
+    function Gabarito(canvas) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext('2d');
+      this.base = document.createElement('canvas');
+      this.luz = document.createElement('canvas');
+      this.visivel = false;
+      this.inicio = 0;
+      this.lanterna = { x: 0, y: 0 };
+      this.medir();
+    }
+    Gabarito.prototype.medir = function () {
+      var dpr = Math.min(2, window.devicePixelRatio || 1);
+      var w = this.canvas.clientWidth;
+      var h = this.canvas.clientHeight;
+      this.w = w; this.h = h; this.dpr = dpr;
+      [this.canvas, this.base, this.luz].forEach(function (c) {
+        c.width = Math.max(1, Math.round(w * dpr));
+        c.height = Math.max(1, Math.round(h * dpr));
+      });
+      /* a malha desenhada uma vez, em traço cheio; a opacidade entra na composição */
+      var b = this.base.getContext('2d');
+      b.setTransform(dpr, 0, 0, dpr, 0, 0);
+      b.clearRect(0, 0, w, h);
+      b.strokeStyle = 'rgb(' + ciano + ')';
+      b.lineWidth = 1;
+      b.beginPath();
+      var ox = (w / 2) % COL;
+      for (var x = ox; x <= w; x += COL) { b.moveTo(x + 0.5, 0); b.lineTo(x + 0.5, h); }
+      var cy = (h / 2) % LADO;
+      var ext = w * TAN;
+      for (var c = cy - Math.ceil(ext / LADO) * LADO; c <= h + ext; c += LADO) {
+        b.moveTo(0, c); b.lineTo(w, c - ext); // sobe a 30°
+        b.moveTo(0, c - ext); b.lineTo(w, c); // desce a 30°
+      }
+      b.stroke();
+      /* estacas: os cruzamentos das três famílias */
+      this.estacas = [];
+      for (var i = 0, xx = ox; xx <= w; xx += COL, i++) {
+        var desl = (Math.round((xx - w / 2) / COL) % 2 !== 0) ? LADO / 2 : 0;
+        for (var yy = cy + desl - LADO; yy <= h + LADO; yy += LADO) this.estacas.push([xx, yy]);
+      }
+    };
+    Gabarito.prototype.quadro = function (agora) {
+      var ctx = this.ctx, w = this.w, h = this.h, dpr = this.dpr;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      /* locação: a malha abre do centro para fora em 1,8 s */
+      var t = MOVIMENTO ? Math.min(1, (agora - this.inicio) / 1800) : 1;
+      var abre = 1 - Math.pow(1 - t, 3);
+      var diag = Math.sqrt(w * w + h * h) / 2;
+      ctx.globalAlpha = 0.07;
+      ctx.drawImage(this.base, 0, 0);
+      if (abre < 1) {
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'destination-in';
+        var g = ctx.createRadialGradient(w / 2 * dpr, h / 2 * dpr, 0, w / 2 * dpr, h / 2 * dpr, Math.max(1, diag * abre * dpr));
+        g.addColorStop(0, '#000'); g.addColorStop(0.82, '#000'); g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        ctx.globalCompositeOperation = 'source-over';
+      }
+      if (!MOVIMENTO) return;
+
+      /* a lanterna: o cursor, ou um passeio lento quando não há cursor */
+      var r = this.canvas.getBoundingClientRect();
+      var px = ponteiro.x - r.left, py = ponteiro.y - r.top;
+      var comCursor = agora - ponteiro.quando < 3500 && px > -RAIO && px < w + RAIO && py > -RAIO && py < h + RAIO;
+      var alvoX, alvoY;
+      if (comCursor) { alvoX = px; alvoY = py; } else {
+        var s = agora / 1000;
+        alvoX = w * (0.5 + 0.34 * Math.sin(s * 0.23));
+        alvoY = h * (0.45 + 0.28 * Math.sin(s * 0.31 + 1.2));
+      }
+      var L = this.lanterna;
+      if (!L.x && !L.y) { L.x = alvoX; L.y = alvoY; }
+      L.x += (alvoX - L.x) * 0.12; L.y += (alvoY - L.y) * 0.12;
+      var forca = abre * (comCursor ? 1 : 0.55);
+
+      var l = this.luz.getContext('2d');
+      l.setTransform(1, 0, 0, 1, 0, 0);
+      l.globalCompositeOperation = 'source-over';
+      l.clearRect(0, 0, this.luz.width, this.luz.height);
+      l.drawImage(this.base, 0, 0);
+      l.globalCompositeOperation = 'destination-in';
+      var gl = l.createRadialGradient(L.x * dpr, L.y * dpr, 0, L.x * dpr, L.y * dpr, RAIO * dpr);
+      gl.addColorStop(0, 'rgba(0,0,0,1)'); gl.addColorStop(1, 'rgba(0,0,0,0)');
+      l.fillStyle = gl;
+      l.fillRect(0, 0, this.luz.width, this.luz.height);
+      ctx.globalAlpha = 0.34 * forca;
+      ctx.drawImage(this.luz, 0, 0);
+
+      /* estacas acesas perto da lanterna */
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.fillStyle = 'rgb(' + ciano + ')';
+      for (var k = 0; k < this.estacas.length; k++) {
+        var e = this.estacas[k];
+        var d = Math.hypot(e[0] - L.x, e[1] - L.y);
+        if (d > RAIO * 0.8) continue;
+        ctx.globalAlpha = (1 - d / (RAIO * 0.8)) * 0.85 * forca;
+        ctx.fillRect(e[0] - 1.5, e[1] - 1.5, 3, 3);
+      }
+      ctx.globalAlpha = 1;
+    };
+
+    var gabaritos = telas.map(function (c) { return new Gabarito(c); });
+    var rodando = false;
+    function laco(agora) {
+      var algum = false;
+      gabaritos.forEach(function (g) { if (g.visivel) { g.quadro(agora); algum = true; } });
+      if (algum && MOVIMENTO && !document.hidden) requestAnimationFrame(laco);
+      else rodando = false;
+    }
+    function acordar() {
+      if (!rodando) { rodando = true; requestAnimationFrame(laco); }
+    }
+
+    if ('IntersectionObserver' in window) {
+      var obs = new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (e) {
+          var g = gabaritos[telas.indexOf(e.target)];
+          g.visivel = e.isIntersecting;
+          if (e.isIntersecting && !g.inicio) g.inicio = performance.now();
+        });
+        acordar();
+      });
+      telas.forEach(function (c) { obs.observe(c); });
+    } else {
+      gabaritos.forEach(function (g) { g.visivel = true; g.inicio = performance.now(); });
+      acordar();
+    }
+    window.addEventListener('pointermove', function (ev) {
+      if (ev.pointerType === 'touch') return;
+      ponteiro.x = ev.clientX; ponteiro.y = ev.clientY; ponteiro.quando = performance.now();
+    }, { passive: true });
+    document.addEventListener('visibilitychange', acordar);
+    var espera;
+    window.addEventListener('resize', function () {
+      clearTimeout(espera);
+      espera = setTimeout(function () { gabaritos.forEach(function (g) { g.medir(); }); acordar(); }, 150);
+    });
+    if (!MOVIMENTO) {
+      /* sem movimento: a malha parada, desenhada uma vez */
+      gabaritos.forEach(function (g) { g.quadro(performance.now()); });
+    }
+  }
+
+  /* ------------------------------------------------------------ linha da obra
+     A seção fica presa e a faixa corre na horizontal com a rolagem; o
+     cronograma de cima enche fase por fase (concluída fica cinza, como no
+     sistema). Só com movimento e tela larga; senão, lista vertical. */
+  function iniciarTrilha() {
+    var secao = document.querySelector('[data-trilha]');
+    if (!secao) return null;
+    var faixa = secao.querySelector('[data-trilha-faixa]');
+    var fases = Array.prototype.slice.call(secao.querySelectorAll('.gantt__fase'));
+    var paineis = Array.prototype.slice.call(faixa.children);
+    /* onde cada fase começa e termina na faixa (pela contagem de painéis) */
+    var limites = {};
+    paineis.forEach(function (p, i) {
+      var f = p.getAttribute('data-fase');
+      if (!limites[f]) limites[f] = [i, i + 1];
+      else limites[f][1] = i + 1;
+    });
+    var estado = { presa: false, distancia: 0 };
+
+    function medir() {
+      var larga = MOVIMENTO && window.innerWidth > 900;
+      secao.classList.toggle('presa', larga);
+      estado.presa = larga;
+      if (!larga) {
+        secao.style.height = '';
+        faixa.style.transform = '';
+        fases.forEach(function (f) { f.style.setProperty('--enche', 1); f.classList.remove('ativa', 'feita'); });
+        return;
+      }
+      estado.distancia = Math.max(0, faixa.scrollWidth - window.innerWidth);
+      secao.style.height = (window.innerHeight + estado.distancia) + 'px';
+    }
+
+    function quadro() {
+      if (!estado.presa) return;
+      var r = secao.getBoundingClientRect();
+      var total = r.height - window.innerHeight;
+      var p = total > 0 ? Math.max(0, Math.min(1, -r.top / total)) : 0;
+      faixa.style.transform = 'translate3d(' + (-p * estado.distancia).toFixed(1) + 'px,0,0)';
+      /* o painel no centro da tela diz em que ponto da obra estamos */
+      var pos = p * (paineis.length - 1) + 0.5;
+      fases.forEach(function (f) {
+        var lim = limites[f.getAttribute('data-fase')];
+        if (!lim) return;
+        var enche = Math.max(0, Math.min(1, (pos - lim[0]) / (lim[1] - lim[0])));
+        f.style.setProperty('--enche', enche.toFixed(3));
+        f.classList.toggle('ativa', enche > 0 && enche < 1);
+        f.classList.toggle('feita', enche >= 1 && p < 1);
+      });
+    }
+
+    medir();
+    window.addEventListener('resize', function () { medir(); quadro(); });
+    return quadro;
+  }
+
   /* ------------------------------------------------------------ ampliar tela */
   function iniciarZoom() {
     var dialogo = document.getElementById('zoom');
@@ -229,7 +522,7 @@
 
     function maior(src) {
       if (/-mobile-\d+\./.test(src)) return src.replace(/-(390|780|1170)\.(avif|webp|jpg)$/, '-1170.webp');
-      return src.replace(/-(1280|2560)\.(avif|webp|jpg)$/, '-2560.webp');
+      return src.replace(/-(1280|1680)\.(avif|webp|jpg)$/, '-1680.webp');
     }
     function abrir(janela) {
       var img = janela.querySelector('picture img');
@@ -273,7 +566,10 @@
     iniciarZoom();
     iniciarGaveta();
     iniciarRevelar();
+    iniciarCorte();
+    iniciarCotas();
     iniciarHistoria();
     iniciarRolagem();
+    iniciarGabarito();
   });
 })();
