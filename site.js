@@ -424,8 +424,8 @@
       var v = valores();
       contar(v.total);
       var msg = 'Olá! Fiz a conta no site do Souz: ' + v.o + ' obras ativas, gasto médio de ' + fmt.format(v.g) +
-        ' por obra ao mês e ' + v.d + ' dias de atraso no recebimento — cerca de ' + fmt.format(v.total) +
-        ' parado. Quero ver isso no Souz.';
+        ' por obra ao mês e ' + v.d + ' dias de atraso no recebimento — adianto cerca de ' + fmt.format(v.total) +
+        ' do meu caixa. Quero ver isso no Souz.';
       botao.href = linkContato(msg);
       botao.target = '_blank';
       botao.rel = 'noopener';

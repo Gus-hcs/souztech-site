@@ -75,7 +75,7 @@
 
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; connect-src 'self' https://formspree.io https://api.web3forms.com https://*.supabase.co; object-src 'none'; base-uri 'self'; upgrade-insecure-requests" />
 <meta name="theme-color" content="#020605" />
-<script src="mov.js?v=8"></script>
+<script src="mov.js?v=9"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png" />
 <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png" />
@@ -714,7 +714,7 @@
   .calc__resultado { display: grid; gap: 10px; justify-items: start; padding-top: 18px; border-top: 1px solid var(--line); }
   .calc__frase { font-size: clamp(18px, 2vw, 22px); line-height: 1.4; color: var(--ink); max-width: 44ch; }
   .calc__valor { font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; color: var(--ciano-claro); white-space: nowrap; }
-  .calc__formula { font-size: 13px; color: var(--ink-3); }
+  .calc__formula { font-size: 13px; color: var(--ink-3); max-width: 80ch; }
   .calc .btn { margin-top: 6px; }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1250,7 +1250,7 @@
       <div class="calc rv" data-calc>
         <div class="calc__cab">
           <span class="eyebrow">Caixa em risco</span>
-          <h3>Quanto dinheiro fica parado quando o recebimento atrasa?</h3>
+          <h3>Quanto você banca do próprio caixa quando o recebimento atrasa?</h3>
         </div>
         <div class="calc__campos">
           <label><span class="campo-rot">Obras ativas</span><input class="campo" data-calc-obras type="text" inputmode="numeric" value="4" /></label>
@@ -1258,9 +1258,9 @@
           <label><span class="campo-rot">Dias médios de atraso no recebimento</span><input class="campo" data-calc-dias type="text" inputmode="numeric" value="20" /></label>
         </div>
         <div class="calc__resultado" aria-live="polite">
-          <p class="calc__frase">Você tem cerca de <b class="calc__valor" data-calc-valor>R$ 160.000</b> parado por causa de recebimentos atrasados.</p>
-          <p class="calc__formula">Estimativa: obras × gasto médio mensal × (dias de atraso ÷ 30). É uma conta simples, não o fluxo de caixa da sua obra.</p>
-          <a class="btn btn--primario" data-calc-whats data-evento="calculadora-whatsapp" href="#">Ver isso no Souz</a>
+          <p class="calc__frase">Você adianta cerca de <b class="calc__valor" data-calc-valor>R$ 160.000</b> do seu caixa enquanto espera receber.</p>
+          <p class="calc__formula">A obra não para enquanto o dinheiro não cai: material e mão de obra desses dias saem do seu bolso. Estimativa: obras × gasto médio mensal × (dias&nbsp;de&nbsp;atraso&nbsp;÷&nbsp;30). É uma conta simples; o Souz mostra isso obra a obra, no fluxo de caixa.</p>
+          <a class="btn btn--primario" data-calc-whats data-evento="calculadora-whatsapp" href="#">Ver meu caixa no Souz</a>
         </div>
       </div>
     </div>
@@ -1494,7 +1494,7 @@
   <p>Tela real do sistema · dados de exemplo, obras fictícias</p>
 </dialog>
 
-<script src="config.js?v=8"></script>
-<script src="site.js?v=8"></script>
+<script src="config.js?v=9"></script>
+<script src="site.js?v=9"></script>
 </body>
 </html>
