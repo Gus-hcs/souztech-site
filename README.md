@@ -10,12 +10,25 @@ usa a paleta clara do manual. Vermelho e âmbar não aparecem no site.
 - `404.html` — página de erro do GitHub Pages.
 - `config.js` — WhatsApp, e-mail, Instagram, CNPJ, preços e depoimentos. Preencha os `TODO`
   quando tiver a informação; até lá, o elemento correspondente fica escondido.
-- `site.js` — links de WhatsApp a partir de `config.js`, nav, menu de gaveta e os efeitos de
-  rolagem (tela do topo que assenta, manifesto que acende, história com tela fixa, paralaxe,
-  barra de progresso). Tudo desliga com `prefers-reduced-motion`.
-- `img/telas/` — telas reais do sistema em modo escuro, sem a barra lateral (Playwright, obras
-  fictícias "Casa 14" e "Casa 42"), em AVIF/WebP/JPG, 1280 e 2560 px; celular em 390/780/1170.
-  Clicar numa tela abre a versão de 2560 px.
+- `mov.js` — carregado no `<head>`: marca a página para os efeitos de entrada antes do primeiro
+  desenho (a CSP não permite script embutido).
+- `site.js` — links de WhatsApp a partir de `config.js`, nav, menu de gaveta e os efeitos:
+  - **gabarito**: a malha isométrica de 30° do Manual (canvas) é locada a partir do centro e
+    acende sob o cursor, com as estacas (cruzamentos); sem cursor, a luz passeia devagar. No topo
+    e no fechamento.
+  - **nível a laser**: toda tela do sistema entra por um corte diagonal de 30° com a linha do
+    laser na borda (`.corte`, `--corte` com `@property`); na história com tela fixa, a troca de
+    tela é o mesmo corte.
+  - o símbolo do topo se constrói (contorno traço a traço, depois as faces), sem girar nem deformar;
+  - **cotas** numeradas na tela do topo, ligadas à legenda;
+  - **linha da obra**: "Como funciona" fica presa e as etapas correm na horizontal com a
+    rolagem, com um cronograma de três fases enchendo junto (lista vertical no celular);
+  - manifesto que acende, paralaxe, barra de progresso.
+  Nada gira nem inclina em 3D (Manual, prancha 04). Tudo desliga com `prefers-reduced-motion`.
+- `img/telas/` — telas reais do sistema em modo escuro, sem a barra lateral (obras fictícias,
+  "Casa 07" e a carteira de exemplo), em AVIF/WebP/JPG, 1280 e 1680 px; o login do usuário foi
+  tirado da barra do topo. Celular (diário e prestadores) em 390/780/1170. Clicar numa tela abre a
+  versão de 1680 px.
 - `img/fotos/` — fotos de obra enviadas, tratadas e otimizadas.
 - `favicon.svg`, `icon-32.png`, `icon-180.png`, `icon-512.png`, `og.png` — ícones e imagem de
   compartilhamento, gerados a partir do símbolo da marca.
