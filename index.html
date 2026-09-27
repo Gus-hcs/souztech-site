@@ -264,8 +264,8 @@
   .hero { position: relative; overflow: hidden; isolation: isolate; text-align: center; padding: 148px 0 96px; }
   .hero__fundo {
     position: absolute; inset: 0; z-index: 0;
-    /* fundo cinza chumbo atrás da malha; as linhas continuam no ciano */
-    background: linear-gradient(180deg, #202326 0%, #1a1d20 50%, #121416 100%);
+    /* Souz Preto liso atrás da malha; as linhas no verde dos botões */
+    background: var(--preto);
   }
   .hero__inner { position: relative; z-index: 2; }
   .hero h1 { margin: 0 auto; max-width: 13ch; font-size: clamp(42px, 8vw, 88px); line-height: 0.98; letter-spacing: -0.045em; font-weight: 800; }
@@ -419,7 +419,7 @@
   /* ----------------------------------------------------------- cta final */
   .cta-final {
     position: relative; overflow: hidden; border-top: 1px solid var(--line);
-    background: linear-gradient(180deg, #121416 0%, #1a1d20 50%, #202326 100%);
+    background: var(--preto);
   }
   .cta-final__inner { position: relative; z-index: 1; }
   .cta-final .display { max-width: 14ch; margin: 0 auto; font-size: clamp(40px, 7vw, 80px); }
