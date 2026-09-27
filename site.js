@@ -309,7 +309,7 @@
     var COL = LADO * Math.cos(Math.PI / 6); // distância entre verticais
     var RAIO = 260;
     var ponteiro = { x: -9999, y: -9999, quando: 0 };
-    var ciano = '47, 212, 196';
+    var ciano = '11, 125, 114'; // o verde dos botões (Ciano Souz)
 
     function Gabarito(canvas) {
       this.canvas = canvas;
@@ -362,7 +362,7 @@
       var t = MOVIMENTO ? Math.min(1, (agora - this.inicio) / 1800) : 1;
       var abre = 1 - Math.pow(1 - t, 3);
       var diag = Math.sqrt(w * w + h * h) / 2;
-      ctx.globalAlpha = 0.11;
+      ctx.globalAlpha = 0.34;
       ctx.drawImage(this.base, 0, 0);
       if (abre < 1) {
         ctx.globalAlpha = 1;
@@ -400,7 +400,7 @@
       gl.addColorStop(0, 'rgba(0,0,0,1)'); gl.addColorStop(1, 'rgba(0,0,0,0)');
       l.fillStyle = gl;
       l.fillRect(0, 0, this.luz.width, this.luz.height);
-      ctx.globalAlpha = 0.34 * forca;
+      ctx.globalAlpha = 0.9 * forca;
       ctx.drawImage(this.luz, 0, 0);
 
       /* estacas acesas perto da lanterna */
@@ -410,7 +410,7 @@
         var e = this.estacas[k];
         var d = Math.hypot(e[0] - L.x, e[1] - L.y);
         if (d > RAIO * 0.8) continue;
-        ctx.globalAlpha = (1 - d / (RAIO * 0.8)) * 0.85 * forca;
+        ctx.globalAlpha = (1 - d / (RAIO * 0.8)) * forca;
         ctx.fillRect(e[0] - 1.5, e[1] - 1.5, 3, 3);
       }
       ctx.globalAlpha = 1;
