@@ -5,32 +5,66 @@
  * que nunca deixa caixa vazia, as cotas do topo, o brilho dos cards, as
  * planilhas que convergem para o botão, os checks dos planos, a história
  * com tela fixa, a linha da obra presa na horizontal, marca d'água e
- * paralaxe. Só transform e opacity; tudo reduz com prefers-reduced-motion.
+ * paralaxe. Leads: prova de origem (e depoimentos de depoimentos.json),
+ * relatório de exemplo, "Conte sobre sua carteira", calculadora de caixa em
+ * risco e souzEvento (medição, desligada em config.js). Só transform e
+ * opacity; tudo reduz com prefers-reduced-motion.
  */
 (function () {
   'use strict';
   var CFG = window.SOUZ_CONFIG || {};
   var MOVIMENTO = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* ------------------------------------------------------------ medição
+     souzEvento(nome, props): usa Plausible, gtag ou Umami se estiverem na
+     página — e só com ANALYTICS_LIGADO (config.js). Nunca manda dado
+     pessoal: só o nome do evento e de onde veio (ex.: local: 'topo'). */
+  function souzEvento(nome, props) {
+    if (!CFG.analytics) return;
+    var p = props || {};
+    try {
+      if (typeof window.plausible === 'function') window.plausible(nome, { props: p });
+      else if (typeof window.gtag === 'function') window.gtag('event', nome, p);
+      else if (window.umami && typeof window.umami.track === 'function') window.umami.track(nome, p);
+    } catch (e) { /* medição nunca quebra a página */ }
+  }
+  window.souzEvento = souzEvento;
+
   /* ------------------------------------------------------------ WhatsApp */
   function numeroWhatsapp() {
     return String(CFG.whatsapp || '').replace(/\D/g, '');
+  }
+  /* link do WhatsApp com a mensagem pronta (ou e-mail, se não houver número) */
+  function linkContato(mensagem) {
+    var numero = numeroWhatsapp();
+    if (numero) return 'https://wa.me/' + numero + '?text=' + encodeURIComponent(mensagem);
+    return 'mailto:' + (CFG.email || '') + '?subject=' + encodeURIComponent('Quero conhecer o Souz Controle de Obra') +
+      '&body=' + encodeURIComponent(mensagem);
+  }
+  function abrirContato(mensagem) {
+    var url = linkContato(mensagem);
+    var janela = window.open(url, '_blank', 'noopener');
+    if (!janela) window.location.href = url;
   }
 
   function ligarBotoesWhatsapp() {
     var numero = numeroWhatsapp();
     document.querySelectorAll('[data-cta="whatsapp"]').forEach(function (el) {
       var mensagem = el.getAttribute('data-cta-mensagem') || CFG.whatsappMensagem || '';
+      el.href = linkContato(mensagem);
       if (numero) {
-        el.href = 'https://wa.me/' + numero + '?text=' + encodeURIComponent(mensagem);
         el.target = '_blank';
         el.rel = 'noopener';
-      } else {
-        el.href =
-          'mailto:' + (CFG.email || '') +
-          '?subject=' + encodeURIComponent('Quero conhecer o Souz Controle de Obra') +
-          '&body=' + encodeURIComponent(mensagem);
       }
+      el.addEventListener('click', function () {
+        souzEvento('cta-whatsapp', { local: el.getAttribute('data-local') || '' });
+      });
+    });
+    document.querySelectorAll('a[data-evento]').forEach(function (el) {
+      if (el.hasAttribute('data-calc-whats')) return;
+      el.addEventListener('click', function () {
+        souzEvento(el.getAttribute('data-evento'), { local: el.getAttribute('data-local') || '' });
+      });
     });
     if (numero) {
       ['whats-flutuante', 'rodape-whatsapp'].forEach(function (id) {
@@ -43,29 +77,20 @@
   function aplicarConfig() {
     var precos = CFG.precos || {};
     document.querySelectorAll('[data-preco]').forEach(function (el) {
-      var valor = precos[el.getAttribute('data-preco')];
+      var valor = String(precos[el.getAttribute('data-preco')] || '').trim();
       if (valor) el.textContent = 'a partir de R$ ' + valor + '/mês';
     });
+    var impl = String(CFG.implantacao || '').trim();
+    var linhaImpl = document.querySelector('[data-implantacao]');
+    if (impl && linhaImpl) {
+      linhaImpl.textContent = 'Implantação assistida: ' + (/^[\d.,]+$/.test(impl) ? 'R$ ' + impl : impl);
+      linhaImpl.hidden = false;
+    }
 
     var cnpj = document.getElementById('rodape-cnpj');
     if (CFG.cnpj && cnpj) {
       cnpj.textContent = 'CNPJ ' + CFG.cnpj;
       cnpj.hidden = false;
-    }
-
-    var lista = CFG.depoimentos || [];
-    var secao = document.getElementById('depoimentos');
-    var alvo = document.getElementById('depoimentos-lista');
-    if (lista.length && secao && alvo) {
-      alvo.innerHTML = lista
-        .map(function (d) {
-          return (
-            '<div class="depo"><p class="txt">“' + esc(d.texto) + '”</p>' +
-            '<p class="quem"><b>' + esc(d.nome) + '</b>' + (d.cargo ? ' · ' + esc(d.cargo) : '') + '</p></div>'
-          );
-        })
-        .join('');
-      secao.hidden = false;
     }
   }
 
@@ -75,7 +100,8 @@
     });
   }
 
-  /* ------------------------------------------------------------ gaveta */
+  /* ------------------------------------------------------------ gaveta
+     Fechada, fica fora da navegação e da leitura (inert + aria-hidden). */
   function iniciarGaveta() {
     var gaveta = document.getElementById('gaveta');
     var abrir = document.querySelector('[data-acao="abrir-gaveta"]');
@@ -83,6 +109,8 @@
     function definir(aberta) {
       gaveta.classList.toggle('aberta', aberta);
       gaveta.setAttribute('aria-hidden', String(!aberta));
+      if (aberta) gaveta.removeAttribute('inert');
+      else gaveta.setAttribute('inert', '');
       abrir.setAttribute('aria-expanded', String(aberta));
       document.body.style.overflow = aberta ? 'hidden' : '';
     }
@@ -94,56 +122,108 @@
   }
 
   /* ------------------------------------------------------------ revelar
-     Entrada: opacidade e 16px, 500 ms, 80 ms de atraso entre irmãos. Três
-     garantias de que nada fica vazio: sem IntersectionObserver, tudo
-     aparece; a cada rolagem, o que já passou do fim da tela aparece mesmo
-     que o observador não tenha avisado; e rolagem rápida desliga a
-     transição (.sem-anim) — o conteúdo aparece pronto. */
+     Visível por padrão. Só espera a entrada (.espera) o que estava abaixo
+     da tela na carga — e só com o IntersectionObserver confirmado
+     (.js-reveal). Garantias de que nada aparece vazio:
+     - o observador dispara 200px antes do elemento entrar;
+     - a cada rolagem, o que está na tela ou acima dela aparece na hora;
+     - uma rede de segurança revela o que ficou 1,2 s na tela ou acima sem
+       ter aparecido;
+     - clique em âncora (menu) revela, sem animação, tudo até o destino;
+     - rolagem rápida desliga a transição (.sem-anim);
+     - recarga com #âncora não esconde nada. */
   var revelados = [];
+  var visivelDesde = typeof WeakMap === 'function' ? new WeakMap() : null;
   function revelar(el) {
     if (el.classList.contains('on')) return;
     el.classList.add('on');
+    el.classList.remove('espera');
     el.dispatchEvent(new CustomEvent('revelado'));
     /* o atraso da cascata é só da entrada: sai depois, para não atrasar o hover */
     if (el.style.transitionDelay) {
       setTimeout(function () { el.style.transitionDelay = ''; }, 900);
     }
   }
+  function semAnimacao(fn) {
+    var raiz = document.documentElement;
+    raiz.classList.add('sem-anim');
+    fn();
+    void raiz.offsetWidth;
+    setTimeout(function () { raiz.classList.remove('sem-anim'); }, 60);
+  }
   function iniciarRevelar() {
     var itens = Array.prototype.slice.call(document.querySelectorAll('.rv'));
     revelados = itens;
-    /* cascata: posição entre os irmãos que também revelam */
+    var raiz = document.documentElement;
+    var comObservador = raiz.classList.contains('js-reveal') && 'IntersectionObserver' in window;
+    var vh = window.innerHeight;
+    /* recarga com #âncora: o navegador ainda vai rolar até ela — não esconde nada */
+    var comAncora = !!window.location.hash;
     itens.forEach(function (el) {
+      if (!comObservador || comAncora || el.getBoundingClientRect().top < vh) {
+        el.classList.add('on');
+        return;
+      }
+      el.classList.add('espera');
+      /* cascata: posição entre os irmãos que também esperam */
       var irmaos = Array.prototype.filter.call(el.parentElement.children, function (x) {
         return x.classList.contains('rv');
       });
       var i = irmaos.indexOf(el);
       if (i > 0) el.style.transitionDelay = Math.min(i, 5) * 80 + 'ms';
     });
-    if (!('IntersectionObserver' in window)) {
-      itens.forEach(revelar);
-      return;
-    }
+    if (!comObservador) return;
     var obs = new IntersectionObserver(
       function (entradas) {
         entradas.forEach(function (e) {
           if (e.isIntersecting) { revelar(e.target); obs.unobserve(e.target); }
         });
       },
-      { threshold: 0, rootMargin: '0px 0px -6% 0px' }
+      { threshold: 0.05, rootMargin: '0px 0px 200px 0px' }
     );
-    itens.forEach(function (el) { obs.observe(el); });
+    itens.forEach(function (el) { if (!el.classList.contains('on')) obs.observe(el); });
+
+    /* âncoras: revela sem animação tudo entre aqui e o destino */
+    document.addEventListener('click', function (ev) {
+      var a = ev.target.closest && ev.target.closest('a[href^="#"]');
+      if (!a) return;
+      var alvo = a.getAttribute('href').length > 1 && document.querySelector(a.getAttribute('href'));
+      if (!alvo) return;
+      var ate = alvo.getBoundingClientRect().top + window.scrollY + window.innerHeight * 1.5;
+      semAnimacao(function () {
+        revelados.forEach(function (el) {
+          if (!el.classList.contains('on') && el.getBoundingClientRect().top + window.scrollY < ate) revelar(el);
+        });
+      });
+    });
+    window.addEventListener('hashchange', function () { varrerRevelar(window.scrollY, window.innerHeight, true); });
+
+    /* rede de segurança: 1,2 s na tela (ou acima) sem aparecer → aparece */
+    var rede = setInterval(function () {
+      var pendentes = 0;
+      var agora = performance.now();
+      revelados.forEach(function (el) {
+        if (el.classList.contains('on')) return;
+        pendentes++;
+        if (el.getBoundingClientRect().top < window.innerHeight) {
+          var desde = visivelDesde ? visivelDesde.get(el) : null;
+          if (!desde) { if (visivelDesde) visivelDesde.set(el, agora); }
+          else if (agora - desde >= 1200) semAnimacao(function () { revelar(el); });
+        }
+      });
+      if (!pendentes) clearInterval(rede);
+    }, 300);
   }
-  /* chamado a cada quadro de rolagem */
+  /* chamado a cada quadro de rolagem: o que está na tela ou acima aparece */
   var rolagemAnterior = { y: window.scrollY, t: 0 };
   var fimRapida = 0;
-  function varrerRevelar(y, vh) {
+  function varrerRevelar(y, vh, instantaneo) {
     var agora = performance.now();
     var dt = agora - rolagemAnterior.t;
     var vel = dt > 0 ? Math.abs(y - rolagemAnterior.y) / dt : 0;
     rolagemAnterior = { y: y, t: agora };
     var raiz = document.documentElement;
-    if (vel > 2.5) {
+    if (vel > 2.5 || instantaneo) {
       raiz.classList.add('sem-anim');
       clearTimeout(fimRapida);
       fimRapida = setTimeout(function () { raiz.classList.remove('sem-anim'); }, 260);
@@ -152,6 +232,220 @@
       var el = revelados[i];
       if (el.classList.contains('on')) continue;
       if (el.getBoundingClientRect().top < vh) revelar(el);
+    }
+  }
+
+  /* ------------------------------------------------------------ prova (B1)
+     depoimentos.json: só entra item com "publicar": true; sem nenhum, fica a
+     faixa de origem (já no HTML). Vídeo: só aparece se o arquivo existir. */
+  function iniciarProva() {
+    var caixa = document.querySelector('[data-prova-depoimentos]');
+    var origem = document.querySelector('[data-prova-origem]');
+    if (caixa && window.fetch) {
+      fetch('depoimentos.json', { cache: 'no-cache' })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (lista) {
+          var ok = (Array.isArray(lista) ? lista : []).filter(function (d) { return d && d.publicar === true; });
+          if (!ok.length) return;
+          caixa.innerHTML = ok.map(function (d) {
+            return '<figure class="depo-card">' +
+              (d.foto ? '<img src="' + esc(d.foto) + '" alt="" width="56" height="56" loading="lazy">' : '<span></span>') +
+              '<div><blockquote>“' + esc(d.frase) + '”</blockquote>' +
+              '<figcaption><b>' + esc(d.nome) + '</b>' + (d.cargo ? ' · ' + esc(d.cargo) : '') +
+              (d.empresa ? ' · ' + esc(d.empresa) : '') + '</figcaption></div></figure>';
+          }).join('');
+          caixa.hidden = false;
+          if (origem) origem.hidden = true;
+        })
+        .catch(function () { /* sem o arquivo, fica a faixa de origem */ });
+    }
+    var video = CFG.video || {};
+    var fig = document.querySelector('[data-prova-video]');
+    if (fig && video.src && window.fetch) {
+      fetch(video.src, { method: 'HEAD' })
+        .then(function (r) {
+          if (!r.ok) return;
+          var v = fig.querySelector('video');
+          if (video.poster) v.poster = video.poster;
+          v.src = video.src; // preload="none": nada baixa até o clique no play
+          v.addEventListener('play', function () { souzEvento('video-play', { local: 'prova' }); }, { once: true });
+          fig.hidden = false;
+        })
+        .catch(function () {});
+    }
+  }
+
+  /* ------------------------------------------------------------ envio ao endpoint
+     Só se FORM_ENDPOINT estiver preenchido. Nada além do que o formulário
+     pede (o contato, ou as respostas dos chips). */
+  function enviarEndpoint(dados) {
+    if (!CFG.formEndpoint || !window.fetch) return Promise.reject(new Error('sem endpoint'));
+    var corpo = Object.assign({}, CFG.formCamposExtras || {}, dados);
+    return fetch(CFG.formEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(corpo),
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r;
+    });
+  }
+
+  /* ------------------------------------------------------------ relatório de exemplo (B3) */
+  function iniciarIsca() {
+    var form = document.querySelector('[data-form="isca"]');
+    if (!form) return;
+    var campo = form.querySelector('[name="contato"]');
+    var aceite = form.querySelector('[name="consentimento"]');
+    var status = form.querySelector('.form-status');
+    var botao = form.querySelector('button[type="submit"]');
+    var MSG = 'Oi, quero ver o relatório de exemplo do Souz';
+    function avisar(texto, tom, html) {
+      status.className = 'form-status' + (tom ? ' ' + tom : '');
+      if (html) status.innerHTML = texto; else status.textContent = texto;
+    }
+    function contatoValido(v) {
+      var email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+      var digitos = v.replace(/\D/g, '');
+      var fone = !/@/.test(v) && digitos.length >= 10 && digitos.length <= 13;
+      return email || fone;
+    }
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var v = campo.value.trim();
+      campo.removeAttribute('aria-invalid');
+      if (!contatoValido(v)) {
+        campo.setAttribute('aria-invalid', 'true');
+        campo.focus();
+        avisar('Confira o contato: um e-mail (nome@empresa.com) ou um WhatsApp com DDD.', 'erro');
+        return;
+      }
+      if (!aceite.checked) {
+        aceite.focus();
+        avisar('Para mandar o relatório, marque a autorização de contato.', 'erro');
+        return;
+      }
+      souzEvento('relatorio-exemplo', { destino: CFG.formEndpoint ? 'formulario' : 'whatsapp' });
+      /* honeypot preenchido: robô — finge que deu certo e não manda nada */
+      if (form.querySelector('[name="site_empresa"]').value) { avisar('Recebido.', 'ok'); form.reset(); return; }
+      if (!CFG.formEndpoint) {
+        abrirContato(MSG);
+        avisar('Abrimos o WhatsApp com a mensagem pronta. É só enviar.', 'ok');
+        return;
+      }
+      botao.disabled = true;
+      avisar('Enviando…');
+      enviarEndpoint({ origem: 'relatorio-exemplo', contato: v, consentimento: true })
+        .then(function () {
+          avisar('Recebido. Vamos mandar o relatório de exemplo para ' + v + '.', 'ok');
+          form.reset();
+        })
+        .catch(function () {
+          avisar('Não deu para enviar agora. Tente de novo ou <a href="' + esc(linkContato(MSG)) + '" target="_blank" rel="noopener">peça pelo WhatsApp</a>.', 'erro', true);
+        })
+        .then(function () { botao.disabled = false; });
+    });
+  }
+
+  /* ------------------------------------------------------------ conte sobre sua carteira (B4) */
+  function iniciarQualifica() {
+    var form = document.querySelector('[data-form="qualifica"]');
+    if (!form) return;
+    var status = form.querySelector('.form-status');
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var r = {};
+      var falta = [];
+      [['obras', 'quantas obras'], ['controle', 'onde controla'], ['problema', 'o maior problema']].forEach(function (p) {
+        var marcado = form.querySelector('[name="' + p[0] + '"]:checked');
+        if (marcado) r[p[0]] = marcado.value; else falta.push(p[1]);
+      });
+      if (falta.length) {
+        status.className = 'form-status erro';
+        status.textContent = 'Falta escolher: ' + falta.join(', ') + '.';
+        var primeiro = form.querySelector('[name="' + (!r.obras ? 'obras' : !r.controle ? 'controle' : 'problema') + '"]');
+        if (primeiro) primeiro.focus();
+        return;
+      }
+      var mensagem = 'Olá! Quero conhecer o Souz. Tenho ' + r.obras + ' obras ativas, hoje controlo em ' +
+        r.controle + ' e o meu maior problema é ' + r.problema + '.';
+      souzEvento('qualifica-whatsapp', { obras: r.obras, controle: r.controle, problema: r.problema });
+      abrirContato(mensagem);
+      if (CFG.formEndpoint) enviarEndpoint({ origem: 'sua-carteira', obras: r.obras, controle: r.controle, problema: r.problema }).catch(function () {});
+      status.className = 'form-status ok';
+      status.textContent = 'Abrimos o WhatsApp com as suas respostas. É só enviar.';
+    });
+  }
+
+  /* ------------------------------------------------------------ calculadora caixa em risco (B5)
+     obras × gasto médio mensal por obra × (dias de atraso ÷ 30). Nada é
+     guardado nem enviado — só vai no WhatsApp se a pessoa clicar. */
+  function lerNumero(v) {
+    var s = String(v || '').replace(/[^\d.,]/g, '');
+    if (!s) return 0;
+    if (s.indexOf(',') >= 0) s = s.replace(/\./g, '').replace(',', '.');
+    else if (/\.\d{3}(\.|$)/.test(s)) s = s.replace(/\./g, '');
+    var n = parseFloat(s);
+    return isFinite(n) ? n : 0;
+  }
+  function iniciarCalc() {
+    var raiz = document.querySelector('[data-calc]');
+    if (!raiz) return;
+    var fmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+    var obras = raiz.querySelector('[data-calc-obras]');
+    var gasto = raiz.querySelector('[data-calc-gasto]');
+    var dias = raiz.querySelector('[data-calc-dias]');
+    var saida = raiz.querySelector('[data-calc-valor]');
+    var botao = raiz.querySelector('[data-calc-whats]');
+    var mostrado = 0;
+    var anim = 0;
+    var medido = false;
+    function valores() {
+      var o = Math.max(0, Math.round(lerNumero(obras.value)));
+      var g = Math.max(0, lerNumero(gasto.value));
+      var d = Math.max(0, Math.round(lerNumero(dias.value)));
+      return { o: o, g: g, d: d, total: o * g * (d / 30) };
+    }
+    function contar(ate) {
+      cancelAnimationFrame(anim);
+      var de = mostrado;
+      if (!MOVIMENTO || Math.abs(ate - de) < 1) { mostrado = ate; saida.textContent = fmt.format(ate); return; }
+      var t0 = performance.now();
+      var dur = 1200;
+      (function passo(t) {
+        var k = Math.min(1, (t - t0) / dur);
+        var e = 1 - Math.pow(1 - k, 3); // easeOutCubic
+        mostrado = de + (ate - de) * e;
+        saida.textContent = fmt.format(mostrado);
+        if (k < 1) anim = requestAnimationFrame(passo);
+      })(t0);
+    }
+    function atualizar() {
+      var v = valores();
+      contar(v.total);
+      var msg = 'Olá! Fiz a conta no site do Souz: ' + v.o + ' obras ativas, gasto médio de ' + fmt.format(v.g) +
+        ' por obra ao mês e ' + v.d + ' dias de atraso no recebimento — cerca de ' + fmt.format(v.total) +
+        ' parado. Quero ver isso no Souz.';
+      botao.href = linkContato(msg);
+      botao.target = '_blank';
+      botao.rel = 'noopener';
+    }
+    [obras, gasto, dias].forEach(function (c) {
+      c.addEventListener('input', function () {
+        atualizar();
+        if (!medido) { medido = true; souzEvento('calculadora-usada', {}); }
+      });
+    });
+    botao.addEventListener('click', function () { souzEvento('calculadora-whatsapp', {}); });
+    /* o primeiro resultado conta a partir de zero quando a calculadora aparece */
+    saida.textContent = fmt.format(0);
+    if ('IntersectionObserver' in window) {
+      var obs = new IntersectionObserver(function (e) {
+        if (e[0].isIntersecting) { atualizar(); obs.disconnect(); }
+      }, { threshold: 0.4 });
+      obs.observe(raiz);
+    } else {
+      atualizar();
     }
   }
 
@@ -695,6 +989,10 @@
     iniciarBrilhoCards();
     iniciarSubstitui();
     iniciarNavAtiva();
+    iniciarProva();
+    iniciarIsca();
+    iniciarQualifica();
+    iniciarCalc();
     iniciarHistoria();
     iniciarRolagem();
     /* o gabarito (canvas) não disputa a carga: começa depois do load, ocioso */
