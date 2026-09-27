@@ -74,7 +74,7 @@
 </script>
 
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; upgrade-insecure-requests" />
-<meta name="theme-color" content="#05100E" />
+<meta name="theme-color" content="#020605" />
 <script src="mov.js?v=7"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png" />
@@ -104,7 +104,7 @@
      ================================================================== */
   :root {
     color-scheme: dark;
-    --preto: #05100e;
+    --preto: #020605; /* preto da moldura, mais fundo que o Souz Preto #05100E */
     --grafite: #0e1a17;
     --elevado: #0e2824;
     --chumbo: #121416;
@@ -224,7 +224,7 @@
   /* ----------------------------------------------------------------- nav */
   .nav { --line: #1c2e2a; position: fixed; top: 0; left: 0; right: 0; z-index: 90; border-bottom: 1px solid transparent; transition: background-color 0.3s ease, border-color 0.3s ease; }
   .nav--solido {
-    background: #05100ecc;
+    background: #020605cc;
     -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
     border-bottom-color: var(--line);
   }
@@ -321,14 +321,6 @@
   }
   .hero__tela { transform-origin: 50% 100%; transform: rotateX(calc((1 - var(--p, 1)) * 6deg)); }
   .hero__tela .janela { box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 60px 120px -50px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(47, 212, 196, 0.06); }
-  /* "no azul?": um destaque que se desenha da esquerda para a direita */
-  .hero h1 .destaque { position: relative; display: inline-block; isolation: isolate; }
-  .hero h1 .destaque::after {
-    content: ''; position: absolute; left: -0.04em; right: -0.04em; bottom: 0.04em; height: 0.2em; z-index: -1; border-radius: 2px;
-    background: rgba(11, 125, 114, 0.55); transform-origin: 0 50%; transform: scaleX(1);
-  }
-  .js-mov .hero h1 .destaque::after { transform: scaleX(0); transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.3, 1) 0.55s; }
-  .js-mov .hero h1.on .destaque::after { transform: scaleX(1); }
 
   /* ----------------------------------------------------------- manifesto */
   .manifesto { padding: 160px 0; }
@@ -535,7 +527,7 @@
     .cta-fixo {
       display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 85;
       padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
-      background: #05100ecc; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+      background: #020605cc; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
       border-top: 1px solid #1c2e2a;
       transform: translateY(110%); transition: transform 0.3s var(--ease); visibility: hidden;
     }
@@ -750,7 +742,7 @@
         </g>
       </svg>
       <span class="eyebrow rv">Gestão de obra para construtoras</span>
-      <h1 class="rv rv-d1">Sua obra fecha <span class="acc destaque">no azul?</span></h1>
+      <h1 class="rv rv-d1">Sua obra fecha <span class="acc">no azul?</span></h1>
       <p class="subtitulo hero__lede rv rv-d2">
         Cada real que entra e sai de cada obra, num painel só. Você vê o gasto, o caixa e a
         margem de toda a carteira — hoje, não no fechamento.
