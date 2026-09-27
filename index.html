@@ -73,23 +73,30 @@
   }
 </script>
 
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; upgrade-insecure-requests" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; upgrade-insecure-requests" />
 <meta name="theme-color" content="#05100E" />
-<script src="mov.js?v=6"></script>
+<script src="mov.js?v=7"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png" />
 <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png" />
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
 
 <link rel="preload" as="image" type="image/avif" imagesrcset="img/telas/tela-carteira-1280.avif 1280w, img/telas/tela-carteira-1680.avif 1680w" imagesizes="(max-width:1240px) 94vw, 1160px" fetchpriority="high" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
-/>
+<link rel="preload" href="fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin />
 
 <style>
+  /* fontes no próprio site (OFL): Archivo variável 400–800 e IBM Plex Mono,
+     só o subconjunto latino — sem a folha do Google bloqueando o desenho */
+  @font-face { font-family: 'Archivo'; font-style: normal; font-weight: 400 800; font-display: swap;
+    src: url(fonts/archivo-latin.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 400; font-display: swap;
+    src: url(fonts/ibm-plex-mono-400-latin.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 500; font-display: swap;
+    src: url(fonts/ibm-plex-mono-500-latin.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
   /* ==================================================================
      SouZ Controle de Obra — site institucional, Manual da Marca v1.0.
      Dark-first. Ciano só em ação e resultado. Raio 0 em divisória,
@@ -165,13 +172,13 @@
     font-family: var(--sans); font-size: 16px; line-height: 1.6;
     -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: clip;
   }
-  h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.022em; text-wrap: balance; color: var(--ink); }
-  p { margin: 0; }
+  h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.02em; text-wrap: balance; color: var(--ink); }
+  p { margin: 0; max-width: 62ch; }
   ul { margin: 0; padding: 0; list-style: none; }
   a { color: inherit; text-decoration: none; }
   img, svg { display: block; max-width: 100%; }
   b, strong { font-weight: 600; color: var(--ink); }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  :focus-visible { outline: 2px solid var(--ciano-claro); outline-offset: 3px; }
 
   .skip-link {
     position: fixed; top: -60px; left: 12px; z-index: 200; background: var(--accent-solid); color: var(--on-accent);
@@ -186,11 +193,12 @@
   .wrap { width: 100%; max-width: var(--w); margin: 0 auto; padding: 0 24px; }
   @media (max-width: 560px) { .wrap { padding: 0 18px; } }
 
-  .eyebrow { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 14px; }
+  .eyebrow { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 14px; }
+  .hero .eyebrow { margin-bottom: 10px; }
   .display { font-size: clamp(36px, 6.4vw, 64px); line-height: 1.03; letter-spacing: -0.035em; font-weight: 800; }
-  .titulo { font-size: clamp(28px, 3.8vw, 44px); line-height: 1.08; letter-spacing: -0.03em; font-weight: 800; }
-  .subtitulo { font-size: clamp(17px, 1.9vw, 20px); line-height: 1.5; color: var(--ink-2); font-weight: 400; max-width: 60ch; }
-  .texto { font-size: 16.5px; line-height: 1.6; color: var(--ink-2); max-width: 58ch; }
+  .titulo { font-size: clamp(28px, 3.8vw, 44px); line-height: 1.08; letter-spacing: -0.02em; font-weight: 800; }
+  .subtitulo { font-size: clamp(17px, 1.9vw, 20px); line-height: 1.5; color: var(--ink-2); font-weight: 400; max-width: 62ch; }
+  .texto { font-size: 16.5px; line-height: 1.6; color: var(--ink-2); max-width: 62ch; }
   .acc { color: var(--accent); }
   .centro { text-align: center; }
   .centro .subtitulo, .centro .texto { margin-left: auto; margin-right: auto; }
@@ -200,8 +208,15 @@
     padding: 15px 24px; border-radius: var(--r); border: 1px solid transparent; cursor: pointer; white-space: nowrap;
     transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
   }
-  .btn--primario { background: var(--accent-solid); color: var(--on-accent); }
+  .btn--primario { position: relative; overflow: hidden; isolation: isolate; background: var(--accent-solid); color: var(--on-accent); }
   .btn--primario:hover { background: var(--ciano-claro); color: #05100e; }
+  /* brilho que passa no hover (700 ms), só transform */
+  .btn--primario::after {
+    content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 60%; z-index: -1; pointer-events: none;
+    background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0.45) 50%, transparent 100%);
+    transform: translateX(-180%) skewX(-18deg);
+  }
+  .btn--primario:hover::after { transform: translateX(260%) skewX(-18deg); transition: transform 0.7s ease; }
   .btn--fantasma { background: transparent; color: var(--ink); border-color: var(--line-strong); }
   .btn--fantasma:hover { border-color: var(--accent); color: var(--accent); }
   .btn:active { transform: translateY(1px); }
@@ -209,8 +224,8 @@
   /* ----------------------------------------------------------------- nav */
   .nav { --line: #1c2e2a; position: fixed; top: 0; left: 0; right: 0; z-index: 90; border-bottom: 1px solid transparent; transition: background-color 0.3s ease, border-color 0.3s ease; }
   .nav--solido {
-    background: color-mix(in srgb, var(--preto) 82%, transparent);
-    -webkit-backdrop-filter: saturate(140%) blur(14px); backdrop-filter: saturate(140%) blur(14px);
+    background: #05100ecc;
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
     border-bottom-color: var(--line);
   }
   .nav__inner { display: flex; align-items: center; gap: 20px; height: 64px; }
@@ -219,6 +234,7 @@
   .nav__links { margin-left: auto; display: flex; align-items: center; gap: 28px; }
   .nav__links a.navlink { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; color: var(--ink-3); transition: color 0.16s ease; }
   .nav__links a.navlink:hover { color: var(--ink); }
+  .nav__links a.navlink.ativo { color: var(--ciano-claro); }
   .nav__links .btn { padding: 11px 18px; font-size: 14px; }
   .nav__gaveta-btn { display: none; background: none; border: 0; color: #fff; padding: 8px; cursor: pointer; }
   @media (max-width: 860px) {
@@ -234,57 +250,85 @@
 
   /* --------------------------------------------------------------- seção */
   .secao { position: relative; padding: 136px 0; }
-  .secao--elevada { background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .secao--elevada { background: var(--surface); }
+  /* separador entre seções: 1px de ciano que some nas pontas */
+  main > section + section::before, main > .respiro + section::before, main > section + .respiro::before, footer.rodape::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; z-index: 3; pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(47, 212, 196, 0.28) 50%, transparent);
+  }
   section[id] { scroll-margin-top: 72px; }
   @media (max-width: 720px) { .secao { padding: 80px 0; } }
   .secao__cabecalho { margin-bottom: 56px; max-width: 64ch; }
   .secao__cabecalho .subtitulo { margin-top: 16px; }
 
-  .rv { opacity: 0; transform: translateY(12px); transition: opacity 0.4s var(--ease), transform 0.4s var(--ease); }
-  .rv.on { opacity: 1; transform: none; }
-  .rv-d1 { transition-delay: 0.06s; } .rv-d2 { transition-delay: 0.12s; } .rv-d3 { transition-delay: 0.18s; }
+  /* reveal: só esconde com JS ligado (mov.js marca .js / .js-mov no <head>);
+     o atraso em cascata (80 ms) vem do site.js. Rolagem rápida liga .sem-anim */
+  .js-mov .rv { opacity: 0; transform: translateY(16px); transition: opacity 0.5s var(--ease), transform 0.5s var(--ease); }
+  .js-mov .rv.on { opacity: 1; transform: none; }
+  .js-mov.sem-anim .rv { transition: none !important; }
+  /* cards e planos: a transição do reveal soma com a do hover e do brilho */
+  .js-mov .fato.rv { transition: opacity 0.5s var(--ease), transform 0.3s var(--ease), --mx 0.15s linear, --my 0.15s linear; }
+  .js-mov .plano.rv { transition: opacity 0.5s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s ease, border-color 0.3s ease; }
 
   /* janela mínima para as telas reais */
   /* a janela é sempre a tela escura do sistema: chumbo, mesmo dentro da moldura ou do papel */
-  .janela { --surface: var(--chumbo-cartao); --surface-2: var(--chumbo-alto); --line: var(--fio); --line-strong: var(--fio-forte); --ink-3: var(--cinza); background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r); overflow: hidden; text-align: left; }
+  .janela {
+    --surface: var(--chumbo-cartao); --surface-2: var(--chumbo-alto); --line: var(--fio); --line-strong: var(--fio-forte); --ink-3: var(--cinza);
+    position: relative; background: var(--surface); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--r); overflow: hidden; text-align: left;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 30px 80px -24px rgba(0, 0, 0, 0.65), 0 12px 24px -12px rgba(0, 0, 0, 0.5);
+  }
+  /* brilho no topo da moldura */
+  .janela::before {
+    content: ''; position: absolute; top: 0; left: 8%; right: 8%; height: 1px; z-index: 2; pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  }
   .janela__barra { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
-  .janela__barra i { width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong); }
+  .janela__barra { background: linear-gradient(180deg, #25282c, var(--surface-2)); }
+  .janela__barra i { width: 9px; height: 9px; border-radius: 50%; background: #3a3e44; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06); }
   .janela__barra span { margin-left: 10px; font-family: var(--mono); font-size: 11px; color: var(--ink-3); letter-spacing: 0.04em; }
   .janela img { width: 100%; height: auto; }
   .janela[data-zoom] { cursor: zoom-in; }
   .janela[data-zoom]:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   .zoom { border: 0; padding: 0; background: transparent; max-width: 96vw; max-height: 94vh; overflow: visible; }
   .zoom::backdrop { background: rgba(3, 8, 7, 0.9); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
-  .zoom img { display: block; max-width: 96vw; max-height: 90vh; width: auto; height: auto; border-radius: var(--r); border: 1px solid var(--line-strong); }
+  .zoom img { display: block; max-width: 96vw; max-height: 90vh; width: auto; height: auto; border-radius: var(--r); border: 1px solid var(--line-strong); touch-action: pinch-zoom; }
   .zoom button { position: fixed; top: 16px; right: 16px; background: var(--surface); color: var(--ink); border: 1px solid var(--line-strong); border-radius: var(--r); padding: 10px 14px; font: inherit; font-size: 14px; cursor: pointer; }
   .zoom p { margin-top: 10px; text-align: center; font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
   .legenda { font-family: var(--mono); font-size: 12px; color: var(--ink-3); line-height: 1.5; margin-top: 12px; }
 
   /* ---------------------------------------------------------------- hero */
-  .hero { position: relative; overflow: hidden; isolation: isolate; text-align: center; padding: 148px 0 96px; }
+  .hero { position: relative; overflow: hidden; isolation: isolate; text-align: center; padding: 88px 0 88px; }
   .hero__fundo {
     position: absolute; inset: 0; z-index: 0;
     /* Souz Preto liso atrás da malha; as linhas no verde dos botões */
     background: var(--preto);
   }
   .hero__inner { position: relative; z-index: 2; }
-  .hero h1 { margin: 0 auto; max-width: 13ch; font-size: clamp(42px, 8vw, 88px); line-height: 0.98; letter-spacing: -0.045em; font-weight: 800; }
-  .hero__lede { margin: 22px auto 0; max-width: 52ch; }
-  .hero__cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
-  .hero__fatos { margin-top: 26px; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 10px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+  /* o título escala também pela altura da tela: em janela baixa ele cede
+     espaço para o print entrar na primeira tela */
+  .hero h1 { margin: 0 auto; max-width: 13ch; font-size: clamp(40px, min(8vw, 7.4vh), 88px); line-height: 0.98; letter-spacing: -0.045em; font-weight: 800; }
+  .hero__lede { margin: 14px auto 0; max-width: 60ch; }
+  .hero__cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+  .hero__fatos { margin-top: 14px; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 10px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
   .hero__fatos span { display: inline-flex; align-items: center; gap: 10px; }
   .hero__fatos span + span::before { content: ''; width: 3px; height: 3px; background: var(--line-strong); }
-  .hero__palco { position: relative; z-index: 2; max-width: 1200px; margin: 64px auto 0; padding: 0 20px; }
+  /* o print é o protagonista: até 1180px, inclinado 6° que se desfaz com
+     a rolagem (--p, site.js), e um halo ciano atrás */
+  .hero__palco { position: relative; z-index: 2; max-width: 1220px; margin: 28px auto 0; padding: 0 20px; perspective: 1600px; }
   .hero__palco::before {
-    content: ''; position: absolute; left: 10%; right: 10%; top: 12%; bottom: -4%; z-index: -1;
-    background: radial-gradient(50% 50% at 50% 50%, rgba(47, 212, 196, 0.10), transparent 70%);
+    content: ''; position: absolute; left: 4%; right: 4%; top: -6%; bottom: 6%; z-index: -1; pointer-events: none;
+    background: radial-gradient(50% 50% at 50% 42%, rgba(47, 212, 196, 0.18), transparent 72%);
   }
-  .hero__tela {
-    transform-origin: 50% 0;
-    transform: scale(calc(0.94 + var(--p, 1) * 0.06));
-    will-change: transform;
+  .hero__tela { transform-origin: 50% 100%; transform: rotateX(calc((1 - var(--p, 1)) * 6deg)); }
+  .hero__tela .janela { box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 60px 120px -50px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(47, 212, 196, 0.06); }
+  /* "no azul?": um destaque que se desenha da esquerda para a direita */
+  .hero h1 .destaque { position: relative; display: inline-block; isolation: isolate; }
+  .hero h1 .destaque::after {
+    content: ''; position: absolute; left: -0.04em; right: -0.04em; bottom: 0.04em; height: 0.2em; z-index: -1; border-radius: 2px;
+    background: rgba(11, 125, 114, 0.55); transform-origin: 0 50%; transform: scaleX(1);
   }
-  .hero__tela .janela { box-shadow: 0 50px 100px -60px rgba(0, 0, 0, 0.9); }
+  .js-mov .hero h1 .destaque::after { transform: scaleX(0); transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.3, 1) 0.55s; }
+  .js-mov .hero h1.on .destaque::after { transform: scaleX(1); }
 
   /* ----------------------------------------------------------- manifesto */
   .manifesto { padding: 160px 0; }
@@ -294,15 +338,33 @@
   @media (max-width: 720px) { .manifesto { padding: 96px 0; } }
 
   /* ------------------------------------------------------------ problema */
-  .fatos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--line); border: 1px solid var(--line); }
+  .fatos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   @media (max-width: 760px) { .fatos { grid-template-columns: 1fr; } }
-  .fato { background: var(--surface); padding: 32px 28px; }
+  /* borda em degradê (ciano 25% no topo, 0 embaixo) e um brilho que segue o
+     cursor (--mx/--my, suavizado em 150 ms pela transição da propriedade) */
+  @property --mx { syntax: '<length>'; inherits: false; initial-value: 50%; }
+  @property --my { syntax: '<length>'; inherits: false; initial-value: 0px; }
+  .fato {
+    position: relative; isolation: isolate; padding: 32px 28px; border-radius: var(--r); border: 1px solid transparent;
+    background:
+      linear-gradient(var(--ground), var(--ground)) padding-box,
+      linear-gradient(180deg, rgba(47, 212, 196, 0.25), rgba(47, 212, 196, 0)) border-box;
+    transition: transform 0.3s var(--ease), --mx 0.15s linear, --my 0.15s linear;
+  }
+  .fato::before {
+    content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; opacity: 0;
+    background: radial-gradient(260px circle at var(--mx) var(--my), rgba(47, 212, 196, 0.12), transparent 70%);
+    transition: opacity 0.25s ease;
+  }
+  .fato:hover { transform: translateY(-4px); }
+  .fato:hover::before { opacity: 1; }
+  .js-mov .fato.rv.on:hover { transform: translateY(-4px); }
   .fato .num { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: var(--muted); }
   .fato h3 { font-size: 19px; margin-top: 14px; line-height: 1.25; }
   .fato p { margin-top: 10px; font-size: 15px; line-height: 1.55; color: var(--ink-3); }
   .virada { margin-top: 64px; padding-top: 48px; border-top: 1px solid var(--line); display: grid; gap: 18px; }
   .fecho { font-size: clamp(30px, 4.6vw, 52px); line-height: 1.04; font-weight: 800; letter-spacing: -0.035em; color: var(--ink); }
-  .substitui { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .substitui { position: relative; margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
   .substitui .item { position: relative; font-family: var(--mono); font-size: 13px; color: var(--ink-3); border: 1px solid var(--line-strong); border-radius: var(--r); padding: 9px 14px; }
   .substitui .item::after { content: ''; position: absolute; left: 10px; right: 10px; top: 50%; height: 1.5px; background: var(--muted); transform: scaleX(0); transform-origin: 0 50%; transition: transform 0.5s var(--ease); }
   .substitui.on .item::after { transform: scaleX(1); }
@@ -312,7 +374,18 @@
   .substitui.on .item:nth-child(5)::after { transition-delay: 0.48s; }
   .substitui.on .item:nth-child(6)::after { transition-delay: 0.6s; }
   .substitui .quebra { flex-basis: 100%; height: 6px; }
-  .substitui .souz { display: inline-flex; align-items: center; gap: 10px; background: var(--accent-solid); color: var(--on-accent); font-weight: 700; font-size: 15px; border-radius: var(--r); padding: 10px 18px; }
+  .substitui .souz { position: relative; display: inline-flex; align-items: center; gap: 10px; background: var(--accent-solid); color: var(--on-accent); font-weight: 700; font-size: 15px; border-radius: var(--r); padding: 10px 18px; }
+  /* no fim, as planilhas convergem para o botão, que acende */
+  .substitui .souz::after {
+    content: ''; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; opacity: 0;
+    box-shadow: 0 0 0 1px var(--ciano-claro), 0 0 32px 2px rgba(47, 212, 196, 0.45);
+    transition: opacity 0.5s ease;
+  }
+  .substitui.aceso .souz::after { opacity: 1; }
+  .item-voo {
+    position: absolute; z-index: 2; pointer-events: none; margin: 0; white-space: nowrap;
+    transition: transform 0.65s cubic-bezier(0.55, 0, 0.3, 1), opacity 0.65s ease;
+  }
   .substitui .souz svg { width: 20px; height: 20px; }
 
   /* ------------------------------------------ história com tela fixa */
@@ -328,8 +401,8 @@
   .exemplo-pend span { color: var(--ink-3); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 8px; }
   .historia__visual { position: sticky; top: 88px; height: calc(100vh - 112px); display: flex; flex-direction: column; justify-content: center; }
   .pilha { display: grid; }
-  .pilha > picture { grid-area: 1 / 1; opacity: 0; transform: scale(0.965) translateY(10px); transition: opacity 0.5s ease, transform 0.7s var(--ease); }
-  .pilha > picture.ativo { opacity: 1; transform: none; }
+  .pilha > picture { grid-area: 1 / 1; opacity: 0; transition: opacity 0.3s ease; }
+  .pilha > picture.ativo { opacity: 1; }
   .historia__rodape { display: flex; align-items: center; gap: 14px; margin-top: 16px; font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
   .historia__rodape .trilho { flex: 1; height: 2px; background: var(--line); position: relative; overflow: hidden; }
   .historia__rodape .trilho i { position: absolute; inset: 0; background: var(--ciano-claro); transform-origin: 0 50%; transform: scaleX(0.2); transition: transform 0.5s var(--ease); }
@@ -380,6 +453,14 @@
   .foto-pequena { width: 168px; border-radius: var(--r); overflow: hidden; border: 1px solid var(--line-strong); flex: none; }
   .foto-pequena-legenda { font-family: var(--mono); font-size: 12px; color: var(--ink-3); max-width: 44ch; }
 
+  /* faixa de respiro: grafite com a malha isométrica a 4% */
+  .respiro {
+    position: relative; height: 136px; background-color: var(--grafite);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='60'%3E%3Cpath d='M0 60 L52 30 M0 0 L52 30 M26 -15 L26 75' stroke='%232fd4c4' stroke-opacity='0.04' stroke-width='1' fill='none'/%3E%3C/svg%3E");
+    background-size: 52px 60px;
+  }
+  @media (max-width: 720px) { .respiro { height: 88px; } }
+
   /* --------------------------------------------------------------- dados */
   .dados-lista { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; background: var(--line); border: 1px solid var(--line); }
   @media (max-width: 860px) { .dados-lista { grid-template-columns: repeat(2, 1fr); } }
@@ -391,13 +472,22 @@
   /* -------------------------------------------------------------- planos */
   .planos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   @media (max-width: 820px) { .planos-grid { grid-template-columns: 1fr; } }
-  .plano { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 30px 26px; display: grid; align-content: start; gap: 6px; }
-  .plano--destaque { border-color: var(--accent); }
+  .plano { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 30px 26px; display: grid; align-content: start; gap: 6px; transition: transform 0.3s var(--ease), box-shadow 0.3s ease, border-color 0.3s ease; }
+  .plano:hover { transform: translateY(-6px); border-color: var(--line-strong); }
+  .js-mov .plano.rv.on:hover { transform: translateY(-6px); }
+  .plano--destaque { border-color: var(--accent); transform: scale(1.02); box-shadow: 0 0 0 1px rgba(47, 212, 196, 0.25), 0 30px 90px -30px rgba(47, 212, 196, 0.35); }
+  .js-mov .plano--destaque.rv.on { transform: scale(1.02); }
+  .plano--destaque:hover, .js-mov .plano--destaque.rv.on:hover { transform: translateY(-6px) scale(1.02); border-color: var(--accent); }
+  .plano .selo { position: absolute; top: -11px; left: 26px; font-family: var(--mono); font-size: 10.5px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; background: var(--ciano); color: #fbfcfb; padding: 4px 10px; border-radius: 4px; }
   .plano .pnome { font-size: 19px; font-weight: 800; color: var(--ink); }
   .plano .pfaixa { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
   .plano ul { margin-top: 16px; display: grid; gap: 8px; }
-  .plano li { position: relative; padding-left: 18px; font-size: 14px; color: var(--ink-2); }
-  .plano li::before { content: ''; position: absolute; left: 0; top: 8px; width: 5px; height: 5px; background: var(--accent); }
+  .plano li { position: relative; padding-left: 24px; font-size: 14px; color: var(--ink-2); }
+  /* check em SVG (site.js) que se traça quando o card entra */
+  .plano li .check { position: absolute; left: 0; top: 4px; width: 14px; height: 14px; overflow: visible; }
+  .plano li .check path { fill: none; stroke: var(--ciano-claro); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .js-mov .plano li .check path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 0.45s ease; }
+  .js-mov .plano.on li .check path { stroke-dashoffset: 0; }
   .plano .ppreco { margin-top: 20px; font-family: var(--mono); font-size: 13px; color: var(--ink); padding-top: 16px; border-top: 1px solid var(--line); }
   .plano .btn { margin-top: 16px; width: 100%; }
   .planos-nota { margin-top: 24px; font-size: 14px; color: var(--ink-3); }
@@ -439,52 +529,46 @@
   .rodape__links a:hover { color: var(--accent); }
   .rodape__base { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 24px; font-size: 13px; color: var(--ink-3); }
 
-  .whats-flut { position: fixed; right: 20px; bottom: 20px; z-index: 80; width: 54px; height: 54px; border-radius: 50%; background: var(--accent-solid); color: var(--on-accent); display: flex; align-items: center; justify-content: center; }
+  .whats-flut { position: fixed; right: 20px; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 80; width: 54px; height: 54px; border-radius: 50%; background: var(--accent-solid); color: var(--on-accent); display: flex; align-items: center; justify-content: center; transition: transform 0.3s var(--ease); }
+  .cta-fixo { display: none; }
+  @media (max-width: 860px) {
+    .cta-fixo {
+      display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 85;
+      padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+      background: #05100ecc; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+      border-top: 1px solid #1c2e2a;
+      transform: translateY(110%); transition: transform 0.3s var(--ease); visibility: hidden;
+    }
+    .cta-fixo .btn { width: 100%; }
+    .cta-fixo.visivel { transform: none; visibility: visible; }
+    /* o botão de chat sobe para não cobrir a barra */
+    body.com-cta-fixo .whats-flut { transform: translateY(-72px); }
+  }
   .whats-flut:hover { background: var(--ciano-claro); color: #05100e; }
+
+  /* cubo em contorno como marca d'água (1px, 6%), com parallax de 0,15× */
+  #problema, #para-quem, #planos { overflow: hidden; overflow: clip; }
+  .marca-dagua { position: absolute; z-index: 0; width: min(560px, 70vw); height: auto; aspect-ratio: 340 / 342; color: var(--nevoa); opacity: 0.06; pointer-events: none; }
+  .marca-dagua--dir { right: -120px; top: 60px; }
+  .marca-dagua--esq { left: -140px; top: 40px; }
+  .secao > .wrap { position: relative; z-index: 1; }
 
 
   /* ==================================================================
-     v4 — gabarito e nível a laser. A malha isométrica de 30° (Manual,
-     prancha 04: textura quase invisível) é locada a partir do centro e
-     acende sob o cursor, como estacas de gabarito; as telas entram por um
-     corte diagonal de 30° com a linha de um nível a laser. Nada gira,
-     nada inclina em 3D, o símbolo não ganha efeito.
+     Gabarito: a malha isométrica de 30° é locada a partir do centro e
+     acende sob o cursor, como estacas de gabarito (site.js). Cotas na
+     tela do topo; linha da obra presa na horizontal.
      ================================================================== */
   .gabarito { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; pointer-events: none; }
   .hero__fundo { z-index: 0; }
   .cta-final .gabarito { z-index: 0; }
 
-  /* o símbolo se constrói: contorno traço a traço, depois as três faces */
-  .hero__cubo { width: 64px; height: 64px; margin: 0 auto 26px; overflow: visible; }
-  .js-mov .hero__cubo polygon { stroke-dasharray: 1; stroke-dashoffset: 1; fill-opacity: 0; animation: cubo-traco 0.9s var(--ease) forwards, cubo-face 0.5s ease forwards; }
-  .js-mov .hero__cubo g g:first-child polygon:nth-child(1) { animation-delay: 0s, 0.95s; }
-  .js-mov .hero__cubo g g:first-child polygon:nth-child(2) { animation-delay: 0.12s, 1.02s; }
-  .js-mov .hero__cubo g g:first-child polygon:nth-child(3) { animation-delay: 0.24s, 1.09s; }
-  .js-mov .hero__cubo g g:last-child polygon:nth-child(1) { animation-delay: 0.36s, 1.16s; }
-  .js-mov .hero__cubo g g:last-child polygon:nth-child(2) { animation-delay: 0.48s, 1.23s; }
-  .js-mov .hero__cubo g g:last-child polygon:nth-child(3) { animation-delay: 0.6s, 1.3s; }
-  @keyframes cubo-traco { to { stroke-dashoffset: 0; } }
-  @keyframes cubo-face { to { fill-opacity: 1; } }
-
-  /* corte a laser: a tela aparece atrás de uma diagonal de 30° que varre
-     do canto de cima à esquerda; a linha do laser vai na borda do corte */
-  @property --corte { syntax: '<percentage>'; inherits: false; initial-value: 112%; }
-  .corte {
-    position: relative; --corte: 112%;
-    -webkit-mask-image: linear-gradient(150deg, #000 var(--corte), transparent calc(var(--corte) + 0.2%));
-    mask-image: linear-gradient(150deg, #000 var(--corte), transparent calc(var(--corte) + 0.2%));
-    transition: --corte 1.25s cubic-bezier(0.65, 0, 0.25, 1);
-  }
-  .corte::after {
-    content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none;
-    background: linear-gradient(150deg,
-      transparent calc(var(--corte) - 7%),
-      rgba(47, 212, 196, 0.10) calc(var(--corte) - 2.4%),
-      rgba(47, 212, 196, 0.95) calc(var(--corte) - 0.25%),
-      #eafffc var(--corte),
-      transparent calc(var(--corte) + 0.2%));
-  }
-  .js-mov .corte:not(.on) { --corte: -12%; }
+  /* os dois cubos se aproximam na diagonal e encaixam (600 ms, uma vez) */
+  .hero__cubo { width: 46px; height: 46px; margin: 0 auto 12px; overflow: visible; }
+  .js-mov .hero__cubo .cubo-a { animation: cubo-encaixa-a 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+  .js-mov .hero__cubo .cubo-b { animation: cubo-encaixa-b 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+  @keyframes cubo-encaixa-a { from { transform: translate(-46px, -39px); opacity: 0; } 40% { opacity: 1; } to { transform: none; opacity: 1; } }
+  @keyframes cubo-encaixa-b { from { transform: translate(46px, 39px); opacity: 0; } 40% { opacity: 1; } to { transform: none; opacity: 1; } }
 
   /* cotas na tela do topo: pontos numerados, como cota de projeto */
   .marcas { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
@@ -499,10 +583,13 @@
   }
   .marca-ponto b { font-weight: 500; color: inherit; }
   .marca-ponto::before {
-    content: ''; position: absolute; inset: -7px; border-radius: 50%; border: 1px solid rgba(47, 212, 196, 0.7);
-    animation: marca-pulso 2.4s ease-out infinite; animation-delay: inherit;
+    content: ''; position: absolute; inset: -7px; border-radius: 50%; border: 1px solid rgba(47, 212, 196, 0.75);
+    opacity: 0; animation: marca-pulso 4s ease-out infinite;
   }
-  @keyframes marca-pulso { 0% { transform: scale(0.6); opacity: 1; } 80%, 100% { transform: scale(1.5); opacity: 0; } }
+  .marca-ponto[data-marca="2"]::before { animation-delay: 0.35s; }
+  .marca-ponto[data-marca="3"]::before { animation-delay: 0.7s; }
+  .marca-ponto[data-marca="4"]::before { animation-delay: 1.05s; }
+  @keyframes marca-pulso { 0% { transform: scale(0.6); opacity: 0.9; } 30%, 100% { transform: scale(1.7); opacity: 0; } }
   .cotado.marcado .marca-ponto { opacity: 1; transform: none; }
   .cotado.marcado .marca-ponto[data-marca="2"] { transition-delay: 0.12s; }
   .cotado.marcado .marca-ponto[data-marca="3"] { transition-delay: 0.24s; }
@@ -516,25 +603,6 @@
   .cotas li.foco b { background: var(--ciano-claro); border-color: var(--ciano-claro); color: #05100e; }
   @media (max-width: 860px) { .cotas { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 520px) { .cotas { grid-template-columns: 1fr; } .marca-ponto { width: 18px; height: 18px; margin: -9px 0 0 -9px; font-size: 9.5px; } }
-
-  /* história com tela fixa: a tela nova entra pelo corte sobre a anterior */
-  .pilha > picture { opacity: 1; transform: none; transition: --corte 1.1s cubic-bezier(0.65, 0, 0.25, 1); position: relative; z-index: 1; }
-  .pilha > picture:not(.ativo):not(.anterior) { visibility: hidden; transition: none; --corte: -12%; }
-  .pilha > picture.anterior { z-index: 1; --corte: 112%; transition: none; }
-  .pilha > picture.ativo { z-index: 2; --corte: 112%; }
-  .pilha > picture {
-    -webkit-mask-image: linear-gradient(150deg, #000 var(--corte), transparent calc(var(--corte) + 0.2%));
-    mask-image: linear-gradient(150deg, #000 var(--corte), transparent calc(var(--corte) + 0.2%));
-  }
-  .pilha > picture::after { display: none; }
-  .historia__visual .janela { position: relative; }
-  .laser-pilha { position: absolute; left: 0; right: 0; bottom: 0; top: 37px; z-index: 5; pointer-events: none; --corte: 112%;
-    background: linear-gradient(150deg, transparent calc(var(--corte) - 7%), rgba(47, 212, 196, 0.10) calc(var(--corte) - 2.4%), rgba(47, 212, 196, 0.95) calc(var(--corte) - 0.25%), #eafffc var(--corte), transparent calc(var(--corte) + 0.2%));
-    -webkit-mask-image: linear-gradient(150deg, #000 var(--corte), transparent calc(var(--corte) + 0.2%));
-    mask-image: linear-gradient(150deg, #000 var(--corte), transparent calc(var(--corte) + 0.2%));
-  }
-  .laser-pilha.varre { --corte: 112%; transition: --corte 1.1s cubic-bezier(0.65, 0, 0.25, 1); }
-  .laser-pilha.zera { --corte: -12%; transition: none; }
 
   /* ------------------------------------------------- linha da obra
      A seção fica presa na tela e a faixa de etapas corre na horizontal
@@ -551,35 +619,38 @@
   .gantt__fase i::after { content: ''; position: absolute; inset: 0; background: var(--ciano); transform-origin: 0 50%; transform: scaleX(var(--enche, 0)); }
   .gantt__fase.ativa span { color: var(--accent); }
   .gantt__fase.feita i::after { background: var(--fio-forte); }
-  .trilha__faixa { display: flex; gap: 28px; padding: 56px max(24px, calc((100vw - 1200px) / 2 + 24px)) 8px; }
-  .trilha__painel { flex: none; width: min(78vw, 820px); display: grid; gap: 22px; align-content: start; }
+  /* fora do modo preso (celular, movimento reduzido): lista vertical */
+  .trilha__faixa { display: flex; flex-direction: column; gap: 56px; max-width: 1200px; margin: 0 auto; padding: 56px 24px 8px; }
+  .trilha__painel { display: grid; gap: 22px; align-content: start; max-width: 900px; }
   .trilha__texto { max-width: 56ch; }
   .trilha__texto .pnum { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
   .trilha__texto h3 { font-size: clamp(24px, 2.6vw, 30px); letter-spacing: -0.028em; font-weight: 800; margin-top: 10px; }
   .trilha__texto p { margin-top: 10px; font-size: 16px; color: var(--ink-3); line-height: 1.55; }
-  .trilha__fim { width: min(78vw, 460px); align-content: center; border-left: 1px solid var(--line-strong); padding-left: 36px; }
+  .trilha__fim { border-top: 1px solid var(--line-strong); padding-top: 32px; }
   .trilha__fim .btn { margin-top: 24px; justify-self: start; }
   /* presa: abaixo da barra do topo, texto ao lado da tela; a tela tem a
      largura que a altura da janela comporta (proporção das capturas) */
   .linha-obra.presa .trilha__fixo { position: sticky; top: 0; height: 100vh; min-height: 620px; display: flex; flex-direction: column; justify-content: center; gap: 40px; padding: 88px 0 28px; overflow: hidden; }
   .linha-obra.presa .trilha__cab .titulo { max-width: none; font-size: clamp(28px, 3vw, 40px); }
-  .linha-obra.presa .trilha__faixa { will-change: transform; padding-top: 0; align-items: center; }
+  .linha-obra.presa .trilha__faixa { flex-direction: row; gap: 28px; max-width: none; margin: 0; padding: 0 max(24px, calc((100% - 1200px) / 2 + 24px)) 8px; align-items: center; }
+  .linha-obra.presa .trilha__painel { flex: none; max-width: none; }
+  .linha-obra.presa.visivel .trilha__faixa { will-change: transform; }
   .linha-obra.presa .trilha__painel { --tela: min(56vw, (100vh - 330px) * 1.875, 980px); width: calc(var(--tela) + 300px); grid-template-columns: 272px var(--tela); gap: 28px; align-items: center; }
   .linha-obra.presa .trilha__painel .trilha__texto p { font-size: 15px; }
-  .linha-obra.presa .trilha__fim { width: min(40vw, 420px); grid-template-columns: 1fr; }
+  .linha-obra.presa .trilha__fim { width: min(40vw, 420px); grid-template-columns: 1fr; border-top: 0; padding-top: 0; border-left: 1px solid var(--line-strong); padding-left: 36px; align-content: center; }
   @media (max-width: 900px) {
     .trilha__fixo { padding: 80px 0 64px; }
     .trilha__cab { grid-template-columns: 1fr; gap: 28px; }
-    .trilha__faixa { flex-direction: column; gap: 48px; padding: 40px 18px 0; }
-    .trilha__painel, .trilha__fim { width: auto; }
-    .trilha__fim { border-left: 0; border-top: 1px solid var(--line-strong); padding: 32px 0 0; }
+    .trilha__faixa { gap: 48px; padding: 40px 18px 0; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .rv { opacity: 1; transform: none; transition: none; }
+    /* reveal vira fade curto, sem deslocamento (.js-red, mov.js) */
+    .js-red .rv { opacity: 0; transition: opacity 0.15s linear; }
+    .js-red .rv.on { opacity: 1; }
     .hero__tela { transform: none; }
-    .corte, .pilha > picture, .laser-pilha { transition: none; }
-    .corte::after, .laser-pilha { display: none; }
+    .marca-dagua { transform: none !important; }
+    .btn--primario:hover::after { transition: none; transform: translateX(-180%) skewX(-18deg); }
     .marca-ponto::before { animation: none; }
     .manifesto .w { opacity: 1; }
     .passo-h { opacity: 1; }
@@ -605,6 +676,20 @@
           <polygon points="0,-100 86.6,-50 0,0 -86.6,-50" fill="#D6D6D6" />
           <polygon points="-86.6,-50 0,0 0,100 -86.6,50" fill="#ADADAD" />
           <polygon points="86.6,-50 86.6,50 0,100 0,0" fill="#E8E8E8" />
+        </g>
+      </g>
+    </symbol>
+    <symbol id="cubo-contorno" viewBox="0 0 340 342">
+      <g fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round" vector-effect="non-scaling-stroke">
+        <g transform="translate(90,103)">
+          <polygon points="0,-100 86.6,-50 0,0 -86.6,-50" vector-effect="non-scaling-stroke" />
+          <polygon points="-86.6,-50 0,0 0,100 -86.6,50" vector-effect="non-scaling-stroke" />
+          <polygon points="86.6,-50 86.6,50 0,100 0,0" vector-effect="non-scaling-stroke" />
+        </g>
+        <g transform="translate(250,239)">
+          <polygon points="0,-100 86.6,-50 0,0 -86.6,-50" vector-effect="non-scaling-stroke" />
+          <polygon points="-86.6,-50 0,0 0,100 -86.6,50" vector-effect="non-scaling-stroke" />
+          <polygon points="86.6,-50 86.6,50 0,100 0,0" vector-effect="non-scaling-stroke" />
         </g>
       </g>
     </symbol>
@@ -652,20 +737,20 @@
     <div class="wrap hero__inner">
       <svg class="hero__cubo" data-cubo-obra viewBox="0 0 340 342" aria-hidden="true">
         <g stroke="#686868" stroke-width="7" stroke-linejoin="round">
-          <g transform="translate(90,103)">
-            <polygon pathLength="1" points="0,-100 86.6,-50 0,0 -86.6,-50" fill="#D6D6D6" />
-            <polygon pathLength="1" points="-86.6,-50 0,0 0,100 -86.6,50" fill="#ADADAD" />
-            <polygon pathLength="1" points="86.6,-50 86.6,50 0,100 0,0" fill="#E8E8E8" />
-          </g>
-          <g transform="translate(250,239)">
-            <polygon pathLength="1" points="0,-100 86.6,-50 0,0 -86.6,-50" fill="#D6D6D6" />
-            <polygon pathLength="1" points="-86.6,-50 0,0 0,100 -86.6,50" fill="#ADADAD" />
-            <polygon pathLength="1" points="86.6,-50 86.6,50 0,100 0,0" fill="#E8E8E8" />
-          </g>
+          <g class="cubo-a"><g transform="translate(90,103)">
+            <polygon points="0,-100 86.6,-50 0,0 -86.6,-50" fill="#D6D6D6" />
+            <polygon points="-86.6,-50 0,0 0,100 -86.6,50" fill="#ADADAD" />
+            <polygon points="86.6,-50 86.6,50 0,100 0,0" fill="#E8E8E8" />
+          </g></g>
+          <g class="cubo-b"><g transform="translate(250,239)">
+            <polygon points="0,-100 86.6,-50 0,0 -86.6,-50" fill="#D6D6D6" />
+            <polygon points="-86.6,-50 0,0 0,100 -86.6,50" fill="#ADADAD" />
+            <polygon points="86.6,-50 86.6,50 0,100 0,0" fill="#E8E8E8" />
+          </g></g>
         </g>
       </svg>
       <span class="eyebrow rv">Gestão de obra para construtoras</span>
-      <h1 class="rv rv-d1">Sua obra fecha <span class="acc">no azul?</span></h1>
+      <h1 class="rv rv-d1">Sua obra fecha <span class="acc destaque">no azul?</span></h1>
       <p class="subtitulo hero__lede rv rv-d2">
         Cada real que entra e sai de cada obra, num painel só. Você vê o gasto, o caixa e a
         margem de toda a carteira — hoje, não no fechamento.
@@ -683,7 +768,7 @@
     </div>
     <div class="hero__palco">
       <div class="hero__tela" data-hero-tela>
-        <div class="janela corte cotado" data-corte>
+        <div class="janela cotado" data-hero-janela>
           <div class="janela__barra"><i></i><i></i><i></i><span>Carteira de obras</span></div>
           <picture>
             <source type="image/avif" srcset="img/telas/tela-carteira-1280.avif 1280w, img/telas/tela-carteira-1680.avif 1680w" sizes="(max-width:1240px) 94vw, 1160px">
@@ -717,9 +802,10 @@
 
   <!-- ============================== PROBLEMA ============================= -->
   <section class="secao secao--elevada" id="problema">
+    <svg class="marca-dagua marca-dagua--dir" data-fator="0.15" aria-hidden="true"><use href="#cubo-contorno" /></svg>
     <div class="wrap">
       <div class="secao__cabecalho rv">
-        <span class="eyebrow" style="color:var(--muted)">Obra controlada na planilha</span>
+        <span class="eyebrow">Obra controlada na planilha</span>
         <h2 class="titulo">O prejuízo não aparece na obra. Aparece no fechamento.</h2>
         <p class="subtitulo">Planilha por obra, print de WhatsApp, caderno de campo. Com uma obra, dá. Com três tocando ao mesmo tempo, ninguém sabe qual está dando dinheiro — até a conta não fechar.</p>
       </div>
@@ -774,7 +860,7 @@
             <p class="texto">Todas as obras lado a lado: saúde, avanço, custo, caixa hoje e resultado. A que está segurando o mês aparece primeiro, com o motivo — e as pendências de todas ficam à direita.</p>
             
             <div class="tela-inline">
-        <div class="janela corte" data-corte>
+        <div class="janela">
           <div class="janela__barra"><i></i><i></i><i></i><span>Carteira de obras</span></div>
           <picture>
             <source type="image/avif" srcset="img/telas/tela-carteira-1280.avif 1280w, img/telas/tela-carteira-1680.avif 1680w" sizes="92vw">
@@ -790,7 +876,7 @@
             <p class="texto">Cada compra, taxa e serviço lançado na etapa certa. Gasto por etapa, composição por tipo e gasto por mês logo no topo — dá para ver qual etapa está pesando enquanto ela ainda está em andamento.</p>
             
             <div class="tela-inline">
-        <div class="janela corte" data-corte>
+        <div class="janela">
           <div class="janela__barra"><i></i><i></i><i></i><span>Lançamentos</span></div>
           <picture>
             <source type="image/avif" srcset="img/telas/tela-lancamentos-1280.avif 1280w, img/telas/tela-lancamentos-1680.avif 1680w" sizes="92vw">
@@ -806,7 +892,7 @@
             <p class="texto">A medição trava no contrato e é comparada com o físico da obra. Se o empreiteiro recebeu à frente do que executou, o sistema mostra quanto foi adiantado.</p>
             <div class="exemplo-pend"><span>Exemplo real do sistema · obra fictícia</span>CT-001 medido 12 p.p. à frente do físico · R$ 5.780 adiantados → segurar a próxima medição até o físico alcançar</div>
             <div class="tela-inline">
-        <div class="janela corte" data-corte>
+        <div class="janela">
           <div class="janela__barra"><i></i><i></i><i></i><span>Medições</span></div>
           <picture>
             <source type="image/avif" srcset="img/telas/tela-medicoes-1280.avif 1280w, img/telas/tela-medicoes-1680.avif 1680w" sizes="92vw">
@@ -822,7 +908,7 @@
             <p class="texto">Caixa hoje, resultado, avanço e curva S à esquerda; à direita, a tendência, as pendências com a ação de cada uma e o financiamento. O vale de caixa mostra o dia em que o saldo chega no mínimo.</p>
             
             <div class="tela-inline">
-        <div class="janela corte" data-corte>
+        <div class="janela">
           <div class="janela__barra"><i></i><i></i><i></i><span>Painel da obra</span></div>
           <picture>
             <source type="image/avif" srcset="img/telas/tela-painel-1280.avif 1280w, img/telas/tela-painel-1680.avif 1680w" sizes="92vw">
@@ -888,7 +974,7 @@
             <h3>Cronograma</h3>
             <p>Etapas com dependências, responsável e caminho crítico. Atrasou uma, o término projetado anda sozinho — e você vê antes do cliente perguntar.</p>
           </div>
-        <div class="janela corte" data-corte>
+        <div class="janela">
           <div class="janela__barra"><i></i><i></i><i></i><span>Cronograma da obra</span></div>
           <picture>
             <source type="image/avif" srcset="img/telas/tela-cronograma-1280.avif 1280w, img/telas/tela-cronograma-1680.avif 1680w" sizes="(max-width:900px) 92vw, 760px">
@@ -903,7 +989,7 @@
             <h3>Plano de materiais</h3>
             <p>O que comprar, quanto e até quando, por etapa. Falta comprar, vencidos e desvio de orçamento no topo — a compra não para a frente de serviço.</p>
           </div>
-        <div class="janela corte" data-corte>
+        <div class="janela">
           <div class="janela__barra"><i></i><i></i><i></i><span>Plano de materiais</span></div>
           <picture>
             <source type="image/avif" srcset="img/telas/tela-materiais-1280.avif 1280w, img/telas/tela-materiais-1680.avif 1680w" sizes="(max-width:900px) 92vw, 760px">
@@ -918,7 +1004,7 @@
             <h3>Diário de obra</h3>
             <p>Clima, efetivo, atividades e ocorrências de cada dia, com fotos. Lançado do celular, no canteiro — funciona até sem sinal.</p>
           </div>
-        <div class="janela corte" data-corte>
+        <div class="janela">
           <div class="janela__barra"><i></i><i></i><i></i><span>Diário de obra</span></div>
           <picture>
             <source type="image/avif" srcset="img/telas/tela-diario-1280.avif 1280w, img/telas/tela-diario-1680.avif 1680w" sizes="(max-width:900px) 92vw, 760px">
@@ -933,7 +1019,7 @@
             <h3>Recebimentos</h3>
             <p>Cada parcela do banco ou do cliente: prevista, solicitada, creditada. Previsto × recebido acumulado e quanto já dá para pedir.</p>
           </div>
-        <div class="janela corte" data-corte>
+        <div class="janela">
           <div class="janela__barra"><i></i><i></i><i></i><span>Recebimentos</span></div>
           <picture>
             <source type="image/avif" srcset="img/telas/tela-recebimentos-1280.avif 1280w, img/telas/tela-recebimentos-1680.avif 1680w" sizes="(max-width:900px) 92vw, 760px">
@@ -970,7 +1056,7 @@
           </ul>
         </div>
         <figure class="rv rv-d1" style="margin:0">
-          <div class="janela corte" data-corte>
+          <div class="janela">
           <div class="janela__barra"><i></i><i></i><i></i><span>Relatórios</span></div>
           <picture>
             <source type="image/avif" srcset="img/telas/tela-relatorio-1280.avif 1280w, img/telas/tela-relatorio-1680.avif 1680w" sizes="(max-width:960px) 92vw, 680px">
@@ -1048,6 +1134,7 @@
 
   <!-- ============================ PARA QUEM ============================== -->
   <section class="secao" id="para-quem">
+    <svg class="marca-dagua marca-dagua--esq" data-fator="0.15" aria-hidden="true"><use href="#cubo-contorno" /></svg>
     <div class="wrap">
       <div class="secao__cabecalho rv">
         <span class="eyebrow">Para quem é</span>
@@ -1083,6 +1170,8 @@
     </div>
   </section>
 
+  <div class="respiro" aria-hidden="true"></div>
+
   <!-- ============================== DADOS ================================ -->
   <section class="secao secao--elevada" id="dados">
     <div class="wrap">
@@ -1101,6 +1190,7 @@
 
   <!-- ============================== PLANOS =============================== -->
   <section class="secao" id="planos">
+    <svg class="marca-dagua marca-dagua--dir" data-fator="0.15" aria-hidden="true"><use href="#cubo-contorno" /></svg>
     <div class="wrap">
       <div class="secao__cabecalho centro rv" style="margin-left:auto;margin-right:auto">
         <span class="eyebrow">Por obras ativas</span>
@@ -1115,6 +1205,7 @@
           <a class="btn btn--fantasma" data-cta="whatsapp" data-cta-mensagem="Olá! Quero uma proposta do Souz Controle de Obra para o plano Inicial (1 a 3 obras)." href="#">Solicitar proposta</a>
         </div>
         <div class="plano plano--destaque rv rv-d1">
+          <span class="selo">Mais escolhido</span>
           <span class="pnome">Carteira</span>
           <span class="pfaixa">4 a 12 obras ativas</span>
           <ul><li>Todos os módulos</li><li>Implantação assistida</li><li>Importação da sua planilha</li></ul>
@@ -1215,6 +1306,10 @@
   </div>
 </footer>
 
+<div class="cta-fixo" id="cta-fixo">
+  <a class="btn btn--primario" data-cta="whatsapp" href="#">Agendar demonstração</a>
+</div>
+
 <a class="whats-flut" id="whats-flutuante" data-cta="whatsapp" href="#" aria-label="Falar no WhatsApp" hidden>
   <svg width="26" height="26" viewBox="0 0 16 16" fill="currentColor"><path d="M2.6 13.4 3.4 10.9A5.7 5.7 0 1 1 5.2 12.7z"/><path d="M6.2 5.6c-.3 0-.6.3-.5.8.3 1.7 1.8 3.2 3.5 3.6.5.1.8-.2.9-.5l-1.1-.8-.6.5c-.6-.3-1.1-.8-1.4-1.4l.5-.6-.8-1.1z"/></svg>
 </a>
@@ -1225,7 +1320,7 @@
   <p>Tela real do sistema · dados de exemplo, obras fictícias</p>
 </dialog>
 
-<script src="config.js?v=6"></script>
-<script src="site.js?v=6"></script>
+<script src="config.js?v=7"></script>
+<script src="site.js?v=7"></script>
 </body>
 </html>

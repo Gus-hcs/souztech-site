@@ -1,9 +1,11 @@
 /**
- * site.js — links de WhatsApp a partir de config.js, nav, gaveta e os
- * efeitos: o gabarito (malha isométrica que acende sob o cursor), o corte
- * a laser das telas, as cotas da tela do topo, a história com tela fixa, a
- * linha da obra presa na horizontal, paralaxe e barra de progresso. Tudo
- * desliga com prefers-reduced-motion.
+ * site.js — links de WhatsApp a partir de config.js, nav (sólida depois de
+ * 40px, link da seção ativa), gaveta, CTA fixo no celular e os efeitos: o
+ * gabarito (malha isométrica que acende sob o cursor), reveal em cascata
+ * que nunca deixa caixa vazia, as cotas do topo, o brilho dos cards, as
+ * planilhas que convergem para o botão, os checks dos planos, a história
+ * com tela fixa, a linha da obra presa na horizontal, marca d'água e
+ * paralaxe. Só transform e opacity; tudo reduz com prefers-reduced-motion.
  */
 (function () {
   'use strict';
@@ -91,22 +93,66 @@
     document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') definir(false); });
   }
 
-  /* ------------------------------------------------------------ revelar */
+  /* ------------------------------------------------------------ revelar
+     Entrada: opacidade e 16px, 500 ms, 80 ms de atraso entre irmãos. Três
+     garantias de que nada fica vazio: sem IntersectionObserver, tudo
+     aparece; a cada rolagem, o que já passou do fim da tela aparece mesmo
+     que o observador não tenha avisado; e rolagem rápida desliga a
+     transição (.sem-anim) — o conteúdo aparece pronto. */
+  var revelados = [];
+  function revelar(el) {
+    if (el.classList.contains('on')) return;
+    el.classList.add('on');
+    el.dispatchEvent(new CustomEvent('revelado'));
+    /* o atraso da cascata é só da entrada: sai depois, para não atrasar o hover */
+    if (el.style.transitionDelay) {
+      setTimeout(function () { el.style.transitionDelay = ''; }, 900);
+    }
+  }
   function iniciarRevelar() {
-    var itens = document.querySelectorAll('.rv');
-    if (!MOVIMENTO || !('IntersectionObserver' in window)) {
-      itens.forEach(function (el) { el.classList.add('on'); });
+    var itens = Array.prototype.slice.call(document.querySelectorAll('.rv'));
+    revelados = itens;
+    /* cascata: posição entre os irmãos que também revelam */
+    itens.forEach(function (el) {
+      var irmaos = Array.prototype.filter.call(el.parentElement.children, function (x) {
+        return x.classList.contains('rv');
+      });
+      var i = irmaos.indexOf(el);
+      if (i > 0) el.style.transitionDelay = Math.min(i, 5) * 80 + 'ms';
+    });
+    if (!('IntersectionObserver' in window)) {
+      itens.forEach(revelar);
       return;
     }
     var obs = new IntersectionObserver(
       function (entradas) {
         entradas.forEach(function (e) {
-          if (e.isIntersecting) { e.target.classList.add('on'); obs.unobserve(e.target); }
+          if (e.isIntersecting) { revelar(e.target); obs.unobserve(e.target); }
         });
       },
-      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+      { threshold: 0, rootMargin: '0px 0px -6% 0px' }
     );
     itens.forEach(function (el) { obs.observe(el); });
+  }
+  /* chamado a cada quadro de rolagem */
+  var rolagemAnterior = { y: window.scrollY, t: 0 };
+  var fimRapida = 0;
+  function varrerRevelar(y, vh) {
+    var agora = performance.now();
+    var dt = agora - rolagemAnterior.t;
+    var vel = dt > 0 ? Math.abs(y - rolagemAnterior.y) / dt : 0;
+    rolagemAnterior = { y: y, t: agora };
+    var raiz = document.documentElement;
+    if (vel > 2.5) {
+      raiz.classList.add('sem-anim');
+      clearTimeout(fimRapida);
+      fimRapida = setTimeout(function () { raiz.classList.remove('sem-anim'); }, 260);
+    }
+    for (var i = 0; i < revelados.length; i++) {
+      var el = revelados[i];
+      if (el.classList.contains('on')) continue;
+      if (el.getBoundingClientRect().top < vh) revelar(el);
+    }
   }
 
   /* ------------------------------------------------------------ manifesto */
@@ -137,7 +183,9 @@
     return { el: p, palavras: palavras, acesas: -1 };
   }
 
-  /* ------------------------------------------------------------ história com tela fixa */
+  /* ------------------------------------------------------------ história com tela fixa
+     O texto troca a cada etapa; a tela da direita troca por crossfade de
+     300 ms (CSS). No celular, empilhado, sem nada preso. */
   function iniciarHistoria() {
     var raiz = document.querySelector('[data-historia]');
     if (!raiz) return;
@@ -149,32 +197,11 @@
     var total = passos.length;
     var atual = -1;
 
-    /* a linha do laser que varre a troca de tela (corte de 30°) */
-    var janela = raiz.querySelector('.historia__visual .janela');
-    var laser = null;
-    if (janela && MOVIMENTO) {
-      laser = document.createElement('div');
-      laser.className = 'laser-pilha';
-      janela.appendChild(laser);
-    }
-
     function ativar(i) {
       if (i === atual) return;
-      passos.forEach(function (p, j) { p.classList.toggle('ativo', j === i); });
-      /* a tela nova entra pelo corte por cima da anterior, que fica
-         embaixo até ser coberta; as outras somem */
-      telas.forEach(function (t, j) {
-        t.classList.toggle('anterior', j === atual && atual !== -1);
-        t.classList.toggle('ativo', j === i);
-      });
-      if (laser && atual !== -1) {
-        laser.classList.remove('varre');
-        laser.classList.add('zera');
-        void laser.offsetWidth;
-        laser.classList.remove('zera');
-        laser.classList.add('varre');
-      }
       atual = i;
+      passos.forEach(function (p, j) { p.classList.toggle('ativo', j === i); });
+      telas.forEach(function (t, j) { t.classList.toggle('ativo', j === i); });
       if (rotulo && telas[i]) rotulo.textContent = telas[i].getAttribute('data-rotulo');
       if (num) num.textContent = '0' + (i + 1) + ' / 0' + total;
       if (trilho) trilho.style.transform = 'scaleX(' + (i + 1) / total + ')';
@@ -198,7 +225,11 @@
     var nav = document.getElementById('nav-topo');
     var barra = document.querySelector('.progresso');
     var heroTela = document.querySelector('[data-hero-tela]');
+    var hero = document.getElementById('topo');
+    var contato = document.getElementById('contato');
+    var ctaFixo = document.getElementById('cta-fixo');
     var paralaxe = Array.prototype.slice.call(document.querySelectorAll('[data-parallax]'));
+    var marcas = Array.prototype.slice.call(document.querySelectorAll('.marca-dagua'));
     var manifesto = MOVIMENTO ? prepararManifesto() : null;
     var trilha = iniciarTrilha();
     var pendente = false;
@@ -209,16 +240,27 @@
       var vh = window.innerHeight;
       var doc = document.documentElement.scrollHeight - vh;
 
-      if (nav) nav.classList.toggle('nav--solido', y > 8);
+      if (nav) nav.classList.toggle('nav--solido', y > 40);
+      varrerRevelar(y, vh);
+
+      /* CTA fixo (celular): depois do topo, e some ao chegar no fechamento */
+      if (ctaFixo && hero) {
+        var passou = hero.getBoundingClientRect().bottom < 0;
+        var fim = contato ? contato.getBoundingClientRect().top < vh : false;
+        var mostra = passou && !fim;
+        ctaFixo.classList.toggle('visivel', mostra);
+        document.body.classList.toggle('com-cta-fixo', mostra);
+      }
+
       if (!MOVIMENTO) return;
 
       if (barra) barra.style.transform = 'scaleX(' + (doc > 0 ? Math.min(1, y / doc) : 0) + ')';
       if (trilha) trilha();
 
+      /* a inclinação de 6° do print se desfaz na primeira meia tela de rolagem */
       if (heroTela) {
-        var r = heroTela.getBoundingClientRect();
-        var p = 1 - (r.top - vh * 0.18) / (vh * 0.62);
-        heroTela.style.setProperty('--p', Math.max(0, Math.min(1, p)).toFixed(3));
+        var p = Math.max(0, Math.min(1, y / (vh * 0.5)));
+        heroTela.style.setProperty('--p', p.toFixed(3));
       }
 
       paralaxe.forEach(function (el) {
@@ -228,6 +270,15 @@
         var amp = Number(el.getAttribute('data-parallax')) || 16;
         var base = el.tagName === 'IMG' ? ' scale(1.06)' : '';
         el.style.transform = 'translate3d(0,' + (centro * amp).toFixed(1) + 'px,0)' + base;
+      });
+
+      /* marca d'água: anda a 0,15× da rolagem (medido pela seção, não por ela) */
+      marcas.forEach(function (el) {
+        var sr = el.parentElement.getBoundingClientRect();
+        if (sr.bottom < -200 || sr.top > vh + 200) return;
+        var d = sr.top + sr.height / 2 - vh / 2;
+        var fator = Number(el.getAttribute('data-fator')) || 0.15;
+        el.style.transform = 'translate3d(0,' + (-d * fator).toFixed(1) + 'px,0)';
       });
 
       if (manifesto) {
@@ -249,38 +300,15 @@
     quadro();
   }
 
-  /* ------------------------------------------------------------ corte a laser
-     Cada tela entra por uma diagonal de 30° que varre do canto de cima
-     (CSS: .corte, --corte); a do topo espera o texto e, depois do corte,
-     acende as cotas. */
-  function iniciarCorte() {
-    var telas = document.querySelectorAll('[data-corte]');
-    if (!MOVIMENTO || !('IntersectionObserver' in window)) {
-      telas.forEach(function (el) { el.classList.add('on', 'marcado'); });
-      return;
-    }
-    function abrir(el) {
-      var atraso = el.closest('.hero') ? 650 : 0;
-      setTimeout(function () {
-        el.classList.add('on');
-        if (el.classList.contains('cotado')) {
-          setTimeout(function () { el.classList.add('marcado'); }, 1150);
-        }
-      }, atraso);
-    }
-    var obs = new IntersectionObserver(
-      function (entradas) {
-        entradas.forEach(function (e) {
-          if (e.isIntersecting) { abrir(e.target); obs.unobserve(e.target); }
-        });
-      },
-      { threshold: 0.18 }
-    );
-    telas.forEach(function (el) { obs.observe(el); });
-  }
-
-  /* ------------------------------------------------------------ cotas do topo */
+  /* ------------------------------------------------------------ cotas do topo
+     Acendem depois que o print entra; passar o mouse numa cota acende o
+     ponto na tela, e vice-versa. O pulso em sequência (1 → 4) é CSS. */
   function iniciarCotas() {
+    var janela = document.querySelector('[data-hero-janela]');
+    if (janela) {
+      if (MOVIMENTO) setTimeout(function () { janela.classList.add('marcado'); }, 1100);
+      else janela.classList.add('marcado');
+    }
     var itens = document.querySelectorAll('.cotas [data-marca]');
     var pontos = document.querySelectorAll('.marcas [data-marca]');
     function focar(n) {
@@ -293,6 +321,97 @@
         el.addEventListener('mouseleave', function () { focar(''); });
       });
     });
+  }
+
+  /* ------------------------------------------------------------ cards do problema
+     O brilho segue o cursor: --mx/--my em px (a suavização de 150 ms é a
+     transição da propriedade, CSS). */
+  function iniciarBrilhoCards() {
+    if (!window.matchMedia('(hover: hover)').matches) return;
+    document.querySelectorAll('.fato').forEach(function (card) {
+      card.addEventListener('pointermove', function (ev) {
+        var r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (ev.clientX - r.left).toFixed(0) + 'px');
+        card.style.setProperty('--my', (ev.clientY - r.top).toFixed(0) + 'px');
+      });
+    });
+  }
+
+  /* ------------------------------------------------------------ planilhas → um sistema só
+     Ao entrar, os chips se riscam um a um (CSS, 120 ms); depois, cópias
+     deles (aria-hidden — o texto original fica onde está) convergem para o
+     botão, que acende. */
+  function iniciarSubstitui() {
+    var lista = document.querySelector('.substitui');
+    if (!lista) return;
+    var botao = lista.querySelector('.souz');
+    var chips = Array.prototype.slice.call(lista.querySelectorAll('.item'));
+    function acender() { lista.classList.add('aceso'); }
+    function convergir() {
+      if (!MOVIMENTO || document.documentElement.classList.contains('sem-anim')) { acender(); return; }
+      var base = lista.getBoundingClientRect();
+      var alvo = botao.getBoundingClientRect();
+      var ax = alvo.left + alvo.width / 2;
+      var ay = alvo.top + alvo.height / 2;
+      var copias = chips.map(function (chip, i) {
+        var r = chip.getBoundingClientRect();
+        var c = chip.cloneNode(true);
+        c.classList.add('item-voo');
+        c.setAttribute('aria-hidden', 'true');
+        c.style.left = (r.left - base.left) + 'px';
+        c.style.top = (r.top - base.top) + 'px';
+        c.style.width = r.width + 'px';
+        c.style.transitionDelay = i * 70 + 'ms';
+        lista.appendChild(c);
+        return { el: c, dx: ax - (r.left + r.width / 2), dy: ay - (r.top + r.height / 2) };
+      });
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          copias.forEach(function (c) {
+            c.el.style.transform = 'translate(' + c.dx.toFixed(0) + 'px,' + c.dy.toFixed(0) + 'px) scale(0.35)';
+            c.el.style.opacity = '0';
+          });
+        });
+      });
+      setTimeout(acender, 520 + chips.length * 70);
+      setTimeout(function () { copias.forEach(function (c) { c.el.remove(); }); }, 900 + chips.length * 70);
+    }
+    lista.addEventListener('revelado', function () {
+      /* espera o último risco (6 × 120 ms + 500 ms) */
+      setTimeout(convergir, MOVIMENTO ? 1250 : 0);
+    });
+    if (lista.classList.contains('on')) convergir();
+  }
+
+  /* ------------------------------------------------------------ planos: check que se traça */
+  function iniciarChecks() {
+    document.querySelectorAll('.plano').forEach(function (plano) {
+      plano.querySelectorAll('li').forEach(function (li, i) {
+        li.insertAdjacentHTML(
+          'afterbegin',
+          '<svg class="check" viewBox="0 0 14 14" aria-hidden="true"><path pathLength="1" d="M2 7.5 5.6 11 12 3.5"/></svg>'
+        );
+        li.querySelector('.check path').style.transitionDelay = 250 + i * 140 + 'ms';
+      });
+    });
+  }
+
+  /* ------------------------------------------------------------ link da seção ativa */
+  function iniciarNavAtiva() {
+    if (!('IntersectionObserver' in window)) return;
+    var links = Array.prototype.slice.call(document.querySelectorAll('.nav__links a.navlink'));
+    var alvos = links.map(function (a) { return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+    var obs = new IntersectionObserver(
+      function (entradas) {
+        entradas.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          var id = '#' + e.target.id;
+          links.forEach(function (a) { a.classList.toggle('ativo', a.getAttribute('href') === id); });
+        });
+      },
+      { rootMargin: '-40% 0px -55% 0px' }
+    );
+    alvos.forEach(function (s) { obs.observe(s); });
   }
 
   /* ------------------------------------------------------------ gabarito
@@ -511,6 +630,11 @@
 
     medir();
     window.addEventListener('resize', function () { medir(); quadro(); });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (e) {
+        secao.classList.toggle('visivel', e[0].isIntersecting);
+      }).observe(secao);
+    }
     return quadro;
   }
 
@@ -565,11 +689,20 @@
     aplicarConfig();
     iniciarZoom();
     iniciarGaveta();
+    iniciarChecks();
     iniciarRevelar();
-    iniciarCorte();
     iniciarCotas();
+    iniciarBrilhoCards();
+    iniciarSubstitui();
+    iniciarNavAtiva();
     iniciarHistoria();
     iniciarRolagem();
-    iniciarGabarito();
+    /* o gabarito (canvas) não disputa a carga: começa depois do load, ocioso */
+    function depoisDaCarga() {
+      if ('requestIdleCallback' in window) requestIdleCallback(iniciarGabarito, { timeout: 1500 });
+      else setTimeout(iniciarGabarito, 200);
+    }
+    if (document.readyState === 'complete') depoisDaCarga();
+    else window.addEventListener('load', depoisDaCarga);
   });
 })();
