@@ -1,0 +1,4 @@
+Coloque aqui o vídeo curto da tela do sistema (60 a 90 s, MP4 H.264, sem som
+obrigatório) e a imagem de capa (JPG, 1280x720). Depois escreva os caminhos em
+config.js, no campo video (src e poster). Enquanto o campo estiver vazio, ou o
+arquivo não existir, o espaço do vídeo não aparece no site.

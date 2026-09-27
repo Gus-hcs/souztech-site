@@ -8,8 +8,15 @@ usa a paleta clara do manual. Vermelho e âmbar não aparecem no site.
 - `index.html` — a página.
 - `privacidade.html` — política de privacidade (LGPD).
 - `404.html` — página de erro do GitHub Pages.
-- `config.js` — WhatsApp, e-mail, Instagram, CNPJ, preços e depoimentos. Preencha os `TODO`
-  quando tiver a informação; até lá, o elemento correspondente fica escondido.
+- `config.js` — no topo, o que você preenche: `PRECO_INICIAL`, `PRECO_CARTEIRA` (vazios =
+  "Sob consulta"), `IMPLANTACAO`, `FORM_ENDPOINT` (vazio = os formulários abrem o WhatsApp),
+  `FORM_CAMPOS_EXTRAS` (ex.: a chave do Web3Forms) e `ANALYTICS_LIGADO` (medição de cliques,
+  desligada). Embaixo, WhatsApp, e-mail, CNPJ e o vídeo (`video.src`/`poster`, vazio = não
+  aparece). **Antes de preencher `FORM_ENDPOINT` ou ligar a medição, atualize a Política de
+  Privacidade** — hoje ela diz que o site não tem formulário nem analytics.
+- `depoimentos.json` — depoimentos reais; só entra no site o item com `"publicar": true`. Sem
+  nenhum, a faixa de prova de origem fica no lugar.
+- `video/` — o vídeo curto da tela e a capa (veja `video/LEIA-ME.txt`).
 - `mov.js` — carregado no `<head>`: marca a página (`.js-mov`, ou `.js-red` com movimento
   reduzido) antes do primeiro desenho; sem JS, nada fica escondido (a CSP não permite script
   embutido).

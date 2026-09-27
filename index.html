@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>SouZ Controle de Obra — gasto, caixa e margem de cada obra numa tela só</title>
+<title>Souz | Software de gestão de obra: gasto, caixa e margem</title>
 <meta
   name="description"
   content="Software de gestão de obra para construtoras e engenheiros: cada real que entra e sai de cada obra, orçado × realizado, fluxo de caixa e margem — antes do fechamento, não depois."
@@ -13,7 +13,7 @@
 
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="SouZ Controle de Obra" />
-<meta property="og:title" content="Sua obra fecha no azul?" />
+<meta property="og:title" content="Souz | Software de gestão de obra: gasto, caixa e margem" />
 <meta
   property="og:description"
   content="Gasto, caixa e margem de cada obra da sua carteira numa tela só — para corrigir enquanto ainda dá, não descobrir no fechamento."
@@ -24,7 +24,7 @@
 <meta property="og:image:height" content="630" />
 <meta property="og:locale" content="pt_BR" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="SouZ — Sua obra fecha no azul?" />
+<meta name="twitter:title" content="Souz | Software de gestão de obra: gasto, caixa e margem" />
 <meta
   name="twitter:description"
   content="Gestão de obra para construtoras: gasto, caixa e margem de cada obra numa tela só."
@@ -73,9 +73,9 @@
   }
 </script>
 
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; upgrade-insecure-requests" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; connect-src 'self' https://formspree.io https://api.web3forms.com https://*.supabase.co; object-src 'none'; base-uri 'self'; upgrade-insecure-requests" />
 <meta name="theme-color" content="#020605" />
-<script src="mov.js?v=7"></script>
+<script src="mov.js?v=8"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png" />
 <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png" />
@@ -201,7 +201,9 @@
   .texto { font-size: 16.5px; line-height: 1.6; color: var(--ink-2); max-width: 62ch; }
   .acc { color: var(--accent); }
   .centro { text-align: center; }
-  .centro .subtitulo, .centro .texto { margin-left: auto; margin-right: auto; }
+  /* todo parágrafo de bloco centralizado fica no mesmo eixo (o limite de
+     62ch estreita o bloco; sem margem automática ele encostava à esquerda) */
+  .centro p, .centro .subtitulo, .centro .texto { margin-left: auto; margin-right: auto; }
 
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-size: 15px; font-weight: 600; line-height: 1;
@@ -263,12 +265,14 @@
 
   /* reveal: só esconde com JS ligado (mov.js marca .js / .js-mov no <head>);
      o atraso em cascata (80 ms) vem do site.js. Rolagem rápida liga .sem-anim */
-  .js-mov .rv { opacity: 0; transform: translateY(16px); transition: opacity 0.5s var(--ease), transform 0.5s var(--ease); }
-  .js-mov .rv.on { opacity: 1; transform: none; }
-  .js-mov.sem-anim .rv { transition: none !important; }
+  /* visível por padrão: só espera (.espera) o que estava abaixo da tela na
+     carga, e só com o IntersectionObserver confirmado (.js-reveal, mov.js) */
+  .js-reveal .rv { transition: opacity 0.5s var(--ease), transform 0.5s var(--ease); }
+  .js-reveal .rv.espera { opacity: 0; transform: translateY(16px); }
+  .js-reveal.sem-anim .rv { transition: none !important; }
   /* cards e planos: a transição do reveal soma com a do hover e do brilho */
-  .js-mov .fato.rv { transition: opacity 0.5s var(--ease), transform 0.3s var(--ease), --mx 0.15s linear, --my 0.15s linear; }
-  .js-mov .plano.rv { transition: opacity 0.5s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s ease, border-color 0.3s ease; }
+  .js-reveal .fato.rv { transition: opacity 0.5s var(--ease), transform 0.3s var(--ease), --mx 0.15s linear, --my 0.15s linear; }
+  .js-reveal .plano.rv { transition: opacity 0.5s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s ease, border-color 0.3s ease; }
 
   /* janela mínima para as telas reais */
   /* a janela é sempre a tela escura do sistema: chumbo, mesmo dentro da moldura ou do papel */
@@ -350,7 +354,7 @@
   }
   .fato:hover { transform: translateY(-4px); }
   .fato:hover::before { opacity: 1; }
-  .js-mov .fato.rv.on:hover { transform: translateY(-4px); }
+
   .fato .num { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: var(--muted); }
   .fato h3 { font-size: 19px; margin-top: 14px; line-height: 1.25; }
   .fato p { margin-top: 10px; font-size: 15px; line-height: 1.55; color: var(--ink-3); }
@@ -431,8 +435,9 @@
   .etapa-f.on { background: color-mix(in srgb, var(--ciano) 18%, var(--ground)); }
   .etapa-f.on b { color: var(--accent); }
   .foto { border-radius: var(--r); overflow: hidden; border: 1px solid var(--line-strong); position: relative; }
-  .foto::after { content: ''; position: absolute; inset: auto 0 0 0; height: 30%; background: linear-gradient(180deg, transparent, rgba(5, 16, 14, 0.35)); pointer-events: none; }
-  .foto img { width: 100%; height: auto; transform: scale(1.06); }
+  /* a foto clareia (brilho 1,15) e só as bordas se fundem ao card */
+  .foto::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 78% 72% at 50% 45%, transparent 62%, rgba(24, 27, 30, 0.55) 100%); }
+  .foto img { width: 100%; height: auto; transform: scale(1.06); filter: brightness(1.15); }
 
   /* ----------------------------------------------------------- para quem */
   .quem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
@@ -463,10 +468,9 @@
   @media (max-width: 820px) { .planos-grid { grid-template-columns: 1fr; } }
   .plano { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 30px 26px; display: grid; align-content: start; gap: 6px; transition: transform 0.3s var(--ease), box-shadow 0.3s ease, border-color 0.3s ease; }
   .plano:hover { transform: translateY(-6px); border-color: var(--line-strong); }
-  .js-mov .plano.rv.on:hover { transform: translateY(-6px); }
+
   .plano--destaque { border-color: var(--accent); transform: scale(1.02); box-shadow: 0 0 0 1px rgba(47, 212, 196, 0.25), 0 30px 90px -30px rgba(47, 212, 196, 0.35); }
-  .js-mov .plano--destaque.rv.on { transform: scale(1.02); }
-  .plano--destaque:hover, .js-mov .plano--destaque.rv.on:hover { transform: translateY(-6px) scale(1.02); border-color: var(--accent); }
+  .plano--destaque:hover { transform: translateY(-6px) scale(1.02); border-color: var(--accent); }
   .plano .selo { position: absolute; top: -11px; left: 26px; font-family: var(--mono); font-size: 10.5px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; background: var(--ciano); color: #fbfcfb; padding: 4px 10px; border-radius: 4px; }
   .plano .pnome { font-size: 19px; font-weight: 800; color: var(--ink); }
   .plano .pfaixa { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
@@ -503,6 +507,8 @@
   .cta-final__inner { position: relative; z-index: 1; }
   .cta-final .display { max-width: 14ch; margin: 0 auto; font-size: clamp(40px, 7vw, 80px); }
   .cta-final__acoes { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 34px; }
+  .cta-final__acoes .btn { min-width: 240px; }
+  @media (max-width: 560px) { .cta-final__acoes { flex-direction: column; align-items: stretch; } .cta-final__acoes .btn { min-width: 0; } }
   .cta-final .direto { margin-top: 18px; font-size: 14px; color: var(--ink-3); }
   .cta-final .direto a { color: var(--accent); }
   .cta-final .direto a:hover { text-decoration: underline; text-underline-offset: 3px; }
@@ -633,10 +639,88 @@
     .trilha__faixa { gap: 48px; padding: 40px 18px 0; }
   }
 
+
+  /* ==================================================================
+     v6 — prova, relatório de exemplo, calculadora e qualificação. Nenhum
+     fundo novo: tudo usa as variáveis de :root e as seções que já existem.
+     ================================================================== */
+  /* prova de origem (e depoimentos, quando houver) */
+  .prova { padding: 8px 0 72px; }
+  .prova__origem {
+    display: flex; align-items: center; gap: 18px; max-width: 880px; margin: 0 auto; padding: 22px 26px;
+    border-radius: var(--r); border: 1px solid transparent;
+    background: linear-gradient(var(--grafite), var(--grafite)) padding-box, linear-gradient(180deg, rgba(47, 212, 196, 0.25), rgba(47, 212, 196, 0)) border-box;
+  }
+  .prova__origem p { font-size: clamp(16px, 1.6vw, 18px); line-height: 1.5; color: var(--ink-2); max-width: none; }
+  .prova__cubo { width: 34px; height: 34px; flex: none; }
+  .prova__depoimentos { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .depo-card {
+    display: grid; grid-template-columns: 56px 1fr; gap: 16px; align-items: start; padding: 24px; border-radius: var(--r);
+    border: 1px solid transparent;
+    background: linear-gradient(var(--grafite), var(--grafite)) padding-box, linear-gradient(180deg, rgba(47, 212, 196, 0.25), rgba(47, 212, 196, 0)) border-box;
+  }
+  .depo-card img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+  .depo-card blockquote { margin: 0; font-size: 16px; line-height: 1.55; color: var(--ink); }
+  .depo-card figcaption { margin-top: 10px; font-size: 13px; color: var(--ink-3); }
+  .depo-card figcaption b { color: var(--ink-2); font-weight: 600; }
+  .prova__video { margin: 32px auto 0; max-width: 880px; }
+  .prova__video video { display: block; width: 100%; height: auto; border-radius: var(--r); border: 1px solid rgba(255, 255, 255, 0.08); background: var(--grafite); }
+  @media (max-width: 560px) { .prova__origem { flex-direction: column; align-items: flex-start; } }
+
+  /* formulários (relatório de exemplo, carteira) e calculadora */
+  .campo-rot { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
+  .campo {
+    width: 100%; font: inherit; font-size: 16px; color: var(--ink); background: var(--ground);
+    border: 1px solid var(--line-strong); border-radius: var(--r); padding: 13px 14px; transition: border-color 0.18s ease;
+  }
+  .campo::placeholder { color: var(--muted); }
+  .campo:focus-visible { border-color: var(--ciano-claro); outline-offset: 1px; }
+  .campo[aria-invalid="true"] { border-color: var(--accent); }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .form-status { min-height: 1.5em; margin-top: 10px; font-size: 14px; color: var(--ink-2); max-width: 56ch; }
+  .form-status.ok { color: var(--ciano-claro); }
+  .form-status.erro { color: var(--ink); }
+  .form-status a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+  .isca__grade { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); gap: 56px; align-items: center; }
+  @media (max-width: 900px) { .isca__grade { grid-template-columns: 1fr; gap: 28px; } }
+  .form-lead { position: relative; display: grid; gap: 14px; padding: 26px; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface-2); }
+  .form-lead .btn { justify-self: start; }
+  .consentimento { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; line-height: 1.5; color: var(--ink-3); cursor: pointer; }
+  .consentimento input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--ciano); flex: none; }
+  .consentimento a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+  .form-qualifica { display: grid; gap: 26px; }
+  .form-qualifica fieldset { border: 0; padding: 0; margin: 0; }
+  .form-qualifica legend { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 12px; padding: 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip { position: relative; cursor: pointer; }
+  .chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .chip span {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 10px 18px; border-radius: var(--r);
+    border: 1px solid var(--line-strong); background: var(--ground); color: var(--ink-2); font-size: 15px; font-weight: 600;
+    transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+  }
+  .chip:hover span { border-color: var(--accent); color: var(--ink); }
+  .chip input:checked + span { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--ciano) 18%, var(--ground)); }
+  .chip input:focus-visible + span { outline: 2px solid var(--ciano-claro); outline-offset: 3px; }
+  .form-qualifica__fim { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .form-qualifica__fim .form-status { margin-top: 0; }
+
+  .calc { margin-top: 56px; padding: 28px; border-radius: var(--r); border: 1px solid var(--line); background: var(--ground); display: grid; gap: 22px; }
+  .calc__cab h3 { font-size: clamp(20px, 2.2vw, 26px); letter-spacing: -0.02em; }
+  .calc__campos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  @media (max-width: 760px) { .calc__campos { grid-template-columns: 1fr; } }
+  .calc__resultado { display: grid; gap: 10px; justify-items: start; padding-top: 18px; border-top: 1px solid var(--line); }
+  .calc__frase { font-size: clamp(18px, 2vw, 22px); line-height: 1.4; color: var(--ink); max-width: 44ch; }
+  .calc__valor { font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; color: var(--ciano-claro); white-space: nowrap; }
+  .calc__formula { font-size: 13px; color: var(--ink-3); }
+  .calc .btn { margin-top: 6px; }
+
   @media (prefers-reduced-motion: reduce) {
     /* reveal vira fade curto, sem deslocamento (.js-red, mov.js) */
-    .js-red .rv { opacity: 0; transition: opacity 0.15s linear; }
-    .js-red .rv.on { opacity: 1; }
+    .js-reveal .rv { transition: opacity 0.15s linear; }
+    .js-reveal .rv.espera { transform: none; }
     .hero__tela { transform: none; }
     .marca-dagua { transform: none !important; }
     .btn--primario:hover::after { transition: none; transform: translateX(-180%) skewX(-18deg); }
@@ -696,7 +780,7 @@
       <a class="navlink" href="#como-funciona">Como funciona</a>
       <a class="navlink" href="#planos">Planos</a>
       <a class="navlink" href="#duvidas">Dúvidas</a>
-      <a class="btn btn--primario" data-cta="whatsapp" href="#">Agendar demonstração</a>
+      <a class="btn btn--primario" data-cta="whatsapp" data-local="nav" data-cta-mensagem="Olá! Vi o site do Souz e quero agendar uma demonstração." href="#">Agendar demonstração</a>
     </div>
     <button class="nav__gaveta-btn" data-acao="abrir-gaveta" aria-label="Abrir menu" aria-expanded="false" aria-controls="gaveta">
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h16M3 11h16M3 16h16"/></svg>
@@ -704,7 +788,7 @@
   </div>
 </nav>
 
-<div class="gaveta" id="gaveta" aria-hidden="true">
+<div class="gaveta" id="gaveta" aria-hidden="true" inert>
   <div class="gaveta__topo">
     <button data-acao="fechar-gaveta" aria-label="Fechar menu">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 5l14 14M19 5L5 19"/></svg>
@@ -714,7 +798,7 @@
   <a href="#como-funciona" data-acao="fechar-gaveta">Como funciona</a>
   <a href="#planos" data-acao="fechar-gaveta">Planos</a>
   <a href="#duvidas" data-acao="fechar-gaveta">Dúvidas</a>
-  <a class="btn btn--primario" data-cta="whatsapp" href="#">Agendar demonstração</a>
+  <a class="btn btn--primario" data-cta="whatsapp" data-local="menu" data-cta-mensagem="Olá! Vi o site do Souz e quero agendar uma demonstração." href="#">Agendar demonstração</a>
 </div>
 
 <main id="conteudo">
@@ -745,7 +829,7 @@
         margem de toda a carteira — hoje, não no fechamento.
       </p>
       <div class="hero__cta rv rv-d3">
-        <a class="btn btn--primario" data-cta="whatsapp" href="#">Agendar demonstração</a>
+        <a class="btn btn--primario" data-cta="whatsapp" data-local="topo" data-cta-mensagem="Olá! Quero ver o Souz com uma obra minha. Podemos agendar uma demonstração?" href="#">Agendar demonstração</a>
         <a class="btn btn--fantasma" href="#produto">Ver como funciona</a>
       </div>
       <div class="hero__fatos rv rv-d3">
@@ -781,6 +865,24 @@
       </div>
     </div>
   </header>
+
+  <!-- =============================== PROVA =============================== -->
+  <section class="prova moldura" id="prova" aria-label="De onde vem o Souz">
+    <div class="wrap">
+      <!-- Enquanto depoimentos.json não tiver item com "publicar": true, fica a
+           faixa de origem (site.js troca pelos depoimentos quando houver). -->
+      <div class="prova__origem" data-prova-origem>
+        <svg class="prova__cubo" aria-hidden="true"><use href="#cubo" /></svg>
+        <p>Construído a partir da planilha de controle de obra de um engenheiro em campo — e validado em obra real.</p>
+      </div>
+      <div class="prova__depoimentos" data-prova-depoimentos hidden></div>
+      <!-- Vídeo curto da tela: só aparece se o arquivo de config.js (video.src) existir. -->
+      <figure class="prova__video" data-prova-video hidden>
+        <video controls preload="none" playsinline width="1280" height="720"></video>
+        <figcaption class="legenda">Um minuto do sistema, com uma obra fictícia.</figcaption>
+      </figure>
+    </div>
+  </section>
 
   <!-- ============================= MANIFESTO ============================= -->
   <section class="manifesto moldura" aria-label="O que o Souz resolve">
@@ -1059,6 +1161,31 @@
     </div>
   </section>
 
+  <!-- ========================= RELATÓRIO DE EXEMPLO ========================== -->
+  <section class="secao secao--elevada isca" id="relatorio-exemplo">
+    <div class="wrap">
+      <div class="isca__grade">
+        <div class="rv">
+          <span class="eyebrow">Relatório de exemplo</span>
+          <h2 class="titulo">Receba um relatório de exemplo</h2>
+          <p class="texto" style="margin-top:14px">O relatório de status que o cliente recebe, gerado pelo sistema com uma obra fictícia. Deixe um e-mail ou WhatsApp e a gente manda.</p>
+        </div>
+        <form class="form-lead rv" data-form="isca" novalidate>
+          <label class="campo-rot" for="isca-contato">E-mail ou WhatsApp</label>
+          <input class="campo" id="isca-contato" name="contato" type="text" inputmode="email" autocomplete="email" required aria-describedby="isca-status" placeholder="voce@construtora.com ou (45) 99999-0000" />
+          <!-- honeypot: pessoas não veem; robô preenche -->
+          <div class="hp" aria-hidden="true"><label>Não preencha este campo <input type="text" name="site_empresa" tabindex="-1" autocomplete="off" /></label></div>
+          <label class="consentimento">
+            <input type="checkbox" name="consentimento" required />
+            <span>Autorizo a Souz Tech a usar este contato só para mandar o relatório e falar sobre o Souz. <a href="privacidade.html">Política de Privacidade</a></span>
+          </label>
+          <button class="btn btn--primario" type="submit" data-evento="relatorio-exemplo">Receber o relatório</button>
+          <p class="form-status" id="isca-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
   <!-- ============================== CAMPO ================================ -->
   <section class="secao" id="campo">
     <div class="wrap">
@@ -1117,6 +1244,24 @@
             </picture>
           </div>
         </figure>
+      </div>
+
+      <!-- calculadora "caixa em risco": nada é guardado nem enviado -->
+      <div class="calc rv" data-calc>
+        <div class="calc__cab">
+          <span class="eyebrow">Caixa em risco</span>
+          <h3>Quanto dinheiro fica parado quando o recebimento atrasa?</h3>
+        </div>
+        <div class="calc__campos">
+          <label><span class="campo-rot">Obras ativas</span><input class="campo" data-calc-obras type="text" inputmode="numeric" value="4" /></label>
+          <label><span class="campo-rot">Gasto médio por obra, por mês (R$)</span><input class="campo" data-calc-gasto type="text" inputmode="decimal" value="60.000" /></label>
+          <label><span class="campo-rot">Dias médios de atraso no recebimento</span><input class="campo" data-calc-dias type="text" inputmode="numeric" value="20" /></label>
+        </div>
+        <div class="calc__resultado" aria-live="polite">
+          <p class="calc__frase">Você tem cerca de <b class="calc__valor" data-calc-valor>R$ 160.000</b> parado por causa de recebimentos atrasados.</p>
+          <p class="calc__formula">Estimativa: obras × gasto médio mensal × (dias de atraso ÷ 30). É uma conta simples, não o fluxo de caixa da sua obra.</p>
+          <a class="btn btn--primario" data-calc-whats data-evento="calculadora-whatsapp" href="#">Ver isso no Souz</a>
+        </div>
       </div>
     </div>
   </section>
@@ -1191,7 +1336,7 @@
           <span class="pfaixa">1 a 3 obras ativas</span>
           <ul><li>Todos os módulos</li><li>Implantação assistida</li><li>Importação da sua planilha</li></ul>
           <div class="ppreco" data-preco="inicial">Sob consulta</div>
-          <a class="btn btn--fantasma" data-cta="whatsapp" data-cta-mensagem="Olá! Quero uma proposta do Souz Controle de Obra para o plano Inicial (1 a 3 obras)." href="#">Solicitar proposta</a>
+          <a class="btn btn--fantasma" data-cta="whatsapp" data-local="plano-inicial" data-cta-mensagem="Olá! Quero uma proposta do Souz Controle de Obra para o plano Inicial (1 a 3 obras)." href="#">Solicitar proposta</a>
         </div>
         <div class="plano plano--destaque rv rv-d1">
           <span class="selo">Mais escolhido</span>
@@ -1199,26 +1344,21 @@
           <span class="pfaixa">4 a 12 obras ativas</span>
           <ul><li>Todos os módulos</li><li>Implantação assistida</li><li>Importação da sua planilha</li></ul>
           <div class="ppreco" data-preco="carteira">Sob consulta</div>
-          <a class="btn btn--primario" data-cta="whatsapp" data-cta-mensagem="Olá! Quero uma proposta do Souz Controle de Obra para o plano Carteira (4 a 12 obras)." href="#">Solicitar proposta</a>
+          <a class="btn btn--primario" data-cta="whatsapp" data-local="plano-carteira" data-cta-mensagem="Olá! Quero uma proposta do Souz Controle de Obra para o plano Carteira (4 a 12 obras)." href="#">Solicitar proposta</a>
         </div>
         <div class="plano rv rv-d2">
           <span class="pnome">Múltiplas frentes</span>
           <span class="pfaixa">13 ou mais obras</span>
           <ul><li>Todos os módulos</li><li>Implantação assistida</li><li>Importação da sua planilha</li></ul>
-          <div class="ppreco" data-preco="multiplas">Sob consulta</div>
-          <a class="btn btn--fantasma" data-cta="whatsapp" data-cta-mensagem="Olá! Quero uma proposta do Souz Controle de Obra para o plano Múltiplas frentes (13+ obras)." href="#">Solicitar proposta</a>
+          <div class="ppreco">Sob consulta</div>
+          <a class="btn btn--fantasma" data-cta="whatsapp" data-local="plano-multiplas" data-cta-mensagem="Olá! Quero uma proposta do Souz Controle de Obra para o plano Múltiplas frentes (13+ obras)." href="#">Solicitar proposta</a>
         </div>
       </div>
       <p class="planos-nota rv">Implantação assistida em todos os planos: alguém do time importa sua planilha e configura a primeira obra com você.</p>
+      <p class="planos-nota planos-implantacao" data-implantacao hidden></p>
     </div>
   </section>
 
-  <section class="secao secao--elevada" id="depoimentos" hidden>
-    <div class="wrap">
-      <div class="secao__cabecalho rv"><h2 class="titulo">Quem usa o Souz</h2></div>
-      <div class="depo-grid" id="depoimentos-lista"></div>
-    </div>
-  </section>
 
   <!-- =============================== FAQ ================================= -->
   <section class="secao" id="duvidas">
@@ -1256,7 +1396,51 @@
           <summary>Preciso instalar alguma coisa?<span class="chev" aria-hidden="true"></span></summary>
           <p>Não. É um sistema web: abre no navegador, no computador ou no celular.</p>
         </details>
+        <details>
+          <summary>Quanto tempo leva a implantação?<span class="chev" aria-hidden="true"></span></summary>
+          <!-- CONFIRMAR: prazo típico de implantação (por obra e por carteira) antes de pôr um número aqui. -->
+          <p>Depende de quantas obras entram e de como a sua planilha está hoje. Na demonstração, a gente olha a planilha com você e diz o prazo antes de você assinar.</p>
+        </details>
+        <details>
+          <summary>O que acontece com os meus dados se eu cancelar?<span class="chev" aria-hidden="true"></span></summary>
+          <!-- CONFIRMAR: por quanto tempo os dados ficam guardados depois do cancelamento e como é a exclusão definitiva. -->
+          <p>Os dados são seus. Antes de encerrar, você exporta tudo: o sistema gera o backup completo e as planilhas de cada obra, para abrir no Excel.</p>
+        </details>
+        <details>
+          <summary>Funciona sem internet na obra?<span class="chev" aria-hidden="true"></span></summary>
+          <!-- CONFIRMAR: comportamento sem rede descrito como está no sistema hoje (gravação no aparelho, envio quando a rede volta). -->
+          <p>Para o registro de campo, sim: o que você lança sem sinal fica guardado no próprio aparelho e é enviado quando a conexão volta. Para entrar no sistema pela primeira vez naquele aparelho, é preciso estar conectado.</p>
+        </details>
       </div>
+    </div>
+  </section>
+
+  <!-- ====================== CONTE SOBRE SUA CARTEIRA ======================= -->
+  <section class="secao secao--elevada qualifica" id="sua-carteira">
+    <div class="wrap">
+      <div class="secao__cabecalho rv">
+        <span class="eyebrow">Três toques</span>
+        <h2 class="titulo">Conte sobre sua carteira</h2>
+        <p class="subtitulo">Responda e a conversa já começa no ponto certo — a mensagem vai pronta para o WhatsApp.</p>
+      </div>
+      <form class="form-qualifica rv" data-form="qualifica" novalidate>
+        <fieldset>
+          <legend>Quantas obras ativas?</legend>
+          <div class="chips"><label class="chip"><input type="radio" name="obras" value="1 a 3" required /><span>1–3</span></label><label class="chip"><input type="radio" name="obras" value="4 a 12" required /><span>4–12</span></label><label class="chip"><input type="radio" name="obras" value="13 ou mais" required /><span>13+</span></label></div>
+        </fieldset>
+        <fieldset>
+          <legend>Hoje você controla em</legend>
+          <div class="chips"><label class="chip"><input type="radio" name="controle" value="planilha" required /><span>Planilha</span></label><label class="chip"><input type="radio" name="controle" value="outro sistema" required /><span>Outro sistema</span></label><label class="chip"><input type="radio" name="controle" value="nada ainda" required /><span>Nada ainda</span></label></div>
+        </fieldset>
+        <fieldset>
+          <legend>O maior problema hoje é</legend>
+          <div class="chips"><label class="chip"><input type="radio" name="problema" value="medição" required /><span>Medição</span></label><label class="chip"><input type="radio" name="problema" value="custo por etapa" required /><span>Custo por etapa</span></label><label class="chip"><input type="radio" name="problema" value="caixa" required /><span>Caixa</span></label></div>
+        </fieldset>
+        <div class="form-qualifica__fim">
+          <button class="btn btn--primario" type="submit" data-evento="qualifica-whatsapp">Enviar pelo WhatsApp</button>
+          <p class="form-status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
     </div>
   </section>
 
@@ -1267,7 +1451,8 @@
       <h2 class="display">Veja sua obra no Souz</h2>
       <p class="subtitulo" style="margin-top:18px">Traga uma obra de verdade. Na demonstração, você vê o gasto, o caixa e a margem dela numa tela só.</p>
       <div class="cta-final__acoes">
-        <a class="btn btn--primario" data-cta="whatsapp" href="#">Agendar demonstração</a>
+        <a class="btn btn--primario" data-cta="whatsapp" data-local="fechamento" data-cta-mensagem="Olá! Quero agendar uma demonstração do Souz com uma obra de verdade." href="#">Agendar pelo WhatsApp</a>
+        <a class="btn btn--primario" data-evento="cta-email" data-local="fechamento" href="mailto:gustavo.souza@souztech.com?subject=Demonstra%C3%A7%C3%A3o%20do%20Souz">Escrever um e-mail</a>
       </div>
       <p class="direto">ou escreva para <a href="mailto:gustavo.souza@souztech.com">gustavo.souza@souztech.com</a></p>
     </div>
@@ -1284,7 +1469,7 @@
       <ul class="rodape__links">
         <li><a href="mailto:gustavo.souza@souztech.com">gustavo.souza@souztech.com</a></li>
         <li><a href="https://instagram.com/souz.tech" target="_blank" rel="noopener">@souz.tech</a></li>
-        <li id="rodape-whatsapp" hidden><a data-cta="whatsapp" href="#">WhatsApp</a></li>
+        <li id="rodape-whatsapp" hidden><a data-cta="whatsapp" data-local="rodape" data-cta-mensagem="Olá! Quero falar com a Souz Tech." href="#">WhatsApp</a></li>
         <li><a href="privacidade.html">Política de Privacidade</a></li>
       </ul>
     </div>
@@ -1296,10 +1481,10 @@
 </footer>
 
 <div class="cta-fixo" id="cta-fixo">
-  <a class="btn btn--primario" data-cta="whatsapp" href="#">Agendar demonstração</a>
+  <a class="btn btn--primario" data-cta="whatsapp" data-local="cta-fixo" data-cta-mensagem="Olá! Estou vendo o site do Souz pelo celular e quero agendar uma demonstração." href="#">Agendar demonstração</a>
 </div>
 
-<a class="whats-flut" id="whats-flutuante" data-cta="whatsapp" href="#" aria-label="Falar no WhatsApp" hidden>
+<a class="whats-flut" id="whats-flutuante" data-cta="whatsapp" data-local="chat" data-cta-mensagem="Olá! Tenho uma dúvida sobre o Souz." href="#" aria-label="Falar no WhatsApp" hidden>
   <svg width="26" height="26" viewBox="0 0 16 16" fill="currentColor"><path d="M2.6 13.4 3.4 10.9A5.7 5.7 0 1 1 5.2 12.7z"/><path d="M6.2 5.6c-.3 0-.6.3-.5.8.3 1.7 1.8 3.2 3.5 3.6.5.1.8-.2.9-.5l-1.1-.8-.6.5c-.6-.3-1.1-.8-1.4-1.4l.5-.6-.8-1.1z"/></svg>
 </a>
 
@@ -1309,7 +1494,7 @@
   <p>Tela real do sistema · dados de exemplo, obras fictícias</p>
 </dialog>
 
-<script src="config.js?v=7"></script>
-<script src="site.js?v=7"></script>
+<script src="config.js?v=8"></script>
+<script src="site.js?v=8"></script>
 </body>
 </html>

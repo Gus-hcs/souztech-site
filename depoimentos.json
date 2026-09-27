@@ -1,0 +1,11 @@
+[
+  {
+    "publicar": false,
+    "preencher": "Troque todos os campos por um depoimento real, com autorização por escrito de quem deu. Só aparece no site com publicar: true.",
+    "foto": "img/depoimentos/PREENCHER.jpg",
+    "nome": "PREENCHER",
+    "cargo": "PREENCHER",
+    "empresa": "PREENCHER",
+    "frase": "PREENCHER"
+  }
+]
